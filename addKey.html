@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Key Saver</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Dodatkowy styl dla naszej kolorystyki */
+        body {
+            background-color: #ffffff;
+            /* biały kolor tła */
+        }
+    </style>
+</head>
+
+<body class="py-8 px-4 flex flex-col items-center">
+    <h2 class="text-2xl font-bold mb-4">Add to contacts list</h2>
+    <label for="keyName" class="text-lg mb-2">Unique key name</label>
+    <input required type="text" id="keyName" class="border rounded-lg py-2 px-4 mb-4 w-full">
+    <label for="publicKey" class="text-lg mb-2">Public Key:</label>
+    <textarea required id="publicKey" rows="5" class="border rounded-lg py-2 px-4 mb-4 w-full resize-none"></textarea>
+    <button id="saveButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Save</button>
+</body>
+
+</html>

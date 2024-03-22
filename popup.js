@@ -11,10 +11,15 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById('encryptBtn').addEventListener('click', async () => {
     const message = document.getElementById('message').value;
     const publicKey = document.getElementById('publicKey').value;
+
     // Wysyłanie zapytania do background.js w celu szyfrowania wiadomości
     const response = await browser.runtime.sendMessage({ action: 'encrypt', message: message, publicKey: publicKey })
 
     const encryptedMessageDiv = document.getElementById('encryptedMessage');
     encryptedMessageDiv.innerText = 'Encrypted message: \n' + response;
 
+});
+document.getElementById('newKey').addEventListener('click', async () => {
+    browser.windows.create({ url: "addKey.html", width: 700, height: 400 })
+    return;
 });
