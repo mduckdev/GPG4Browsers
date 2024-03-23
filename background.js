@@ -28,6 +28,7 @@ async function encryptMessage(message, publicKey) {
     return response;
 }
 
+
 // Nasłuchuj na zdarzenie przychodzącej wiadomości
 browser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     switch (request.action) {
@@ -41,7 +42,13 @@ browser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             browser.windows.create({ url: "p.html" })
             return Promise.resolve(true)
         }
-
+        case "validate-key": {
+            let key = await openpgp.readKey({armoredKey:String(request.publicKey)}).catch(e=>{console.error(e);return null});
+            if(!key){
+                return Promise.reject(false);
+            }
+            return Promise.resolve(true)
+        }
         default: {
             return Promise.reject(false);
         }
