@@ -7,8 +7,6 @@
         "tabs",
         "activeTab",
         "webNavigation",
-        "webRequest",
-        "webRequestBlocking",
         "storage",
         "nativeMessaging",
         "contextMenus"
@@ -30,7 +28,7 @@
         }
     ],
     "action": {
-        "default_popup": "p.html",
+        "default_popup": "popup.html",
         "default_icon": {
             "16": "icons/icon16.png",
             "48": "icons/icon48.png",
@@ -44,7 +42,7 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "p.html",
+                "popup.html",
                 "addKey.html"
             ],
             "extension_ids": []
