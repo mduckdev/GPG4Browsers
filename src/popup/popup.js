@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let publicKeysList = await browser.storage.local.get({ publicKeysList: {} });
     publicKeysList = publicKeysList.publicKeysList;
     for (const [key, value] of Object.entries(publicKeysList)) {
-        const select = document.getElementById("keys");
+        const select = document.getElementById("publicKeysDropdown");
         let keyOption = document.createElement("option");
         keyOption.value = key;
         keyOption.innerText = key;
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 document.getElementById('encryptBtn').addEventListener('click', async () => {
     const message = document.getElementById('message').value;
-    const keyName = document.getElementById('keys').value;
+    const keyName = document.getElementById('publicKeysDropdown').value;
 
     // Wysyłanie zapytania do background.js w celu szyfrowania wiadomości
     let publicKeysList = await browser.storage.local.get({ publicKeysList: {} });
@@ -26,7 +26,7 @@ document.getElementById('encryptBtn').addEventListener('click', async () => {
     const response = await browser.runtime.sendMessage({ action: 'encrypt', message: message, publicKey: publicKeysList[keyName] })
 
     const encryptedMessageDiv = document.getElementById('encryptedMessage');
-    encryptedMessageDiv.innerText = 'Encrypted message: \n' + response;
+    encryptedMessageDiv.innerText = response;
 
 });
 document.getElementById('newPublicKey').addEventListener('click', async () => {
