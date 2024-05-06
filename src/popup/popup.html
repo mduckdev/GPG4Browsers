@@ -22,24 +22,34 @@
             <textarea id="message"
                 class="w-full h-24 bg-gray-100 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 p-2 rounded-md"></textarea>
 
-            <label id="publicKeyLabel" for="publicKey" class="hidden block text-sm font-medium text-gray-700">Public
-                key:</label>
-            <textarea id="publicKey"
-                class="hidden w-full h-24 bg-gray-100 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 p-2 rounded-md"></textarea>
-
             <div class="mt-4">
-                <label id="keysLabel" for="keys" class="block text-sm font-medium text-gray-700">Choose a key:</label>
-                <select id="keysDropdown" name="keys"
-                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                    <!-- Tutaj będą opcje z kluczami -->
+                <label id="publicKeysLabel" for="keys" class="block text-sm font-medium text-gray-700">Select the
+                    recipient's
+                    public key:</label>
 
-                </select>
-                <button id="newKey"
-                    class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Add new
-                    public key</button>
+                <div class="flex gap-2">
+                    <select id="publicKeysDropdown" name="keys"
+                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
+                        <!-- Tutaj będą opcje z kluczami -->
+                    </select>
+                    <button id="newPublicKey"
+                        class="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
+                </div>
+
+
+                <label id="privateKeysLabel" for="keys" class="block text-sm font-medium text-gray-700 pt-3">Sign with
+                    private key:</label>
+                <div class="flex gap-2">
+                    <select id="privateKeysDropdown" name="keys"
+                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
+                    </select>
+                    <button id="newPrivateKey"
+                        class="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
+                </div>
                 <label class="cursor-pointer label pb-0">
-                    <input id="enterKeyToggle" type="checkbox" data-theme="light" class="toggle toggle-success" />
-                    <span class="label-text">Enter key without saving</span>
+                    <input id="signMessageToggle" type="checkbox" data-theme="light" class="toggle toggle-success"
+                        checked />
+                    <span class="label-text pl-3">Sign the message</span>
                 </label>
             </div>
             <button id="encryptBtn"

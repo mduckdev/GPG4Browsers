@@ -29,36 +29,27 @@ document.getElementById('encryptBtn').addEventListener('click', async () => {
     encryptedMessageDiv.innerText = 'Encrypted message: \n' + response;
 
 });
-document.getElementById('newKey').addEventListener('click', async () => {
+document.getElementById('newPublicKey').addEventListener('click', async () => {
     browser.windows.create({ url: "../addKey.html", width: 700, height: 700 })
     return;
 });
 
-document.getElementById('enterKeyToggle').addEventListener('click', async () => {
-    const keysLabel = document.getElementById("keysLabel");
-    const keysDropdown = document.getElementById("keysDropdown");
-    const newKey = document.getElementById("newKey");
-
-    const publicKeyLabel = document.getElementById("publicKeyLabel");
-    const publicKey = document.getElementById("publicKey");
+document.getElementById('signMessageToggle').addEventListener('click', async () => {
+    const privateKeysLabel = document.getElementById("privateKeysLabel");
+    const privateKeysDropdown = document.getElementById("privateKeysDropdown");
+    const newPrivateKey = document.getElementById("newPrivateKey");
 
 
-    const enterKeyToggle = document.getElementById("enterKeyToggle");
+    const signMessageToggle = document.getElementById("signMessageToggle");
 
-    if (enterKeyToggle.checked) {
-        keysLabel.style.display = "none";
-        keysDropdown.style.display = "none";
-        newKey.style.display = "none";
-
-        publicKeyLabel.style.display = "block";
-        publicKey.style.display = "block";
+    if (signMessageToggle.checked) {
+        privateKeysLabel.style.display = "block";
+        privateKeysDropdown.style.display = "block";
+        newPrivateKey.style.display = "block";
     } else {
-        keysLabel.style.display = "block";
-        keysDropdown.style.display = "block";
-        newKey.style.display = "block";
-
-        publicKeyLabel.style.display = "none";
-        publicKey.style.display = "none";
+        privateKeysLabel.style.display = "none";
+        privateKeysDropdown.style.display = "none";
+        newPrivateKey.style.display = "none";
     }
 
     return;

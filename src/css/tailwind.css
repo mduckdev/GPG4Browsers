@@ -1584,10 +1584,6 @@ input.tab:checked + .tab-content,
   display: flex;
 }
 
-.hidden {
-  display: none;
-}
-
 .h-24 {
   height: 6rem;
 }
@@ -1598,6 +1594,14 @@ input.tab:checked + .tab-content,
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.basis-1\/6 {
+  flex-basis: 16.666667%;
+}
+
+.basis-5\/6 {
+  flex-basis: 83.333333%;
 }
 
 .cursor-pointer {
@@ -1614,6 +1618,10 @@ input.tab:checked + .tab-content,
 
 .items-center {
   align-items: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
 }
 
 .overflow-hidden {
@@ -1699,6 +1707,14 @@ input.tab:checked + .tab-content,
 
 .pb-0 {
   padding-bottom: 0px;
+}
+
+.pl-3 {
+  padding-left: 0.75rem;
+}
+
+.pt-3 {
+  padding-top: 0.75rem;
 }
 
 .text-2xl {
