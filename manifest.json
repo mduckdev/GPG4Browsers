@@ -1,34 +1,23 @@
 {
     "manifest_version": 3,
-    "name": "PGP On The Go",
+    "name": "PGP4Browsers",
     "version": "0.0.1",
-    "description": "Extension for encrypting messages with OpenPGP",
+    "description": "Extension for encrypting data with OpenPGP",
     "permissions": [
         "tabs",
         "activeTab",
-        "webNavigation",
         "storage",
         "nativeMessaging",
         "contextMenus"
     ],
     "background": {
         "scripts": [
-            "background.js",
+            "src/background.js",
             "openpgp.min.js"
         ]
     },
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "contentScript.js"
-            ]
-        }
-    ],
     "action": {
-        "default_popup": "popup.html",
+        "default_popup": "src/popup/popup.html",
         "default_icon": {
             "16": "icons/icon16.png",
             "48": "icons/icon48.png",
@@ -42,8 +31,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "popup.html",
-                "addKey.html"
+                "src/popup/popup.html",
+                "src/addKey.html"
             ],
             "extension_ids": []
         }

@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encrypt Email</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../css/tailwind.css" rel="stylesheet">
+
     <style>
         /* Dostosowanie wyświetlonego zaszyfrowanego komunikatu */
         #encryptedMessage {
@@ -20,16 +21,26 @@
             <label for="message" class="block text-sm font-medium text-gray-700">Message:</label>
             <textarea id="message"
                 class="w-full h-24 bg-gray-100 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 p-2 rounded-md"></textarea>
+
+            <label id="publicKeyLabel" for="publicKey" class="hidden block text-sm font-medium text-gray-700">Public
+                key:</label>
+            <textarea id="publicKey"
+                class="hidden w-full h-24 bg-gray-100 border-b-2 border-gray-300 focus:outline-none focus:border-blue-500 p-2 rounded-md"></textarea>
+
             <div class="mt-4">
-                <label for="keys" class="block text-sm font-medium text-gray-700">Choose a key:</label>
-                <select id="keys" name="keys"
+                <label id="keysLabel" for="keys" class="block text-sm font-medium text-gray-700">Choose a key:</label>
+                <select id="keysDropdown" name="keys"
                     class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <!-- Tutaj będą opcje z kluczami -->
 
                 </select>
                 <button id="newKey"
-                    class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Add new
+                    class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Add new
                     public key</button>
+                <label class="cursor-pointer label pb-0">
+                    <input id="enterKeyToggle" type="checkbox" data-theme="light" class="toggle toggle-success" />
+                    <span class="label-text">Enter key without saving</span>
+                </label>
             </div>
             <button id="encryptBtn"
                 class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Encrypt</button>
