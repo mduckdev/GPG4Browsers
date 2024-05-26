@@ -7,13 +7,6 @@
     <title>Public Key Saver</title>
     <link href="./css/tailwind.css" rel="stylesheet">
     <script src="addKey.js" defer></script>
-    <style>
-        /* Dodatkowy styl dla naszej kolorystyki */
-        body {
-            background-color: #ffffff;
-            /* biały kolor tła */
-        }
-    </style>
 </head>
 
 <body class="py-8 px-4 flex flex-col items-center">
@@ -21,7 +14,7 @@
     <label for="keyName" class="text-lg mb-2">Unique key name</label>
     <input required type="text" id="keyName" class="border rounded-lg py-2 px-4 mb-4 w-full">
     <label for="publicKey" class="text-lg mb-2">Public Key:</label>
-    <textarea required id="publicKey" rows="5" class="border rounded-lg py-2 px-4 mb-4 w-full resize-none"></textarea>
+    <textarea required id="publicKey" rows="5" class="border rounded-lg py-2 px-4 mb-4 w-full"></textarea>
     <button id="saveButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Save</button>
 </body>
 
