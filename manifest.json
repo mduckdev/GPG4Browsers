@@ -28,6 +28,11 @@
         "48": "icons/icon48.png",
         "96": "icons/icon96.png"
     },
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "mduckdev@gmail.com"
+        }
+    },
     "web_accessible_resources": [
         {
             "resources": [
@@ -36,5 +41,5 @@
             ],
             "extension_ids": []
         }
-    ]
+    ] 
 }

@@ -7,6 +7,9 @@
     "tailwindcss": "^3.4.3"
   },
   "scripts": {
-    "watch:css": "nodemon --watch ./src --ext html,js --exec \"npx tailwindcss -i ./src/css/input.css -o ./src/css/tailwind.css\""
+    "watch:css": "nodemon --watch ./src --ext html,js --exec \"npx tailwindcss -i ./src/css/input.css -o ./src/css/tailwind.css\"",
+    "ext-ubuntu":"mkdir -p ~/tmp-dir && TMPDIR=~/tmp-dir/ web-ext run",
+    "ext":"npx web-ext run"
+
   }
 }
