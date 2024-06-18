@@ -1,15 +1,45 @@
 {
+  "name": "pgp4browsers",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "next": "14.2.4",
+    "openpgp": "^5.11.1",
+    "react": "^18",
+    "react-dom": "^18"
+  },
   "devDependencies": {
+    "@types/node": "^20",
+    "@types/openpgp": "^4.4.22",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^4.10.5",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.4",
+    "grunt": "^1.6.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-shell-spawn": "^0.4.0",
     "nodemon": "^3.1.0",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5",
+    "webextension-polyfill": "^0.12.0"
   },
   "scripts": {
-    "watch:css": "nodemon --watch ./src --ext html,js --exec \"npx tailwindcss -i ./src/css/input.css -o ./src/css/tailwind.css\"",
-    "ext-ubuntu":"mkdir -p ~/tmp-dir && TMPDIR=~/tmp-dir/ web-ext run",
-    "ext":"npx web-ext run"
-
+    "ext-ubuntu": "mkdir -p ~/tmp-dir && TMPDIR=~/tmp-dir/ web-ext run",
+    "ext": "npx web-ext run",
+    "dev": "next dev",
+    "build": "next build && npx tsc -p ./tsconfig.build.json && cp manifest.json ./out/manifest.json && cp -r ./icons/ ./out/",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   }
 }

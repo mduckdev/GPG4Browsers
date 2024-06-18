@@ -12,12 +12,11 @@
     ],
     "background": {
         "scripts": [
-            "src/background.js",
-            "openpgp.min.js"
+            "background.js"
         ]
     },
     "action": {
-        "default_popup": "src/popup/popup.html",
+        "default_popup": "popup.html",
         "default_icon": {
             "16": "icons/icon16.png",
             "48": "icons/icon48.png",
@@ -30,16 +29,16 @@
     },
     "browser_specific_settings": {
         "gecko": {
-          "id": "mduckdev@gmail.com"
+            "id": "mduckdev@gmail.com"
         }
     },
     "web_accessible_resources": [
         {
             "resources": [
-                "src/popup/popup.html",
-                "src/addKey.html"
+                "popup.html",
+                "add_key.html"
             ],
             "extension_ids": []
         }
-    ] 
+    ]
 }
