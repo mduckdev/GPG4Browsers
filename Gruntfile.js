@@ -6,8 +6,8 @@ module.exports = function (grunt) {
             nextBuild: {
                 command: 'npx next build',
             },
-            nextStart: {
-                command: 'npx next start',
+            nextDev: {
+                command: 'npx next dev',
                 options: {
                     async: true
                 }
@@ -84,7 +84,7 @@ module.exports = function (grunt) {
             grunt.task.run('shell:tscBuild');
         }
     });
-    grunt.registerTask('ext-dev', ['shell:nextStart', 'shell:tscBuild', 'copy:dev', 'shell:runWebExtDev', 'watch', 'shell:nextStart:kill', 'shell:runWebExtDev:kill']);
+    grunt.registerTask('ext-dev', ['shell:nextDev', 'shell:tscBuild', 'copy:dev', 'shell:runWebExtDev', 'watch', 'shell:nextDev:kill', 'shell:runWebExtDev:kill']);
 
 
     grunt.registerTask('default', ['watch']);

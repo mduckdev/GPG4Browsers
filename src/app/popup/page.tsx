@@ -1,10 +1,12 @@
-import Encryption from "@/app/components/encryption";
+import HtmlLink from "@/app/components/HtmlLink";
 
 export default function Popup() {
+  
     return (
         <div className="italic">
-            test
-
+            teeest
+            <HtmlLink href="/popup/encryption" >encryption</HtmlLink>
+            
         </div>
     );
 }
