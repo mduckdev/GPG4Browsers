@@ -1,6 +1,9 @@
+import React from "react";
 export default function Encryption() {
     return (
+
         <div className="max-w-md mx-auto rounded-lg shadow-md overflow-hidden">
+            <h2 className="text-2xl font-bold mb-4">Encryption</h2>
             <div className="p-4">
                 <label htmlFor="message" className="block text-sm font-medium ">Message:</label>
                 <textarea id="message"

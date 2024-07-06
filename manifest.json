@@ -12,7 +12,7 @@
     ],
     "background": {
         "scripts": [
-            "background.js"
+            "js/background.js"
         ]
     },
     "action": {
@@ -35,8 +35,7 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "popup.html",
-                "add_key.html"
+                "**/*"
             ],
             "extension_ids": []
         }

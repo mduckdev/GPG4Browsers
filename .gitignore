@@ -2,7 +2,6 @@
 *.pgp
 node_modules
 
-.next
 /.pnp
 .pnp.js
 out
@@ -11,6 +10,10 @@ out
 
 # production
 /build
+/dist
+
+#dev
+/temp
 
 # misc
 .DS_Store

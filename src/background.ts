@@ -28,7 +28,7 @@ async function encryptMessage(message: string, publicKey: string) {
 }
 
 
-browser.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener(async (request, sender) => {
     switch (request.action) {
         case "encrypt": {
             const encryptedMessage = encryptMessage(request.message, request.publicKey);

@@ -1,92 +1,80 @@
-
 module.exports = function (grunt) {
-
     grunt.initConfig({
         shell: {
-            nextBuild: {
-                command: 'npx next build',
-            },
-            nextDev: {
-                command: 'npx next dev',
-                options: {
-                    async: true
-                }
-            },
-            tscBuild: {
-                command: 'npx tsc -p ./tsconfig.build.json'
-            },
-            runWebExtDev: {
-                command: 'npx web-ext run --source-dir=.next/server/app/',
-                options: {
-                    async: true
-                }
-            }
-        },
-        watch: {
-            scripts: {
-                files: ['./src/background.ts'],
-                tasks: ['compile-if-changed'],
-                options: {
-                    spawn: false,
-                },
-            }
-        },
 
+            runWebExtDev: {
+                command: 'npx web-ext run --devtools --source-dir=./dist/',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            runWebpackDev: {
+                command: 'npx webpack -w --config ./webpack.dev.js',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            runWebpackProd:{
+                command: 'npx webpack -w --config ./webpack.prod.js',
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            }
+        },
         copy: {
             build: {
                 files: [
                     {
                         src: 'manifest.json',
-                        dest: './out/manifest.json'
+                        dest: './dist/manifest.json'
+                    },
+                    {
+                        src: './src/popup.html',
+                        dest: './dist/popup.html'
                     },
                     {
                         expand: true,
                         cwd: 'icons/',
                         src: '**/*',
-                        dest: './out/icons/'
-                    }
-                ]
-            },
-            dev: {
-                files: [
-                    {
-                        src: './manifest.json',
-                        dest: './.next/server/app/manifest.json'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'icons/',
-                        src: '**/*',
-                        dest: './.next/server/app/icons/'
-                    },
-                    {
-                        expand: true,
-                        cwd: './.next/static/',
-                        src: '**/*',
-                        dest: './.next/server/app/_next/static/'
+                        dest: './dist/icons/'
                     }
                 ]
             }
-
+        },
+        clean: {
+            dist: "./dist/*",
+          },
+        concurrent: {
+            dev: [
+                'shell:runWebpackDev',
+                'shell:runWebExtDev'
+            ],
+            options: {
+                logConcurrentOutput: true
+            }
         }
-
     });
 
-    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-shell-spawn');
+    grunt.loadNpmTasks('grunt-concurrent');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
-    grunt.registerTask('build-all', ['shell:nextBuild', 'shell:tscBuild', 'copy:build']);
-    grunt.registerTask('compile-if-changed', function () {
-        // Sprawdź, czy plik background.ts uległ zmianie
-        if (grunt.file.exists('./src/background.ts')) {
-            // Wykonaj kompilację TypeScript
-            grunt.task.run('shell:tscBuild');
-        }
-    });
-    grunt.registerTask('ext-dev', ['shell:nextDev', 'shell:tscBuild', 'copy:dev', 'shell:runWebExtDev', 'watch', 'shell:nextDev:kill', 'shell:runWebExtDev:kill']);
+    grunt.registerTask('ext-dev', [
+        'clean:dist',
+        'copy:build',
+        'concurrent:dev'
+    ]);
+    grunt.registerTask('ext-prod', [
+        'clean:dist',
+        'copy:build',
+        'shell:runWebpackProd',
+        'shell:runWebpackProd:kill'
 
+    ]);
 
-    grunt.registerTask('default', ['watch']);
-
+    grunt.registerTask('default', ['ext-dev']);
 };

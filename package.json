@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@openpgp/web-stream-tools": "^0.0.11-patch-0",
     "next": "14.2.4",
     "openpgp": "^5.11.1",
+    "path": "^0.12.7",
     "react": "^18",
     "react-dom": "^18",
-    "web-ext": "^8.2.0"
+    "web-ext": "^8.2.0",
+    "webpack-merge": "^6.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -15,27 +18,31 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/webextension-polyfill": "^0.10.7",
+    "autoprefixer": "^10.4.19",
+    "css-loader": "^7.1.2",
     "daisyui": "^4.10.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "grunt": "^1.6.1",
+    "grunt-concurrent": "^3.0.0",
+    "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
     "grunt-shell-spawn": "^0.4.0",
     "nodemon": "^3.1.0",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
+    "postcss-loader": "^8.1.1",
+    "style-loader": "^4.0.0",
     "tailwindcss": "^3.4.3",
+    "ts-loader": "^9.5.1",
     "typescript": "^5",
-    "webextension-polyfill": "^0.12.0"
+    "webextension-polyfill": "^0.12.0",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
-    "ext-ubuntu": "mkdir -p ~/tmp-dir && TMPDIR=~/tmp-dir/ web-ext run",
     "ext": "npx web-ext run",
-    "dev": "next dev",
-    "build": "next build && npx tsc -p ./tsconfig.build.json && cp manifest.json ./out/manifest.json && cp -r ./icons/ ./out/",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "npx grunt ext-dev",
+    "build": "npx grunt ext-prod"
   },
   "eslintConfig": {
     "extends": [
