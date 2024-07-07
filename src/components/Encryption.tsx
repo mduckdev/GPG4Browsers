@@ -2,8 +2,8 @@ import React from "react";
 export default function Encryption() {
     return (
 
-        <div className="max-w-md mx-auto rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-2xl font-bold mb-4">Encryption</h2>
+        <div className="p-2">
+            <h2 className="text-2xl font-bold mb-4 text-center">Encryption</h2>
             <div className="p-4">
                 <label htmlFor="message" className="block text-sm font-medium ">Message:</label>
                 <textarea id="message"
@@ -41,7 +41,7 @@ export default function Encryption() {
                 <button id="encryptBtn"
                     className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Encrypt</button>
             </div>
-            <div className="p-4 border-t border-gray-300" id="encryptedMessage"></div>
+            <div className="p-4" id="encryptedMessage"></div>
         </div>
     );
 }
