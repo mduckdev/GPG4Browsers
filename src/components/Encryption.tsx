@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 export default function Encryption() {
+    const [signMessage,setSignMessage] = useState<boolean>(true);
     return (
 
         <div className="p-2">
@@ -22,19 +23,26 @@ export default function Encryption() {
                             className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
                     </div>
 
+                    {
+                        signMessage?(
+                        <div className="privateKeys">
+                            <label id="privateKeysLabel" htmlFor="keys" className="block text-sm font-medium  pt-3" >Sign with
+                                private key:</label>
+                            <div className="flex gap-2">
+                                <select id="privateKeysDropdown" name="keys"
+                                    className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
+                                </select>
+                                <button id="newPrivateKey"
+                                    className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
+                            </div>
+                        </div>
+                        ):(null)
+                    }
+                    
 
-                    <label id="privateKeysLabel" htmlFor="keys" className="block text-sm font-medium  pt-3">Sign with
-                        private key:</label>
-                    <div className="flex gap-2">
-                        <select id="privateKeysDropdown" name="keys"
-                            className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
-                        </select>
-                        <button id="newPrivateKey"
-                            className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
-                    </div>
                     <label className="cursor-pointer label pb-0">
                         <input id="signMessageToggle" type="checkbox" className="toggle toggle-success"
-                            defaultChecked={true} />
+                            defaultChecked={signMessage} onChange={(e)=>{setSignMessage(e.target.checked);}}/>
                         <span className="label-text pl-3">Sign the message</span>
                     </label>
                 </div>
