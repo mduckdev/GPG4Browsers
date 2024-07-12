@@ -1,8 +1,10 @@
+import { RootState, useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
-export default function Encryption() {
+export default function Encryption({activeTab,setActiveTab}) {
     const [signMessage,setSignMessage] = useState<boolean>(true);
-    return (
+    const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
 
+    return (
         <div className="p-2">
             <h2 className="text-2xl font-bold mb-4 text-center">Encryption</h2>
             <div className="p-4">
@@ -18,9 +20,14 @@ export default function Encryption() {
                     <div className="flex gap-2">
                         <select id="publicKeysDropdown" name="keys"
                             className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
+                                {
+                                    pubKeysList.map(element=>{
+                                        return <option>{element.publicKeyName}</option>
+                                    })
+                                }
                         </select>
                         <button id="newPublicKey"
-                            className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6">+</button>
+                            className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveTab('addPublicKey')}>+</button>
                     </div>
 
                     {

@@ -1,6 +1,65 @@
-import React from "react";
-export default function AddPublicKey() {
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
+import { addPublicKey } from "@src/redux/publicKeySlice";
+import Browser from "webextension-polyfill";
+export default function AddPublicKey({activeTab,setActiveTab}) {
+    const dispatch = useAppDispatch();
+    const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
+    const [publicKeyName,setPublicKeyName] = useState<string>("");
+    const [publicKeyValue,setPublicKeyValue] = useState<string>("");
+    const [isValidPublicKey,setIsValidPublicKey] = useState<boolean>(false);
+    const [isUniquePublicKey,setIsUniquePublicKey] = useState<boolean>(false);
+
+    const validatePublicKey = async (publicKey:string) => {
+        let isValidKey = await Browser.runtime.sendMessage({action:"validate-pubkey",publicKey:publicKey}).catch(e=>{console.error(e);})
+        if(isValidKey){
+            setIsValidPublicKey(true);
+            return true;
+        }else{
+            setIsValidPublicKey(false);
+            return false;
+        }
+    }
+    const checkIsUniquePublicKey = async (publicKey:string) => {
+        let fingerprint:string = await Browser.runtime.sendMessage({action:"get-fingerprint",publicKey:publicKey}).catch(e=>{console.error(e);})
+        for (const pubKey of pubKeysList){
+            let tempFingerprint:string = await Browser.runtime.sendMessage({action:"get-fingerprint",publicKey:pubKey.publicKeyValue}).catch(e=>{console.error(e);})
+            if(tempFingerprint===fingerprint){
+                setIsUniquePublicKey(false);
+                return false
+            }
+        };
+        setIsUniquePublicKey(true);
+        return true;
+        
+    }
+
+    const saveToKeyring = async ()=>{
+        let isValid = await validatePublicKey(publicKeyValue);
+        if(!isValid){
+            return;
+        }
+        let isUnique = await checkIsUniquePublicKey(publicKeyValue);
+        if(!isUnique){
+            return;
+        }
+
+        dispatch(addPublicKey({publicKeyName:publicKeyName,publicKeyValue:publicKeyValue}));
+        setActiveTab('encryption');
+
+    }
+
     return (
-    <div>Add public key</div>
+    <div className="p-4 flex flex-col items-center">
+        <h2 className="text-2xl font-bold mb-4 text-center">Add to contacts list</h2>
+        <label htmlFor="keyName" className="text-lg mb-2">Unique key name</label>
+        <input required value={publicKeyName} onChange={(e)=>{setPublicKeyName(e.target.value)}} type="text" id="keyName" className="w-full border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 " />
+        <label htmlFor="publicKey" className="text-lg mb-2">Public Key:</label>
+        <textarea required value={publicKeyValue} onChange={(e)=>{setPublicKeyValue(e.target.value)}} id="publicKey" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
+        <button id="saveButton" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-4" onClick={()=> saveToKeyring()}>Save</button>
+        <button id="backButton" className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4" onClick={() => setActiveTab('encryption')}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+    </div>
     )
 }

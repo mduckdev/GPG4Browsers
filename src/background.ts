@@ -39,12 +39,21 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             browser.windows.create({ url: "popup.html" })
             return Promise.resolve(true)
         }
-        case "validate-key": {
+        case "validate-pubkey": {
             let key = await openpgp.readKey({ armoredKey: String(request.publicKey) }).catch(e => { console.error(e); return null });
+            console.log(key)
             if (!key) {
                 return Promise.reject(false);
             }
             return Promise.resolve(true)
+        }
+        case "get-fingerprint":{
+            let key:openpgp.Key = await openpgp.readKey({ armoredKey: String(request.publicKey) }).catch(e => { console.error(e); return null });
+            if (!key) {
+                return Promise.reject(false);
+            }else{
+                return Promise.resolve(key.getFingerprint())
+            }
         }
         default: {
             return Promise.reject(false);

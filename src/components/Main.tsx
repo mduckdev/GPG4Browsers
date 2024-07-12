@@ -4,11 +4,14 @@ import Encryption from './Encryption';
 import Decryption from './Decryption';
 import Signing from './Signing';
 import Options from './Options';
-export default function Main({activeTab}) {
+import AddPublicKey from "./AddPublicKey";
+export default function Main({activeTab,setActiveTab}) {
     const renderComponent = () => {
         switch (activeTab) {
           case 'encryption':
-            return <Encryption />;
+            return <Encryption activeTab={activeTab} setActiveTab={setActiveTab} />;
+          case 'addPublicKey':
+            return <AddPublicKey activeTab={activeTab} setActiveTab={setActiveTab} />;
           case 'decryption':
             return <Decryption />;
           case 'signing':
@@ -16,7 +19,7 @@ export default function Main({activeTab}) {
           case 'options':
             return <Options />;
           default:
-            return <Encryption />;
+            return <Encryption activeTab={activeTab} setActiveTab={setActiveTab} />;
         }
       };
     return (
