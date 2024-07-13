@@ -1,8 +1,32 @@
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState, useAppSelector } from "@src/redux/store";
+import { Key, Message, createMessage, encrypt, readKey } from "openpgp";
 import React, { useState } from "react";
+
 export default function Encryption({activeTab,setActiveTab}) {
-    const [signMessage,setSignMessage] = useState<boolean>(true);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
+
+    const [signMessage,setSignMessage] = useState<boolean>(true);
+    const [selectedPubKey,setSelectedPubKey] =  useState<string>(pubKeysList[0].publicKeyValue || "");
+    const [message,setMessage] =  useState<string>("");
+    const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
+
+
+
+    const encryptMessage = async(message:string,publicKey:string)=>{
+        const pgpKey:Key = await readKey({armoredKey:publicKey}).catch(e => { console.error(e); return null });
+        const pgpMessage:Message<string> = await createMessage({ text: message });
+        const response = await encrypt({
+            message: pgpMessage,
+            encryptionKeys: pgpKey,
+        }).then((encrypted) => {
+            return encrypted;
+        }).catch(e => {console.error(e); return ""});
+
+        setEncryptedMessage(response);
+        return response;
+    }
 
     return (
         <div className="p-2">
@@ -10,7 +34,7 @@ export default function Encryption({activeTab,setActiveTab}) {
             <div className="p-4">
                 <label htmlFor="message" className="block text-sm font-medium ">Message:</label>
                 <textarea id="message"
-                    className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md"></textarea>
+                    className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" onChange={(e)=>{setMessage(e.target.value)}}></textarea>
 
                 <div className="mt-4">
                     <label id="publicKeysLabel" htmlFor="keys" className="block text-sm font-medium ">Select the
@@ -18,11 +42,11 @@ export default function Encryption({activeTab,setActiveTab}) {
                         public key:</label>
 
                     <div className="flex gap-2">
-                        <select id="publicKeysDropdown" name="keys"
+                        <select id="publicKeysDropdown" name="keys" onChange={(e)=>{setSelectedPubKey(e.target.value)}}
                             className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
                                 {
                                     pubKeysList.map(element=>{
-                                        return <option>{element.publicKeyName}</option>
+                                        return <option value={element.publicKeyValue} key={element.publicKeyName}>{element.publicKeyName} | {element.userID}</option>
                                     })
                                 }
                         </select>
@@ -54,9 +78,23 @@ export default function Encryption({activeTab,setActiveTab}) {
                     </label>
                 </div>
                 <button id="encryptBtn"
-                    className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Encrypt</button>
+                    className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={()=>encryptMessage(message,selectedPubKey)}>Encrypt</button>
             </div>
-            <div className="p-4" id="encryptedMessage"></div>
+
+            <div className="p-4 mb-6" id="encryptedMessage">
+                {
+                    (encryptedMessage==="")?(null):(
+                            <button
+                        className={`text-white focus:outline-none h-full flex items-center justify-center ${activeTab === 'encryption' ? 'font-bold' : ''} hover:opacity-75`}
+                        onClick={() => {navigator.clipboard.writeText(encryptedMessage)}}
+                        >
+                        
+                        <FontAwesomeIcon icon={faCopy} size="2x"/>)
+                        </button>)
+                }
+                
+                <p>{encryptedMessage}</p>
+            </div>
         </div>
     );
 }

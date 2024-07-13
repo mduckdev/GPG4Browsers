@@ -47,7 +47,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             }
             return Promise.resolve(true)
         }
-        case "get-fingerprint":{
+        case "get-key-info":{
             let key:openpgp.Key = await openpgp.readKey({ armoredKey: String(request.publicKey) }).catch(e => { console.error(e); return null });
             if (!key) {
                 return Promise.reject(false);

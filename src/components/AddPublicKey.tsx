@@ -4,6 +4,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { addPublicKey } from "@src/redux/publicKeySlice";
 import Browser from "webextension-polyfill";
+import * as openpgp from "openpgp"
 export default function AddPublicKey({activeTab,setActiveTab}) {
     const dispatch = useAppDispatch();
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
@@ -23,9 +24,9 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
         }
     }
     const checkIsUniquePublicKey = async (publicKey:string) => {
-        let fingerprint:string = await Browser.runtime.sendMessage({action:"get-fingerprint",publicKey:publicKey}).catch(e=>{console.error(e);})
+        let fingerprint:string = await Browser.runtime.sendMessage({action:"get-key-info",publicKey:publicKey}).catch(e=>{console.error(e);})
         for (const pubKey of pubKeysList){
-            let tempFingerprint:string = await Browser.runtime.sendMessage({action:"get-fingerprint",publicKey:pubKey.publicKeyValue}).catch(e=>{console.error(e);})
+            let tempFingerprint:string = await Browser.runtime.sendMessage({action:"get-key-info",publicKey:pubKey.publicKeyValue}).catch(e=>{console.error(e);})
             if(tempFingerprint===fingerprint){
                 setIsUniquePublicKey(false);
                 return false
@@ -46,7 +47,13 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
             return;
         }
 
-        dispatch(addPublicKey({publicKeyName:publicKeyName,publicKeyValue:publicKeyValue}));
+        let key:openpgp.Key = await openpgp.readKey({ armoredKey: publicKeyValue }).catch(e => { console.error(e); return null });
+        let userID:openpgp.PrimaryUser = await key.getPrimaryUser();
+        let name:string = userID.user.userID.name;
+        let email:string = userID.user.userID.email;
+
+
+        dispatch(addPublicKey({publicKeyName:publicKeyName,publicKeyValue:publicKeyValue,userID:`${name?name:""} <${email}>`}));
         setActiveTab('encryption');
 
     }

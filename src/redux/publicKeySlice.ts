@@ -2,7 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store';
 interface IPublicKey {
     publicKeyName:string,
-    publicKeyValue:string
+    publicKeyValue:string,
+    userID:string
 }
 
 const initialState: IPublicKey[] = []
@@ -11,7 +12,7 @@ export const publicKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPublicKey:(state,action:PayloadAction<IPublicKey>)=>{
-            state.push({publicKeyName:action.payload.publicKeyName,publicKeyValue:action.payload.publicKeyValue})
+            state.push({publicKeyName:action.payload.publicKeyName,publicKeyValue:action.payload.publicKeyValue,userID:action.payload.userID})
         },
         deletePublicKey:(state,action:PayloadAction<IPublicKey>)=>{
             
