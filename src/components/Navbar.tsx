@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock, faCog, faFileSignature } from '@fortawesome/free-solid-svg-icons';
 export default function Navbar({activeTab, setActiveTab}) {
     return (
-      <nav className="fixed bottom-0 w-full p-4 flex justify-around border border-slate-700 rounded-b-lg">
+      <nav className="fixed bottom-0 w-full p-4 flex justify-around border border-slate-700 bg-slate-750 rounded-b-lg">
         <button
           className={`text-white focus:outline-none h-full flex items-center justify-center ${activeTab === 'encryption' ? 'font-bold' : ''} hover:opacity-75`}
           onClick={() => setActiveTab('encryption')}

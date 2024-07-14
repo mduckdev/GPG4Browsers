@@ -60,7 +60,7 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
 
     return (
     <div className="p-4 flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-4 text-center">Add to contacts list</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">Add to keyring</h2>
         <label htmlFor="keyName" className="text-lg mb-2">Unique key name</label>
         <input required value={publicKeyName} onChange={(e)=>{setPublicKeyName(e.target.value)}} type="text" id="keyName" className="w-full border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 " />
         <label htmlFor="publicKey" className="text-lg mb-2">Public Key:</label>

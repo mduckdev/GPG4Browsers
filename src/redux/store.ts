@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import browser from 'webextension-polyfill';
 import publicKeyReducer from './publicKeySlice';
 import { useDispatch,TypedUseSelectorHook, useSelector } from 'react-redux';
+import privateKeyReducer from './privateKeySlice';
 
 const saveToBrowserStorage = (state:RootState) => {
   try {
@@ -25,6 +26,7 @@ const loadFromBrowserStorage = async () => {
 
 const rootReducer = combineReducers({
   publicKey: publicKeyReducer,
+  privateKey:privateKeyReducer
 });
 
 const tempStore = configureStore({

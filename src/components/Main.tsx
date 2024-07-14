@@ -5,6 +5,7 @@ import Decryption from './Decryption';
 import Signing from './Signing';
 import Options from './Options';
 import AddPublicKey from "./AddPublicKey";
+import AddprivateKey from "./AddPrivateKey";
 export default function Main({activeTab,setActiveTab}) {
     const renderComponent = () => {
         switch (activeTab) {
@@ -12,6 +13,8 @@ export default function Main({activeTab,setActiveTab}) {
             return <Encryption activeTab={activeTab} setActiveTab={setActiveTab} />;
           case 'addPublicKey':
             return <AddPublicKey activeTab={activeTab} setActiveTab={setActiveTab} />;
+            case 'addPrivateKey':
+            return <AddprivateKey activeTab={activeTab} setActiveTab={setActiveTab} />;
           case 'decryption':
             return <Decryption />;
           case 'signing':
@@ -23,7 +26,7 @@ export default function Main({activeTab,setActiveTab}) {
         }
       };
     return (
-        <div className="container mb-5 pt-8">
+        <div className="container mx-auto mb-5 pt-8">
         {renderComponent()}
       </div>
     )
