@@ -4,7 +4,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { addPublicKey } from "@src/redux/publicKeySlice";
 import Browser from "webextension-polyfill";
-import * as openpgp from "openpgp"
+import {readKey,Key,PrimaryUser, BasePublicKeyPacket} from "openpgp"
 export default function AddPublicKey({activeTab,setActiveTab}) {
     const dispatch = useAppDispatch();
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
@@ -14,8 +14,8 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
     const [isUniquePublicKey,setIsUniquePublicKey] = useState<boolean>(false);
 
     const validatePublicKey = async (publicKey:string) => {
-        let isValidKey = await Browser.runtime.sendMessage({action:"validate-pubkey",publicKey:publicKey}).catch(e=>{console.error(e);})
-        if(isValidKey){
+        const key:Key = await readKey({armoredKey:publicKey}).catch(e => { console.error(e); return null });
+        if(key && !key?.isPrivate()){
             setIsValidPublicKey(true);
             return true;
         }else{
@@ -24,10 +24,15 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
         }
     }
     const checkIsUniquePublicKey = async (publicKey:string) => {
-        let fingerprint:string = await Browser.runtime.sendMessage({action:"get-key-info",publicKey:publicKey}).catch(e=>{console.error(e);})
+        const key:BasePublicKeyPacket = await readKey({armoredKey:publicKey}).catch(e => { console.error(e); return null });
+        if(!key){
+            setIsValidPublicKey(false);
+            return false;
+        }
         for (const pubKey of pubKeysList){
-            let tempFingerprint:string = await Browser.runtime.sendMessage({action:"get-key-info",publicKey:pubKey.publicKeyValue}).catch(e=>{console.error(e);})
-            if(tempFingerprint===fingerprint){
+            let tempKey:BasePublicKeyPacket = await readKey({armoredKey:pubKey.publicKeyValue}).catch(e => { console.error(e); return null });
+            if(key.hasSameFingerprintAs(tempKey)){
+                console.log("Key already used")
                 setIsUniquePublicKey(false);
                 return false
             }
@@ -47,8 +52,8 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
             return;
         }
 
-        let key:openpgp.Key = await openpgp.readKey({ armoredKey: publicKeyValue }).catch(e => { console.error(e); return null });
-        let userID:openpgp.PrimaryUser = await key.getPrimaryUser();
+        let key:Key = await readKey({ armoredKey: publicKeyValue }).catch(e => { console.error(e); return null });
+        let userID:PrimaryUser = await key.getPrimaryUser();
         let name:string = userID.user.userID.name;
         let email:string = userID.user.userID.email;
 

@@ -30,30 +30,9 @@ async function encryptMessage(message: string, publicKey: string) {
 
 browser.runtime.onMessage.addListener(async (request, sender) => {
     switch (request.action) {
-        case "encrypt": {
-            const encryptedMessage = encryptMessage(request.message, request.publicKey);
-            console.log(encryptedMessage)
-            return Promise.resolve(encryptedMessage);
-        }
         case "open-encryption-tab": {
             browser.windows.create({ url: "popup.html" })
             return Promise.resolve(true)
-        }
-        case "validate-pubkey": {
-            let key = await openpgp.readKey({ armoredKey: String(request.publicKey) }).catch(e => { console.error(e); return null });
-            console.log(key)
-            if (!key) {
-                return Promise.reject(false);
-            }
-            return Promise.resolve(true)
-        }
-        case "get-key-info":{
-            let key:openpgp.Key = await openpgp.readKey({ armoredKey: String(request.publicKey) }).catch(e => { console.error(e); return null });
-            if (!key) {
-                return Promise.reject(false);
-            }else{
-                return Promise.resolve(key.getFingerprint())
-            }
         }
         default: {
             return Promise.reject(false);

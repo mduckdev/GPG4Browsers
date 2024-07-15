@@ -4,16 +4,21 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { addPrivateKey } from "@src/redux/privateKeySlice";
 import Browser from "webextension-polyfill";
-import * as openpgp from "openpgp"
+import {Key,readKey} from "openpgp"
 export default function AddprivateKey({activeTab,setActiveTab}) {
     const dispatch = useAppDispatch();
     const privKeysList = useAppSelector((state:RootState)=>state.privateKey);
     const [privateKeyName,setprivateKeyName] = useState<string>("");
     const [privateKeyValue,setprivateKeyValue] = useState<string>("");
-    const [isValidprivateKey,setIsValidprivateKey] = useState<boolean>(false);
-    const [isUniqueprivateKey,setIsUniqueprivateKey] = useState<boolean>(false);
+    const [isValidPrivateKey,setIsValidPrivateKey] = useState<boolean>(false);
+    const [isUniquePrivateKey,setIsUniquePrivateKey] = useState<boolean>(false);
 
     const validateprivateKey = async (privateKey:string) => {
+        let key:Key = await readKey({ armoredKey: privateKey }).catch(e => { console.error(e); return null });
+        if (!key) {
+            return false;
+        }
+        return true;
         
     }
     const checkIsUniqueprivateKey = async (privateKey:string) => {

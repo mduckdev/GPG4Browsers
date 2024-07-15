@@ -2,7 +2,7 @@ import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RootState, useAppSelector } from "@src/redux/store";
 import { Key, Message, createMessage, encrypt, readKey } from "openpgp";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function Encryption({activeTab,setActiveTab}) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
@@ -13,10 +13,6 @@ export default function Encryption({activeTab,setActiveTab}) {
     const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
     const [showClipboardIcon,setShowClipboardIcon] = useState<boolean>(false);
     const [showSuccessIcon,setshowSuccessIcon] = useState<boolean>(false);
-
-    useEffect(()=>{
-        console.log(showClipboardIcon)
-    },[showClipboardIcon])
 
     const encryptMessage = async(message:string,publicKey:string)=>{
         if(message==="" || publicKey===""){
@@ -71,7 +67,7 @@ export default function Encryption({activeTab,setActiveTab}) {
                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 basis-5/6">
                                 </select>
                                 <button id="newPrivateKey"
-                                    className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveTab('addKey')}>+</button>
+                                    className="mt-1 bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveTab('addPrivateKey')}>+</button>
                             </div>
                         </div>
                         ):(null)

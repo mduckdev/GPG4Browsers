@@ -1,5 +1,6 @@
 *.asc
 *.pgp
+*.gpg
 *.pub
 node_modules
 
