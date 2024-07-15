@@ -120,10 +120,13 @@ export default function Encryption({activeTab,setActiveTab}) {
     null
   ) : (
     <div className="mt-4 mb-8 relative" id="encryptedMessage" 
-    onMouseOver={() => { setShowClipboardIcon(true) }}
-    onMouseLeave={() => { setShowClipboardIcon(false); setshowSuccessIcon(false) }}>
+    onMouseOver={() => { setShowClipboardIcon(true);setshowSuccessIcon(false) }}
+    onMouseLeave={() => { setShowClipboardIcon(false); setshowSuccessIcon(false) }}
+    onClick={() => { navigator.clipboard.writeText(encryptedMessage);setShowClipboardIcon(false);setshowSuccessIcon(true) }}
+    
+    >
         {
-            showClipboardIcon?(<div id="button-wrapper" className="absolute inset-y-1/2 inset-x-1/2 z-10 blur-none">
+            showClipboardIcon?(<div id="button-wrapper" className="absolute inset-y-1/2 inset-x-1/2 z-10 blur-none" >
                 <button
                 className="text-white focus:outline-none h-full flex items-center justify-center"
                 >
@@ -147,7 +150,6 @@ export default function Encryption({activeTab,setActiveTab}) {
         value={encryptedMessage}
         contentEditable={false}
         readOnly={true}
-        onClick={() => { navigator.clipboard.writeText(encryptedMessage);setShowClipboardIcon(false);setshowSuccessIcon(true) }}
         
       >
       </textarea>
