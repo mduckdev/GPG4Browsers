@@ -3,7 +3,7 @@
 *.gpg
 *.pub
 node_modules
-
+.dccache
 /.pnp
 .pnp.js
 out

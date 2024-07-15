@@ -25,8 +25,8 @@ const loadFromBrowserStorage = async () => {
 };
 
 const rootReducer = combineReducers({
-  publicKey: publicKeyReducer,
-  privateKey:privateKeyReducer
+  publicKeys: publicKeyReducer,
+  privateKeys:privateKeyReducer
 });
 
 const tempStore = configureStore({

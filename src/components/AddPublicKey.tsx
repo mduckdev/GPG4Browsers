@@ -3,11 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { addPublicKey } from "@src/redux/publicKeySlice";
-import Browser from "webextension-polyfill";
 import {readKey,Key,PrimaryUser, BasePublicKeyPacket} from "openpgp"
 export default function AddPublicKey({activeTab,setActiveTab}) {
     const dispatch = useAppDispatch();
-    const pubKeysList = useAppSelector((state:RootState)=>state.publicKey);
+    const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const [publicKeyName,setPublicKeyName] = useState<string>("");
     const [publicKeyValue,setPublicKeyValue] = useState<string>("");
     const [isValidPublicKey,setIsValidPublicKey] = useState<boolean>(false);
@@ -58,7 +57,7 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
         let email:string = userID.user.userID.email;
 
 
-        dispatch(addPublicKey({publicKeyName:publicKeyName,publicKeyValue:publicKeyValue,userID:`${name?name:""} <${email}>`}));
+        dispatch(addPublicKey({publicKeyName:publicKeyName,publicKeyValue:publicKeyValue,userID:`${name?name:""} <${email}>`,fingerprint:key.getFingerprint()}));
         setActiveTab('encryption');
 
     }

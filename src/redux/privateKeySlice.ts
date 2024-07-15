@@ -3,7 +3,8 @@ import { RootState } from './store';
 interface IPrivateKey {
     privateKeyName:string,
     privateKeyValue:string,
-    userID:string
+    userID:string,
+    fingerprint:string
 }
 
 const initialState: IPrivateKey[] = []
@@ -12,7 +13,7 @@ export const privateKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPrivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
-            state.push({privateKeyName:action.payload.privateKeyName,privateKeyValue:action.payload.privateKeyValue,userID:action.payload.userID})
+            state.push({privateKeyName:action.payload.privateKeyName,privateKeyValue:action.payload.privateKeyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
         },
         deleteprivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
             
