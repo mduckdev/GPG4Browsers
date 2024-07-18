@@ -112,7 +112,7 @@ export default function Encryption({activeTab,setActiveTab}) {
                     </label>
                 </div>
                 <button id="encryptBtn"
-                    className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={()=>encryptMessage(message,selectedPubKey,selectedPrivKey)}>Encrypt</button>
+                    className="btn btn-info mt-2" onClick={()=>encryptMessage(message,selectedPubKey,selectedPrivKey)}>Encrypt</button>
             </div>
 
 {

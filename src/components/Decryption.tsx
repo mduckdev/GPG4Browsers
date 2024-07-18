@@ -13,7 +13,7 @@ export default function Decryption() {
 
                 
                 <button 
-                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" >Decrypt</button>
+                    className="mt-4 btn btn-info" >Decrypt</button>
             </div>
 
             <div className="p-4 mb-6" id="encryptedMessage">
