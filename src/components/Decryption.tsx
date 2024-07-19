@@ -1,13 +1,20 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import { BaseSecretKeyPacket, Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
+import {  Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
+
+import OutputTextarea from "./OutputTextarea";
 export default function Decryption() {
-    const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
-    const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
-    const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     
+    const [encryptedMessage,setEncryptedMessage] = useState<string>("");
+    const [decryptedMessage,setDecryptedMessage] = useState<string>("");
+    const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
+
+
+    const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+
+
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
             const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.privateKeyValue});
@@ -53,12 +60,7 @@ export default function Decryption() {
 
         const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey});
 
-        console.log(decryptedMessage)
-
-        //add textarea with decrypted message
-
-
-
+        setDecryptedMessage(decryptedMessage.data);
         
     }
 
@@ -68,17 +70,21 @@ export default function Decryption() {
             <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setPrivateKeyPassphrase={setPrivateKeyPassphrase} onConfirm={()=>{decryptMessage(encryptedMessage,privateKeyPassphrase)}} onClose={()=>{setPrivateKeyPassphrase("")}} />
 
             <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
-            <div className="p-4 flex flex-col">
+            <div className="w-full flex flex-col">
                 <label htmlFor="message" className="block text-sm font-medium">Encrypted message:</label>
                 <textarea id="message"
-                    className="w-full mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={encryptedMessage} onChange={(e)=>{setEncryptedMessage(e.target.value)}}></textarea>
+                    className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={encryptedMessage} onChange={(e)=>{setEncryptedMessage(e.target.value)}}></textarea>
                 <button 
                     className="mt-4 btn btn-info" onClick={()=>{decryptMessage(encryptedMessage)}}>Decrypt</button>
             </div>
 
-            <div className="p-4 mb-6" id="encryptedMessage">
-                
-            </div>
+            {
+  (decryptedMessage === "") ? (
+    null
+  ) : (
+   <OutputTextarea textValue={decryptedMessage}/>
+  )
+}
         </div>
     );
 }

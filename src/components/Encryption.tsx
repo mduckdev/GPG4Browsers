@@ -4,6 +4,7 @@ import { RootState, useAppSelector } from "@src/redux/store";
 import { Key, Message, PrivateKey, createMessage, decryptKey, encrypt, readKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
+import OutputTextarea from "./OutputTextarea";
 
 export default function Encryption({activeTab,setActiveTab}) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -119,41 +120,7 @@ export default function Encryption({activeTab,setActiveTab}) {
   (encryptedMessage === "") ? (
     null
   ) : (
-    <div className="mt-4 mb-8 relative" id="encryptedMessage" 
-    onMouseOver={() => { setShowClipboardIcon(true);setshowSuccessIcon(false) }}
-    onMouseLeave={() => { setShowClipboardIcon(false); setshowSuccessIcon(false) }}
-    onClick={() => { navigator.clipboard.writeText(encryptedMessage);setShowClipboardIcon(false);setshowSuccessIcon(true) }}
-    
-    >
-        {
-            showClipboardIcon?(<div id="button-wrapper" className="absolute inset-y-1/2 inset-x-1/2 z-10 blur-none" >
-                <button
-                className="text-white focus:outline-none h-full flex items-center justify-center"
-                >
-                <FontAwesomeIcon icon={faCopy} size="2x" />
-            </button>
-            </div>):(null)
-        }
-        {
-            showSuccessIcon?(<div id="button-wrapper" className="absolute inset-y-1/2 inset-x-1/2 z-10 blur-none">
-                <button
-                className="text-white focus:outline-none h-full flex items-center justify-center"
-                >
-                <FontAwesomeIcon icon={faCheck} size="2x" color="green" />
-            </button>
-            </div>):(null)
-        }
-
-
-      <textarea
-        className={`w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-green-500 p-2 rounded-md hover:cursor-pointer ${(showClipboardIcon || showSuccessIcon)?('blur-[1px]'):('')}`}
-        value={encryptedMessage}
-        contentEditable={false}
-        readOnly={true}
-        
-      >
-      </textarea>
-    </div>
+    <OutputTextarea textValue={encryptedMessage}/>
   )
 }
                 
