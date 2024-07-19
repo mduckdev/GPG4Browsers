@@ -69,8 +69,8 @@ export default function AddPublicKey({activeTab,setActiveTab}) {
         <input required value={publicKeyName} onChange={(e)=>{setPublicKeyName(e.target.value)}} type="text" id="keyName" className="w-full border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 " />
         <label htmlFor="publicKey" className="text-lg mb-2">Public Key:</label>
         <textarea required value={publicKeyValue} onChange={(e)=>{setPublicKeyValue(e.target.value)}} id="publicKey" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
-        <button id="saveButton" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-4" onClick={()=> saveToKeyring()}>Save</button>
-        <button id="backButton" className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mb-4" onClick={() => setActiveTab('encryption')}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+        <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>Save</button>
+        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveTab('encryption')}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
     </div>
     )
 }

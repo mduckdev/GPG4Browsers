@@ -57,7 +57,7 @@ export default function Encryption({activeTab,setActiveTab}) {
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setPrivateKeyPassphrase={setPrivateKeyPassphrase} onConfirm={()=>{encryptMessage(message,selectedPubKey,selectedPrivKey,privateKeyPassphrase)}} onClose={()=>{}} />
+            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setPrivateKeyPassphrase={setPrivateKeyPassphrase} onConfirm={()=>{encryptMessage(message,selectedPubKey,selectedPrivKey,privateKeyPassphrase)}} onClose={()=>{setPrivateKeyPassphrase("")}} />
 
             <h2 className="text-2xl font-bold mb-4 text-center">Encryption</h2>
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
