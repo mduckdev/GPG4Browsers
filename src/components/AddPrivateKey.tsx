@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { addPrivateKey } from "@src/redux/privateKeySlice";
-import {BasePacket, BaseSecretKeyPacket, Key,PrimaryUser,readKey} from "openpgp"
+import {BasePacket, BaseSecretKeyPacket, Key,PrimaryUser,PrivateKey,readKey, readPrivateKey} from "openpgp"
+import { addPublicKey } from "@src/redux/publicKeySlice";
 export default function AddprivateKey({activeTab,setActiveTab}) {
     const dispatch = useAppDispatch();
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
@@ -49,13 +50,17 @@ export default function AddprivateKey({activeTab,setActiveTab}) {
             return false;
         }
 
-        let key:Key = await readKey({ armoredKey: privateKeyValue }).catch(e => { console.error(e); return null });
-        let userID:PrimaryUser = await key.getPrimaryUser();
-        let name:string = userID.user.userID.name;
-        let email:string = userID.user.userID.email;
+        const key:PrivateKey = await readPrivateKey({ armoredKey: privateKeyValue }).catch(e => { console.error(e); return null });
+        const userID:PrimaryUser = await key.getPrimaryUser();
+        const name:string = userID.user.userID.name;
+        const email:string = userID.user.userID.email;
 
+        const pubKeyFromPrivKey = key.toPublic();
 
         dispatch(addPrivateKey({privateKeyName:privateKeyName,privateKeyValue:privateKeyValue,userID:`${name?name:""} <${email}>`, fingerprint:key.getFingerprint()}));
+        dispatch(addPublicKey({publicKeyName:privateKeyName,publicKeyValue:pubKeyFromPrivKey.armor(),userID:`${name?name:""} <${email}>`, fingerprint:key.getFingerprint()}));
+
+        
         setActiveTab('encryption');
     }
 

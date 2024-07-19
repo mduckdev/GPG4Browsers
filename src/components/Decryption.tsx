@@ -1,18 +1,22 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import {  Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
+import {  Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 
 import OutputTextarea from "./OutputTextarea";
 export default function Decryption() {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
+    const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
+
     
     const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const [decryptedMessage,setDecryptedMessage] = useState<string>("");
     const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
-
+    const [signatureMessages,setSignatureMessages] = useState<string>("");
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+    const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
+
 
 
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
@@ -40,6 +44,7 @@ export default function Decryption() {
         const pgpMessage:Message<string> = await readMessage({armoredMessage:message})
         const encryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
         let decryptionKey = await findDecryptionKeyInKeyring(encryptionKeys);
+        const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.publicKeyValue})))
         if(!decryptionKey){
             console.log(`Couldn't find a suitable key with IDs:${encryptionKeys.map(e=>e.toHex()).join(" ")}`)            
             return;
@@ -58,8 +63,23 @@ export default function Decryption() {
             }
         }
 
-        const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey});
+        const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey,verificationKeys:pubKeys});
+        let verified = false;
+        setIsMessageVerified(false);
+        let info = [];
+        for (const signature of decryptedMessage.signatures){
+            let isVerified = await signature.verified.catch(e=>{return false});
+            if(isVerified){
+                info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
+                verified=true;
+                setIsMessageVerified(true)
+            }
+        }
+        info.push(verified?(""):("Message authenticity could not be verified."))
 
+
+        setSignatureMessages(info.join("\n"))
+        console.log(info)
         setDecryptedMessage(decryptedMessage.data);
         
     }
@@ -83,8 +103,11 @@ export default function Decryption() {
     null
   ) : (
    <OutputTextarea textValue={decryptedMessage}/>
+   
   )
 }
+
+        <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
         </div>
     );
 }
