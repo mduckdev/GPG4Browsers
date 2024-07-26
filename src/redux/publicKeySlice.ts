@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store';
-interface IPublicKey {
-    publicKeyName:string,
-    publicKeyValue:string,
+export interface IPublicKey {
+    keyValue:string,
     userID:string,
     fingerprint:string
 }
@@ -13,10 +12,12 @@ export const publicKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPublicKey:(state,action:PayloadAction<IPublicKey>)=>{
-            state.push({publicKeyName:action.payload.publicKeyName,publicKeyValue:action.payload.publicKeyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
+            state.push({keyValue:action.payload.keyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
         },
-        deletePublicKey:(state,action:PayloadAction<IPublicKey>)=>{
-            
+        deletePublicKey:(state,action:PayloadAction<string>)=>{
+            state = state.filter((element)=>{
+                return element.fingerprint !== action.payload;
+            })
         },
         editPublicKey:(state,action:PayloadAction<IPublicKey>)=>{
             
@@ -25,8 +26,9 @@ export const publicKeySlice = createSlice({
     },
 })
 
-export const { addPublicKey } = publicKeySlice.actions
+export const { addPublicKey,deletePublicKey } = publicKeySlice.actions
 
-//export const selectValues = (state: RootState, index: number) => state.publicKey[index]
+//export const getPublicKeyByFingerprint = (state: RootState, fingerprint:string) => state.publicKeys.filter(e=>e.fingerprint===fingerprint)
+
 
 export default publicKeySlice.reducer

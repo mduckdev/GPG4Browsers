@@ -21,7 +21,7 @@ export default function Decryption() {
 
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
-            const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.privateKeyValue});
+            const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.keyValue});
             // see https://github.com/openpgpjs/openpgpjs/issues/1693
             //
             //@ts-ignore
@@ -44,7 +44,7 @@ export default function Decryption() {
         const pgpMessage:Message<string> = await readMessage({armoredMessage:message})
         const encryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
         let decryptionKey = await findDecryptionKeyInKeyring(encryptionKeys);
-        const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.publicKeyValue})))
+        const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
         if(!decryptionKey){
             console.log(`Couldn't find a suitable key with IDs:${encryptionKeys.map(e=>e.toHex()).join(" ")}`)            
             return;

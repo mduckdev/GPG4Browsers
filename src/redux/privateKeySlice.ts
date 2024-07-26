@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store';
-interface IPrivateKey {
-    privateKeyName:string,
-    privateKeyValue:string,
+export interface IPrivateKey {
+    keyValue:string,
     userID:string,
     fingerprint:string
 }
@@ -13,10 +12,12 @@ export const privateKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPrivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
-            state.push({privateKeyName:action.payload.privateKeyName,privateKeyValue:action.payload.privateKeyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
+            state.push({keyValue:action.payload.keyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
         },
-        deleteprivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
-            
+        deletePrivateKey:(state,action:PayloadAction<string>)=>{
+            state = state.filter((element)=>{
+                return element.fingerprint !== action.payload;
+            })
         },
         editprivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
             
@@ -25,8 +26,8 @@ export const privateKeySlice = createSlice({
     },
 })
 
-export const { addPrivateKey } = privateKeySlice.actions
+export const { addPrivateKey,deletePrivateKey } = privateKeySlice.actions
 
-//export const selectValues = (state: RootState, index: number) => state.privateKey[index]
+//export const getPrivateKeyByFingerprint = (state: RootState, fingerprint:string) => state.privateKeys.filter(e=>e.fingerprint===fingerprint)
 
 export default privateKeySlice.reducer
