@@ -21,8 +21,8 @@ export default function Navbar({activeTab, setActiveTab}) {
 
         </button>
         <button
-          className={`${activeTab === 'signing' ? 'active' : ''} hover:opacity-75`}
-          onClick={() => setActiveTab('signing')}
+          className={`${activeTab === 'signatures' ? 'active' : ''} hover:opacity-75`}
+          onClick={() => setActiveTab('signatures')}
         >
           <FontAwesomeIcon icon={faFileSignature} />
           <span className="btm-nav-label">Signatures</span>

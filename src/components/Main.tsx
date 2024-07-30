@@ -2,9 +2,9 @@ import React from "react";
 
 import Encryption from './Encryption';
 import Decryption from './Decryption';
-import Signing from './Signing';
 import Options from './Options';
 import AddKey from "./AddKey";
+import Signatures from "./Signatures";
 export default function Main({activeTab,setActiveTab}) {
     const renderComponent = () => {
         switch (activeTab) {
@@ -14,8 +14,8 @@ export default function Main({activeTab,setActiveTab}) {
             return <AddKey activeTab={activeTab} setActiveTab={setActiveTab} />;
           case 'decryption':
             return <Decryption />;
-          case 'signing':
-            return <Signing />;
+          case 'signatures':
+            return <Signatures />;
           case 'options':
             return <Options />;
           default:

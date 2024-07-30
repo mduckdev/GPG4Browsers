@@ -32,8 +32,6 @@ const App: React.FC = () => {
   },[])
 
 useEffect(()=>{
-  
-  console.log("theme changed =",theme)
   dispatch(setTheme(theme));  
   document.querySelector("html").setAttribute("data-theme",theme)
 },[theme])
@@ -43,7 +41,7 @@ useEffect(()=>{
   }
 
   return (
-  <div className="min-h-screen">
+  <div className="min-h-screen overscroll-none">
     <div className={`${isPopup?("w-96"):("w-full")} relative`}>
     <ThemeToggle className="absolute top-3 left-3" currentTheme={theme} setTheme={setThemeLocal}/>
     {
