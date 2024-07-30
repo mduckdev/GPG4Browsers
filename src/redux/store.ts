@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import publicKeyReducer from './publicKeySlice';
 import { useDispatch,TypedUseSelectorHook, useSelector } from 'react-redux';
 import privateKeyReducer from './privateKeySlice';
+import themeReducer from './themeSlice';
 
 const saveToBrowserStorage = (state:RootState) => {
   try {
@@ -26,7 +27,8 @@ const loadFromBrowserStorage = async () => {
 
 const rootReducer = combineReducers({
   publicKeys: publicKeyReducer,
-  privateKeys:privateKeyReducer
+  privateKeys:privateKeyReducer,
+  theme:themeReducer
 });
 
 const tempStore = configureStore({
