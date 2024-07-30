@@ -3,31 +3,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock, faCog, faFileSignature } from '@fortawesome/free-solid-svg-icons';
 export default function Navbar({activeTab, setActiveTab}) {
     return (
-      <nav className="fixed bottom-0 w-full flex justify-around border border-base-300 bg-base-200">
+      <nav className="btm-nav">
         <button
-          className={`dark:text-slate-50 p-4 w-full focus:outline-none h-full items-center justify-center ${activeTab === 'encryption' ? 'opacity-75' : ''} hover:opacity-75`}
+          className={`${activeTab === 'encryption' ? 'active' : ''} hover:opacity-75`}
           onClick={() => setActiveTab('encryption')}
         >
-          <FontAwesomeIcon icon={faLock} size="2x"/>
+          <FontAwesomeIcon icon={faLock}/>
+          <span className="btm-nav-label">Encryption</span>
         </button>
         <button
-          className={`dark:text-slate-50 p-4 w-full focus:outline-none h-full flex items-center justify-center ${activeTab === 'decryption' ? 'opacity-75' : ''} hover:opacity-75`}
+          className={`${activeTab === 'decryption' ? 'active' : ''} hover:opacity-75`}
           onClick={() => setActiveTab('decryption')}
         >
           
-          <FontAwesomeIcon icon={faUnlock} size="2x"/>
+          <FontAwesomeIcon icon={faUnlock} />
+          <span className="btm-nav-label">Decryption</span>
+
         </button>
         <button
-          className={`dark:text-slate-50 p-4 w-full focus:outline-none h-full flex items-center justify-center ${activeTab === 'signing' ? 'opacity-75' : ''} hover:opacity-75`}
+          className={`${activeTab === 'signing' ? 'active' : ''} hover:opacity-75`}
           onClick={() => setActiveTab('signing')}
         >
-          <FontAwesomeIcon icon={faFileSignature} size="2x"/>
+          <FontAwesomeIcon icon={faFileSignature} />
+          <span className="btm-nav-label">Signatures</span>
+
         </button>
         <button
-          className={`dark:text-slate-50 p-4 w-full focus:outline-none h-full flex items-center justify-center ${activeTab === 'options' ? 'opacity-75' : ''} hover:opacity-75`}
+          className={`${activeTab === 'options' ? 'active' : ''} hover:opacity-75`}
           onClick={() => setActiveTab('options')}
         >
-          <FontAwesomeIcon icon={faCog} size="2x"/>
+          <FontAwesomeIcon icon={faCog} />
+          <span className="btm-nav-label">Options</span>
+
         </button>
       </nav>
     )

@@ -22,7 +22,7 @@ const App: React.FC = () => {
 
   return (
   <div className="min-h-screen">
-    <div className={`${isPopup?("w-80"):("w-full")} relative`}>
+    <div className={`${isPopup?("w-96"):("w-full")} relative`}>
     {
       isPopup?(
         <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer" onClick={openTab} />
