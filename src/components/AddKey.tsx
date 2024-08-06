@@ -6,10 +6,12 @@ import { IPrivateKey, addPrivateKey, deletePrivateKey } from "@src/redux/private
 import { BasePublicKeyPacket, BaseSecretKeyPacket, Key,PrimaryUser,readKey, readPrivateKey} from "openpgp"
 import { IPublicKey, addPublicKey, deletePublicKey } from "@src/redux/publicKeySlice";
 
-export default function AddKey({activeTab,setActiveTab}) {
+export default function AddKey({activeTab,previousTab,setActiveTab}) {
+
     const dispatch = useAppDispatch();
     const privateKeysList:IPrivateKey[] = useAppSelector((state:RootState)=>state.privateKeys);
     const publicKeysList:IPublicKey[] = useAppSelector((state:RootState)=>state.publicKeys);
+
 
     const [keyValue,setKeyValue] = useState<string>("");
     const [isValidKey,setIsValidKey] = useState<boolean>(false);
@@ -100,7 +102,7 @@ export default function AddKey({activeTab,setActiveTab}) {
         <label htmlFor="keyValue" className="text-lg mb-2">Paste your armored key:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
         <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>Save</button>
-        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveTab('encryption')}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveTab(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
     </div>
     )
 }

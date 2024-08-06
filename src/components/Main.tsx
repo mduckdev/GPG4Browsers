@@ -5,21 +5,21 @@ import Decryption from './Decryption';
 import Options from './Options';
 import AddKey from "./AddKey";
 import Signatures from "./Signatures";
-export default function Main({activeTab,setActiveTab}) {
+export default function Main({activeTab,previousTab,setActiveTab}) {
     const renderComponent = () => {
         switch (activeTab) {
           case 'encryption':
-            return <Encryption activeTab={activeTab} setActiveTab={setActiveTab} />;
+            return <Encryption activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab} />;
           case 'addKey':
-            return <AddKey activeTab={activeTab} setActiveTab={setActiveTab} />;
+            return <AddKey activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab} />;
           case 'decryption':
             return <Decryption />;
           case 'signatures':
-            return <Signatures />;
+            return <Signatures  activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab} />;
           case 'options':
             return <Options />;
           default:
-            return <Encryption activeTab={activeTab} setActiveTab={setActiveTab} />;
+            return <Encryption activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab} />;
         }
       };
     return (

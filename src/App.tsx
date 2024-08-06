@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Main from './components/Main';
 import Navbar from './components/Navbar';
@@ -8,6 +8,7 @@ import Browser from 'webextension-polyfill';
 import ThemeToggle from './components/ThemeToggle';
 import { useAppDispatch, useAppSelector } from './redux/store';
 import { setTheme } from './redux/themeSlice';
+import { usePrevious } from './utils';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -15,6 +16,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('encryption');
   const [isPopup, setIsPopup] = useState<boolean>(true);
   const [theme, setThemeLocal] = useState<string>(fetchedTheme);
+  const previousTab = usePrevious(activeTab);
 
   useEffect(()=>{
     if(!(['dark','light'].includes(theme))){
@@ -36,6 +38,8 @@ useEffect(()=>{
   document.querySelector("html").setAttribute("data-theme",theme)
 },[theme])
 
+
+
   const openTab = ()=>{
     Browser.tabs.create({ url: "popup.html?popup=false" });
   }
@@ -49,7 +53,7 @@ useEffect(()=>{
         <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer text-xl" onClick={openTab} />
       ):(null)
     }
-      <Main activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <Main activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab}/>
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab}/>
     </div>
   </div>

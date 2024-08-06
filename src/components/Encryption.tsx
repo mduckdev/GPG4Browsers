@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 import OutputTextarea from "./OutputTextarea";
 
-export default function Encryption({activeTab,setActiveTab}) {
+export default function Encryption({activeTab,previousTab,setActiveTab}) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
