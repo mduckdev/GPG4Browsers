@@ -93,7 +93,7 @@ export default function AddKey({activeTab,previousTab,setActiveTab}) {
             dispatch(addPublicKey({keyValue:keyValue, userID:`${name?name:""} <${email}>`, fingerprint:publicKeyFingerprint}));
         }
         
-        setActiveTab('encryption');
+        setActiveTab(previousTab);
     }
 
     return (

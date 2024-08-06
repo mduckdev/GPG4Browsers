@@ -34,7 +34,7 @@ export default function PassphraseModal({title,text, isVisible,setPrivateKeyPass
                 <h3 className="font-bold text-lg">{title}</h3>
                 <p className="py-4">{text}</p>
                 <div className="modal-action">
-                <form method="dialog">
+                <form method="dialog" className="w-full">
                     <input required type="password" id="passphrase" className="w-full border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 " 
                       onChange={(e)=>{setPrivateKeyPassphrase(e.target.value)}}
                       />

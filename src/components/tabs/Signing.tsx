@@ -1,12 +1,48 @@
 import { RootState, useAppSelector } from "@src/redux/store";
+import { CleartextMessage, Message, PrivateKey, createCleartextMessage, createMessage, decryptKey, readPrivateKey, sign } from "openpgp";
 import React, { useState } from "react";
+import PassphraseModal from "../PassphraseModal";
+import OutputTextarea from "../OutputTextarea";
 export default function Signing({activeTab,setActiveTab}) {
-    const [message,setMessage] = useState<string>("");
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
 
+    const [message,setMessage] = useState<string>("");
+    const [signedMessage,setSignedMessage] = useState<string>("");
+
+    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
+    const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
+
+    const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+
+    const signMessage = async ()=>{
+        let signKey:PrivateKey = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e => { console.error(e); return null });
+        
+        if(!signKey){
+            return;
+        }
+        if(!signKey.isDecrypted()){
+            if(privateKeyPassphrase===""){
+                setIsModalVisible(true);
+                return;
+            }else{
+                const decrytpedKey:PrivateKey = await decryptKey({
+                    privateKey:signKey,
+                    passphrase:privateKeyPassphrase
+                });
+                signKey = decrytpedKey;
+            }
+        }
+        const messageParsed:Message<string> = await createCleartextMessage({text:message}).catch(e => { console.error(e); return null });
+
+        const signature:string = await sign({message:messageParsed,signingKeys:signKey}).catch(e => { console.error(e); return null });
+        
+        setPrivateKeyPassphrase("");
+        setSignedMessage(signature);
+    }
     return (
     <div className="p-6">
+        <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setPrivateKeyPassphrase={setPrivateKeyPassphrase} onConfirm={()=>{signMessage()}} onClose={()=>{setPrivateKeyPassphrase("");setIsModalVisible(false)}} />
+
         <h2 className="text-2xl font-bold mb-4 text-center">Signatures</h2>
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">Message</label>
@@ -29,8 +65,15 @@ export default function Signing({activeTab,setActiveTab}) {
                             </div>
                         </div>
             <button 
-                className="mt-4 btn btn-info">Sign message</button>
+                className="mt-4 btn btn-info" onClick={signMessage}>Sign message</button>
         </div>
+    {       
+        (signedMessage === "") ? (
+            null
+        ) : (
+            <OutputTextarea textValue={signedMessage}/>
+        )
+    }
     </div>
     )
 }
