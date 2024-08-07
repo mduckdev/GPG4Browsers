@@ -13,10 +13,10 @@ import { usePrevious } from './utils';
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const fetchedTheme  = useAppSelector(state=>state.theme.prefferedTheme);
-  const [activeTab, setActiveTab] = useState<string>('encryption');
+  const [activeSection, setActiveSection] = useState<string>('encryption');
   const [isPopup, setIsPopup] = useState<boolean>(true);
   const [theme, setThemeLocal] = useState<string>(fetchedTheme);
-  const previousTab = usePrevious(activeTab);
+  const previousTab = usePrevious(activeSection);
 
   useEffect(()=>{
     if(!(['dark','light'].includes(theme))){
@@ -53,8 +53,8 @@ useEffect(()=>{
         <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer text-xl" onClick={openTab} />
       ):(null)
     }
-      <Main activeTab={activeTab} previousTab={previousTab} setActiveTab={setActiveTab}/>
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <Main activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection}/>
+      <Navbar activeSection={activeSection} setActiveSection={setActiveSection}/>
     </div>
   </div>
   );

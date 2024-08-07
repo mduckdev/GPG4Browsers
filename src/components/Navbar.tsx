@@ -1,19 +1,19 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock, faCog, faFileSignature } from '@fortawesome/free-solid-svg-icons';
-export default function Navbar({activeTab, setActiveTab}) {
+export default function Navbar({activeSection, setActiveSection}) {
     return (
       <nav className="btm-nav">
         <button
-          className={`${activeTab === 'encryption' ? 'active' : ''} hover:opacity-75`}
-          onClick={() => setActiveTab('encryption')}
+          className={`${activeSection === 'encryption' ? 'active' : ''} hover:opacity-75`}
+          onClick={() => setActiveSection('encryption')}
         >
           <FontAwesomeIcon icon={faLock}/>
           <span className="btm-nav-label">Encryption</span>
         </button>
         <button
-          className={`${activeTab === 'decryption' ? 'active' : ''} hover:opacity-75`}
-          onClick={() => setActiveTab('decryption')}
+          className={`${activeSection === 'decryption' ? 'active' : ''} hover:opacity-75`}
+          onClick={() => setActiveSection('decryption')}
         >
           
           <FontAwesomeIcon icon={faUnlock} />
@@ -21,16 +21,16 @@ export default function Navbar({activeTab, setActiveTab}) {
 
         </button>
         <button
-          className={`${activeTab === 'signatures' ? 'active' : ''} hover:opacity-75`}
-          onClick={() => setActiveTab('signatures')}
+          className={`${activeSection === 'signatures' ? 'active' : ''} hover:opacity-75`}
+          onClick={() => setActiveSection('signatures')}
         >
           <FontAwesomeIcon icon={faFileSignature} />
           <span className="btm-nav-label">Signatures</span>
 
         </button>
         <button
-          className={`${activeTab === 'options' ? 'active' : ''} hover:opacity-75`}
-          onClick={() => setActiveTab('options')}
+          className={`${activeSection === 'options' ? 'active' : ''} hover:opacity-75`}
+          onClick={() => setActiveSection('options')}
         >
           <FontAwesomeIcon icon={faCog} />
           <span className="btm-nav-label">Options</span>

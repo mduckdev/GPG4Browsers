@@ -3,6 +3,8 @@ import { RootState } from './store';
 export interface IPublicKey {
     keyValue:string,
     userID:string,
+    name:string,
+    email:string,
     fingerprint:string
 }
 
@@ -12,7 +14,14 @@ export const publicKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPublicKey:(state,action:PayloadAction<IPublicKey>)=>{
-            state.push({keyValue:action.payload.keyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
+            state.push(
+                {
+                keyValue:action.payload.keyValue,
+                userID:action.payload.userID,
+                name:action.payload.name,
+                email:action.payload.email,
+                fingerprint:action.payload.fingerprint,
+                })
         },
         deletePublicKey:(state,action:PayloadAction<string>)=>{
             state = state.filter((element)=>{

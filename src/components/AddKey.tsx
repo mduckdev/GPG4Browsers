@@ -6,7 +6,7 @@ import { IPrivateKey, addPrivateKey, deletePrivateKey } from "@src/redux/private
 import { BasePublicKeyPacket, BaseSecretKeyPacket, Key,PrimaryUser,readKey, readPrivateKey} from "openpgp"
 import { IPublicKey, addPublicKey, deletePublicKey } from "@src/redux/publicKeySlice";
 
-export default function AddKey({activeTab,previousTab,setActiveTab}) {
+export default function AddKey({activeSection,previousTab,setActiveSection}) {
 
     const dispatch = useAppDispatch();
     const privateKeysList:IPrivateKey[] = useAppSelector((state:RootState)=>state.privateKeys);
@@ -65,14 +65,15 @@ export default function AddKey({activeTab,previousTab,setActiveTab}) {
             const userID:PrimaryUser = await key.getPrimaryUser();
             const name:string = userID.user.userID.name;
             const email:string = userID.user.userID.email;
-            
+            const userIDString:string = userID.user.userID.userID;
+            console.log(userID)
             const pubKeyFromPrivKey = key.toPublic();
             
             dispatch(deletePublicKey(key.getFingerprint()));
             dispatch(deletePrivateKey(key.getFingerprint()));
 
-            dispatch(addPrivateKey({keyValue:keyValue,userID:`${name?name:""} <${email}>`, fingerprint:key.getFingerprint()}));
-            dispatch(addPublicKey({keyValue:pubKeyFromPrivKey.armor(),userID:`${name?name:""} <${email}>`, fingerprint:pubKeyFromPrivKey.getFingerprint()}));
+            dispatch(addPrivateKey({keyValue:keyValue,userID:userIDString,name:name,email:email, fingerprint:key.getFingerprint()}));
+            dispatch(addPublicKey({keyValue:pubKeyFromPrivKey.armor(),userID:userIDString,name:name,email:email, fingerprint:pubKeyFromPrivKey.getFingerprint()}));
 
             
         }else{
@@ -87,13 +88,13 @@ export default function AddKey({activeTab,previousTab,setActiveTab}) {
             const userID:PrimaryUser = await key.getPrimaryUser();
             const name:string = userID.user.userID.name;
             const email:string = userID.user.userID.email;
-
+            const userIDString:string = userID.user.userID.userID;
             dispatch(deletePublicKey(publicKeyFingerprint));
             
-            dispatch(addPublicKey({keyValue:keyValue, userID:`${name?name:""} <${email}>`, fingerprint:publicKeyFingerprint}));
+            dispatch(addPublicKey({keyValue:keyValue, userID:userIDString,name:name,email:email, fingerprint:publicKeyFingerprint}));
         }
         
-        setActiveTab(previousTab);
+        setActiveSection(previousTab);
     }
 
     return (
@@ -102,7 +103,7 @@ export default function AddKey({activeTab,previousTab,setActiveTab}) {
         <label htmlFor="keyValue" className="text-lg mb-2">Paste your armored key:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
         <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>Save</button>
-        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveTab(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
     </div>
     )
 }

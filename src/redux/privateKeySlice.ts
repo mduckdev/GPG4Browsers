@@ -3,6 +3,8 @@ import { RootState } from './store';
 export interface IPrivateKey {
     keyValue:string,
     userID:string,
+    name:string,
+    email:string,
     fingerprint:string
 }
 
@@ -12,7 +14,13 @@ export const privateKeySlice = createSlice({
     initialState:initialState,
     reducers: {
         addPrivateKey:(state,action:PayloadAction<IPrivateKey>)=>{
-            state.push({keyValue:action.payload.keyValue,userID:action.payload.userID,fingerprint:action.payload.fingerprint})
+            state.push({
+                keyValue:action.payload.keyValue,
+                userID:action.payload.userID,
+                name:action.payload.name,
+                email:action.payload.email,
+                fingerprint:action.payload.fingerprint,
+                })
         },
         deletePrivateKey:(state,action:PayloadAction<string>)=>{
             state = state.filter((element)=>{

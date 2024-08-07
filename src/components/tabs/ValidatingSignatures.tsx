@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-export default function ValidatingSignatures({activeTab,setActiveTab}) {
+export default function ValidatingSignatures({activeSection,setActiveSection}) {
     const [signedMessage,setSignedMessage] = useState<string>("");
     return (
     <div className="p-6">

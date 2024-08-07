@@ -7,11 +7,10 @@ import OutputTextarea from "./OutputTextarea";
 export default function Decryption() {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
-
+    const [privateKey,setPrivateKey] = useState<string>("");
     
     const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const [decryptedMessage,setDecryptedMessage] = useState<string>("");
-    const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
     const [signatureMessages,setSignatureMessages] = useState<string>("");
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
@@ -21,7 +20,8 @@ export default function Decryption() {
 
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
-            const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.keyValue});
+            const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
+
             // see https://github.com/openpgpjs/openpgpjs/issues/1693
             //
             //@ts-ignore
@@ -31,17 +31,21 @@ export default function Decryption() {
                 const decryptionKeyID = privKeyDecryptionKey.getKeyID();
                 for(const encryptionKey of encryptionKeys){
                     if(decryptionKeyID.equals(encryptionKey)){
+                        setPrivateKey(privKey.armor());
                         return privKey;
                     }
                 }
             }
-            
-            return false;
         }
+        return false;
     }
 
-    const decryptMessage = async (message:string,passphrase?:string)=>{
-        const pgpMessage:Message<string> = await readMessage({armoredMessage:message})
+    const decryptMessage = async (privateKey?:PrivateKey)=>{
+        const pgpMessage:Message<string> = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
+        if(!pgpMessage){
+            return;
+            //show alert with information
+        }
         const encryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
         let decryptionKey = await findDecryptionKeyInKeyring(encryptionKeys);
         const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
@@ -50,20 +54,15 @@ export default function Decryption() {
             return;
             //show alert no key found
         }
-        if(!decryptionKey.isDecrypted()){
-            if(privateKeyPassphrase===""){
+        if(!decryptionKey.isDecrypted() && !privateKey){
                 setIsModalVisible(true);
                 return;
-            }else{
-                const decrytpedKey:PrivateKey = await decryptKey({
-                    privateKey:decryptionKey,
-                    passphrase:privateKeyPassphrase
-                });
-                decryptionKey = decrytpedKey;
-            }
+        }
+        if(privateKey?.isDecrypted()){
+            decryptionKey=privateKey;
         }
 
-        const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey,verificationKeys:pubKeys});
+        const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });;
         let verified = false;
         setIsMessageVerified(false);
         let info = [];
@@ -87,7 +86,7 @@ export default function Decryption() {
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setPrivateKeyPassphrase={setPrivateKeyPassphrase} onConfirm={()=>{decryptMessage(encryptedMessage,privateKeyPassphrase)}} onClose={()=>{setPrivateKeyPassphrase("")}} />
+            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKey={privateKey} onConfirm={decryptMessage} onClose={()=>{}} />
 
             <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
             <div className="w-full flex flex-col">
@@ -95,7 +94,7 @@ export default function Decryption() {
                 <textarea id="message"
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={encryptedMessage} onChange={(e)=>{setEncryptedMessage(e.target.value)}}></textarea>
                 <button 
-                    className="mt-4 btn btn-info" onClick={()=>{decryptMessage(encryptedMessage)}}>Decrypt</button>
+                    className="mt-4 btn btn-info" onClick={()=>{decryptMessage()}}>Decrypt</button>
             </div>
 
             {

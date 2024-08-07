@@ -2,17 +2,17 @@ import { useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
 import Signing from "./tabs/Signing";
 import ValidatingSignatures from "./tabs/ValidatingSignatures";
-export default function Signatures({activeTab,previousTab,setActiveTab}) {
+export default function Signatures({activeSection,previousTab,setActiveSection}) {
      
     const [selectedTab,setSelectedTab]=useState("signing");
     const renderComponent = () => {
         switch (selectedTab) {
             case 'signing':
-                return <Signing activeTab="signatures" setActiveTab={setActiveTab}/>;
+                return <Signing activeSection="signatures" setActiveSection={setActiveSection}/>;
             case 'validatingSignatures':
-                return <ValidatingSignatures activeTab="signatures" setActiveTab={setActiveTab} />
+                return <ValidatingSignatures activeSection="signatures" setActiveSection={setActiveSection} />
             default:
-                return <Signing activeTab="signatures" setActiveTab={setActiveTab} />;
+                return <Signing activeSection="signatures" setActiveSection={setActiveSection} />;
         }
       };
         return (
