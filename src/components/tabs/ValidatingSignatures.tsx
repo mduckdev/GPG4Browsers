@@ -1,19 +1,43 @@
+import { RootState, useAppSelector } from "@src/redux/store";
 import { sectionsPropsInterface } from "@src/types";
-import { Signature, readSignature } from "openpgp";
+import { getSignatureInfo } from "@src/utils";
+import { CleartextMessage, Key, Signature, VerificationResult, VerifyMessageResult, readCleartextMessage, readKey, readSignature, verify } from "openpgp";
 import React, { useState } from "react";
 export default function ValidatingSignatures({activeSection,setActiveSection}:sectionsPropsInterface) {
+    const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
+
     const [signedMessage,setSignedMessage] = useState<string>("");
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
     const [signatureMessages,setSignatureMessages] = useState<string>("");
 
     const verifySignature = async ()=>{
-        const signatureParsed:Signature|null = await readSignature({armoredSignature:signedMessage}).catch(e => { console.error(e); return null });
+        const signatureParsed:CleartextMessage|null = await readCleartextMessage({cleartextMessage:signedMessage}).catch(e => { console.error(e); return null });
         if(!signatureParsed){
             setSignatureMessages("Failed to parse the message.");
             setIsMessageVerified(false);
             return;
         }
+        const pubKeys:Key[] = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
 
+        const signatureInfo:VerifyMessageResult<string> | null = await verify({message:signatureParsed,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });
+
+        if(!signatureInfo){
+            setSignatureMessages("Failed to check signatures.");
+            setIsMessageVerified(false);
+            return;
+        }
+
+        const results = await getSignatureInfo(signatureInfo);
+
+        if(!results){
+            setSignatureMessages("Message authenticity could not be verified.");
+            setIsMessageVerified(false);
+            return;
+        }
+        
+
+        setIsMessageVerified(true)
+        setSignatureMessages(results.join("\n"))
 
     }
 
