@@ -1,5 +1,5 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import {  Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
+import {  DecryptMessageResult, Key, KeyID, Message, PrivateKey, Subkey, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 
@@ -20,8 +20,10 @@ export default function Decryption() {
 
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
-            const privKey:PrivateKey = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
-
+            const privKey:PrivateKey|null = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
+            if(!privKey){
+                return;
+            }
             // see https://github.com/openpgpjs/openpgpjs/issues/1693
             //
             //@ts-ignore
@@ -41,7 +43,7 @@ export default function Decryption() {
     }
 
     const decryptMessage = async (privateKey?:PrivateKey)=>{
-        const pgpMessage:Message<string> = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
+        const pgpMessage:Message<string>|null = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
         if(!pgpMessage){
             return;
             //show alert with information
@@ -62,7 +64,13 @@ export default function Decryption() {
             decryptionKey=privateKey;
         }
 
-        const decryptedMessage = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });;
+        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:decryptionKey,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });
+
+        if(!decryptedMessage){
+            console.log("Failed to decrypt the message.");
+            return;
+        }
+
         let verified = false;
         setIsMessageVerified(false);
         let info = [];
@@ -78,8 +86,7 @@ export default function Decryption() {
 
 
         setSignatureMessages(info.join("\n"))
-        console.log(info)
-        setDecryptedMessage(decryptedMessage.data);
+        setDecryptedMessage(decryptedMessage.data.toString());
         
     }
 

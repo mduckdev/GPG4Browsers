@@ -5,5 +5,5 @@ export const usePrevious = (value:string):string =>{
     useEffect(() => {
       ref.current = value;
     });
-    return ref.current;
+    return ref.current || "encryption";
   }

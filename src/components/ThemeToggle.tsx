@@ -1,11 +1,14 @@
+import { themeTogglePropsInterface } from "@src/types";
 import React, { useEffect, useRef } from "react";
-export default function ThemeToggle({className,currentTheme,setTheme}) {
-    const hiddenInput = useRef(null);    
+export default function ThemeToggle({className,currentTheme,setTheme}:themeTogglePropsInterface) {
+    const hiddenInput = useRef<HTMLInputElement|null>(null);    
     useEffect(()=>{
-        if(currentTheme==="dark"){
+        if(currentTheme==="dark" && hiddenInput?.current){
             hiddenInput.current.checked = true;
         }else{
-            hiddenInput.current.checked = false;
+            if(hiddenInput?.current){
+                hiddenInput.current.checked = false;
+            }
         }
     },[currentTheme])
     return (

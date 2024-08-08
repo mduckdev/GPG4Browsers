@@ -1,17 +1,9 @@
+import { passphraseProps } from "@src/types";
 import { PrivateKey, decryptKey, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
-interface passphraseProps{
-  title:string;
-  text:string;
-  isVisible:any;
-  privateKey:string;
-  setIsVisible:Function;
-  onClose?:Function;
-  onConfirm:Function;
-}
 
 export default function PassphraseModal({title,text, isVisible,privateKey, setIsVisible ,onClose, onConfirm}:passphraseProps) {
-    const modalRef = useRef(null);
+    const modalRef = useRef<HTMLDialogElement|null>(null);
     const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
     const [isPassphraseValid,setIsPassphraseValid] =  useState<boolean>(true);
 
@@ -27,14 +19,14 @@ export default function PassphraseModal({title,text, isVisible,privateKey, setIs
   const handleClose = () => {
     if (onClose) {
       onClose();
-      modalRef.current.close();
+      modalRef?.current?.close();
     }
     if(setIsVisible){
       setIsVisible(false);
     }
   }
   const handleConfirm = async () => {
-    const privateKeyParsed:PrivateKey = await readPrivateKey({armoredKey:privateKey}).catch(e => { console.error(e); return null });
+    const privateKeyParsed:PrivateKey|null = await readPrivateKey({armoredKey:privateKey}).catch(e => { console.error(e); return null });
     if(!privateKeyParsed){
       return;
     }
@@ -59,7 +51,7 @@ export default function PassphraseModal({title,text, isVisible,privateKey, setIs
     }
   }
 
-  const handleESC = (event) => {
+  const handleESC = (event: React.SyntheticEvent<HTMLDialogElement, Event>) => {
     event.preventDefault();
     handleClose();
   }

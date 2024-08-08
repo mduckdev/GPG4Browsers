@@ -1,7 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock, faCog, faFileSignature } from '@fortawesome/free-solid-svg-icons';
-export default function Navbar({activeSection, setActiveSection}) {
+import { sectionsPropsInterface } from "@src/types";
+export default function Navbar({activeSection, setActiveSection}:sectionsPropsInterface) {
     return (
       <nav className="btm-nav">
         <button

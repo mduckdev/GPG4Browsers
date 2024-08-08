@@ -35,7 +35,7 @@ const App: React.FC = () => {
 
 useEffect(()=>{
   dispatch(setTheme(theme));  
-  document.querySelector("html").setAttribute("data-theme",theme)
+  document?.querySelector("html")?.setAttribute("data-theme",theme)
 },[theme])
 
 

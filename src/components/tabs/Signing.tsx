@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import PassphraseModal from "../PassphraseModal";
 import OutputTextarea from "../OutputTextarea";
 import KeyDropdown from "../keyDropdown";
-export default function Signing({activeSection,setActiveSection}) {
+import { sectionsPropsInterface } from "@src/types";
+
+export default function Signing({activeSection,setActiveSection}:sectionsPropsInterface) {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
     const [message,setMessage] = useState<string>("");
@@ -21,7 +23,7 @@ export default function Signing({activeSection,setActiveSection}) {
         }
 
 
-        let signKey:PrivateKey;
+        let signKey:PrivateKey|null;
         if(unlockedPrivateKey instanceof PrivateKey){
             signKey=unlockedPrivateKey;
         }else{
@@ -35,11 +37,15 @@ export default function Signing({activeSection,setActiveSection}) {
             setIsModalVisible(true);
             return;
         }
-        const messageParsed:Message<string> = await createCleartextMessage({text:message}).catch(e => { console.error(e); return null });
-
-        const signature:string = await sign({message:messageParsed,signingKeys:signKey}).catch(e => { console.error(e); return null });
-        if(!signature || !messageParsed){
+        const messageParsed:CleartextMessage|null = await createCleartextMessage({text:message}).catch(e => { console.error(e); return null });
+        if(!messageParsed){
+            console.log("Failed to generate parse message");
+            return;
+        }
+        const signature:string|null = await sign({message:messageParsed,signingKeys:signKey}).catch(e => { console.error(e); return null });
+        if(!signature){
             console.log("Failed to generate signature");
+            return;
         }
         setSignedMessage(signature);
     }

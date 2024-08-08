@@ -5,7 +5,8 @@ import Decryption from './Decryption';
 import Options from './Options';
 import AddKey from "./AddKey";
 import Signatures from "./Signatures";
-export default function Main({activeSection,previousTab,setActiveSection}) {
+import { sectionsWithPreviousInterface } from "@src/types";
+export default function Main({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
     const renderComponent = () => {
         switch (activeSection) {
           case 'encryption':

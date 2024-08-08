@@ -1,11 +1,12 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import { Key, Message, PrivateKey, createMessage, decryptKey, encrypt, readKey } from "openpgp";
+import { Key, MaybeArray, Message, PrivateKey, createMessage, decryptKey, encrypt, readKey, readPrivateKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 import OutputTextarea from "./OutputTextarea";
 import KeyDropdown from "./keyDropdown";
+import { sectionsWithPreviousInterface } from "@src/types";
 
-export default function Encryption({activeSection,previousTab,setActiveSection}) {
+export default function Encryption({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
@@ -22,8 +23,14 @@ export default function Encryption({activeSection,previousTab,setActiveSection})
         if(message==="" || selectedPubKey===""){
             return;
         }
-        const pgpKey:Key = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
-        let pgpSignKey:PrivateKey = (await readKey({armoredKey:privateKey}).catch(e => { console.error(e); return null }));
+        const pgpKey:Key|null = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
+        if(!pgpKey){
+            return;
+        }
+        let pgpSignKey:PrivateKey|null=null;
+        if(privateKey){
+            pgpSignKey = (await readPrivateKey({armoredKey:privateKey}).catch(e => { console.error(e); return null }));
+        }
         
         if(pgpSignKey && !pgpSignKey?.isDecrypted() && signMessage){
             setIsModalVisible(true);
@@ -32,10 +39,10 @@ export default function Encryption({activeSection,previousTab,setActiveSection})
 
 
         const pgpMessage:Message<string> = await createMessage({ text: message });
-        const response = await encrypt({
+        const response:string = await encrypt({
             message: pgpMessage,
             encryptionKeys: pgpKey,
-            signingKeys: signMessage?(pgpSignKey):([])
+            signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
         }).then((encrypted) => {
             return encrypted;
         }).catch(e => {console.error(e); return ""});

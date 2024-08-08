@@ -3,10 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { IPrivateKey, addPrivateKey, deletePrivateKey } from "@src/redux/privateKeySlice";
-import { BasePublicKeyPacket, BaseSecretKeyPacket, Key,PrimaryUser,readKey, readPrivateKey} from "openpgp"
+import {  Key,PrimaryUser,readKey} from "openpgp"
 import { IPublicKey, addPublicKey, deletePublicKey } from "@src/redux/publicKeySlice";
+import { sectionsWithPreviousInterface } from "@src/types";
 
-export default function AddKey({activeSection,previousTab,setActiveSection}) {
+
+export default function AddKey({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
 
     const dispatch = useAppDispatch();
     const privateKeysList:IPrivateKey[] = useAppSelector((state:RootState)=>state.privateKeys);
@@ -17,81 +19,40 @@ export default function AddKey({activeSection,previousTab,setActiveSection}) {
     const [isValidKey,setIsValidKey] = useState<boolean>(false);
     const [isUniqueKey,setIsUniqueKey] = useState<boolean>(false);
 
-    const checkIsUniquePrivateKey = async (key:BaseSecretKeyPacket) => {
-        for (const tempKey of privateKeysList){
-            let tempKeyParsed:BaseSecretKeyPacket = await readPrivateKey({armoredKey:tempKey.keyValue}).catch(e => { console.error(e); return null });
-            if(key.hasSameFingerprintAs(tempKeyParsed)){
-                console.log("Key already used")
-                setIsUniqueKey(false);
-                return false
-            }
-        };
-        setIsUniqueKey(true);
-        return true;
-    }
-
-    const checkIsUniquePublicKey = async (key:BasePublicKeyPacket) => {
-        for (const tempKey of publicKeysList){
-            let tempKeyParsed:BasePublicKeyPacket = await readKey({armoredKey:tempKey.keyValue}).catch(e => { console.error(e); return null });
-            if(key.hasSameFingerprintAs(tempKeyParsed)){
-                console.log("Key already used")
-                setIsUniqueKey(false);
-                return false
-            }
-        };
-        setIsUniqueKey(true);
-        return true;
-    }
-
     const saveToKeyring = async (overwriteKey?:boolean)=>{
-        const key:Key = await readKey({ armoredKey: keyValue }).catch(e => { console.error(e); return null });
+        const key:Key|null = await readKey({ armoredKey: keyValue }).catch(e => { console.error(e); return null });
         if(!key){
             setIsValidKey(false)
             return false;
         }
-        
+        let isUnique:boolean;
+        const keyFingerprint = key.getFingerprint();
+        isUnique =  (
+            ((privateKeysList.filter(e=>e.fingerprint===keyFingerprint)).length===0) && 
+            ((publicKeysList.filter(e=>e.fingerprint===keyFingerprint)).length===0)
+        );
+        if(!isUnique&&!overwriteKey){
+            //show confirm modal
+            return false;
+        }
+        const userID:PrimaryUser = await key.getPrimaryUser();
+        const name:string = userID.user.userID?.name || "";
+        const email:string = userID.user.userID?.email || "";
+        const userIDString:string = userID.user.userID?.userID || "";
         if(key.isPrivate()){
-            const privateKey:BaseSecretKeyPacket = await readPrivateKey({ armoredKey: keyValue }).catch(e => { console.error(e); return null });
-            const privateKeyFingerprint = privateKey.getFingerprint();
-            const isUnique =  (
-                ((privateKeysList.filter(e=>e.fingerprint===privateKeyFingerprint)).length===0) && 
-                ((publicKeysList.filter(e=>e.fingerprint===privateKeyFingerprint)).length===0)
-            );
-            if(!isUnique&&!overwriteKey){
-                //show confirm modal
-                return false;
-            }
-
-            const userID:PrimaryUser = await key.getPrimaryUser();
-            const name:string = userID.user.userID.name;
-            const email:string = userID.user.userID.email;
-            const userIDString:string = userID.user.userID.userID;
-            console.log(userID)
             const pubKeyFromPrivKey = key.toPublic();
-            
             dispatch(deletePublicKey(key.getFingerprint()));
             dispatch(deletePrivateKey(key.getFingerprint()));
 
-            dispatch(addPrivateKey({keyValue:keyValue,userID:userIDString,name:name,email:email, fingerprint:key.getFingerprint()}));
+            dispatch(addPrivateKey({keyValue:keyValue,userID:userIDString,name:name,email:email, fingerprint:keyFingerprint}));
             dispatch(addPublicKey({keyValue:pubKeyFromPrivKey.armor(),userID:userIDString,name:name,email:email, fingerprint:pubKeyFromPrivKey.getFingerprint()}));
 
             
         }else{
-            const publicKey:BasePublicKeyPacket = await readKey({ armoredKey: keyValue }).catch(e => { console.error(e); return null });
-            const publicKeyFingerprint:string = publicKey.getFingerprint();
-            const isUnique:boolean = (publicKeysList.filter(e=>e.fingerprint===publicKeyFingerprint)).length===0;
-            if(!isUnique&&!overwriteKey){
-                //show confirm modal
-                return false;
-            }
-
-            const userID:PrimaryUser = await key.getPrimaryUser();
-            const name:string = userID.user.userID.name;
-            const email:string = userID.user.userID.email;
-            const userIDString:string = userID.user.userID.userID;
-            dispatch(deletePublicKey(publicKeyFingerprint));
+           
+            dispatch(deletePublicKey(keyFingerprint));
             
-            dispatch(addPublicKey({keyValue:keyValue, userID:userIDString,name:name,email:email, fingerprint:publicKeyFingerprint}));
+            dispatch(addPublicKey({keyValue:keyValue, userID:userIDString,name:name,email:email, fingerprint:keyFingerprint}));
         }
         
         setActiveSection(previousTab);

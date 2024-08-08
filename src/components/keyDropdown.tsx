@@ -1,12 +1,8 @@
 import { IPrivateKey } from "@src/redux/privateKeySlice";
 import { IPublicKey } from "@src/redux/publicKeySlice";
+import { KeyDropdownProps } from "@src/types";
 import React from "react";
-interface KeyDropdownProps{
-    label:string,
-    privateKeysList:IPublicKey[]|IPrivateKey[],
-    setSelectedKey:Function,
-    setActiveSection:Function
-}
+
 export default function KeyDropdown({label,privateKeysList,setSelectedKey,setActiveSection}:KeyDropdownProps) {
     return (
     <div>

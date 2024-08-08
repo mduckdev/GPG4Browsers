@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-export default function OutputTextarea({textValue}) {
+import { outputTextareaPropsInterface } from "@src/types";
+export default function OutputTextarea({textValue}:outputTextareaPropsInterface) {
     const [showClipboardIcon,setShowClipboardIcon] = useState<boolean>(false);
     const [showSuccessIcon,setshowSuccessIcon] = useState<boolean>(false);
     return (
