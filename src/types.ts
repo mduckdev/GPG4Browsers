@@ -15,6 +15,7 @@ export interface outputTextareaPropsInterface{
 
 export interface KeyDropdownProps{
     label:string,
+    isActive:boolean,
     privateKeysList:IPublicKey[]|IPrivateKey[],
     setSelectedKey:Function,
     setActiveSection:Function

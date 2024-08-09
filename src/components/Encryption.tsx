@@ -62,20 +62,16 @@ export default function Encryption({activeSection,previousTab,setActiveSection}:
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" onChange={(e)=>{setMessage(e.target.value)}}></textarea>
 
                 <div className="mt-3">
-                    <KeyDropdown label="Select recipient's public key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
-                    
-                    {
-                        signMessage?(
-                            <KeyDropdown label="Sign with private key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
-                        ):(null)
-                    }
-                    
+                    <KeyDropdown isActive={true} label="Recipient's public key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
 
-                    <label className="cursor-pointer label pb-0">
-                        <input id="signMessageToggle" type="checkbox" className="toggle toggle-success"
-                            defaultChecked={signMessage} onChange={(e)=>{setSignMessage(e.target.checked);}}/>
-                        <span className="label-text pl-3">Sign the message</span>
-                    </label>
+                    <KeyDropdown isActive={signMessage} label="Sign with private key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                    
+                    <div className="form-control">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">Sign the message</span>
+                            <input type="checkbox" defaultChecked={signMessage} className="checkbox" onChange={(e)=>{setSignMessage(e.target.checked);}}/>
+                        </label>
+                    </div>
                 </div>
                 <button id="encryptBtn"
                     className="btn btn-info mt-2" onClick={()=>encryptMessage(selectedPrivKey)}>Encrypt</button>
