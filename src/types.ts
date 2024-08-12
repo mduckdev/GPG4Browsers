@@ -9,6 +9,9 @@ export interface sectionsPropsInterface{
 export interface sectionsWithPreviousInterface extends sectionsPropsInterface{
     previousTab:string
 }
+export interface MainProps extends sectionsWithPreviousInterface{
+    isPopup:boolean;
+}
 export interface outputTextareaPropsInterface{
     textValue:string
 }
@@ -16,7 +19,7 @@ export interface outputTextareaPropsInterface{
 export interface KeyDropdownProps{
     label:string,
     isActive:boolean,
-    privateKeysList:IPublicKey[]|IPrivateKey[],
+    keysList:IPublicKey[]|IPrivateKey[],
     setSelectedKey:Function,
     setActiveSection:Function
 }

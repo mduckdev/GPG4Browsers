@@ -58,7 +58,7 @@ export default function Signing({activeSection,setActiveSection}:sectionsPropsIn
             <label htmlFor="message" className="block text-sm font-medium">Message</label>
             <textarea id="message"
                 className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
-                <KeyDropdown label="Sign with private key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                <KeyDropdown isActive={true} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
             <button 
                 className="mt-4 btn btn-info" onClick={()=>signMessage(selectedPrivKey)}>Sign message</button>
         </div>

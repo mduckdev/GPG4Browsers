@@ -5,12 +5,12 @@ import Decryption from './Decryption';
 import Options from './Options';
 import AddKey from "./AddKey";
 import Signatures from "./Signatures";
-import { sectionsWithPreviousInterface } from "@src/types";
-export default function Main({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
+import { MainProps } from "@src/types";
+export default function Main({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const renderComponent = () => {
         switch (activeSection) {
           case 'encryption':
-            return <Encryption activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
+            return <Encryption isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'addKey':
             return <AddKey activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'decryption':
@@ -20,7 +20,7 @@ export default function Main({activeSection,previousTab,setActiveSection}:sectio
           case 'options':
             return <Options />;
           default:
-            return <Encryption activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
+            return <Encryption isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
         }
       };
     return (

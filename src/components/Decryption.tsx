@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 
 import OutputTextarea from "./OutputTextarea";
-export default function Decryption() {
+export default function Decryption({}) {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const [privateKey,setPrivateKey] = useState<string>("");

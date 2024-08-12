@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import PassphraseModal from "./PassphraseModal";
 import OutputTextarea from "./OutputTextarea";
 import KeyDropdown from "./keyDropdown";
-import { sectionsWithPreviousInterface } from "@src/types";
+import { MainProps } from "@src/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
-export default function Encryption({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
+export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
@@ -15,12 +17,18 @@ export default function Encryption({activeSection,previousTab,setActiveSection}:
 
     const [message,setMessage] =  useState<string>("");
     const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
+    const [fileName, setFileName] = useState<string>("")
+    const [fileData, setFileData] = useState<Uint8Array|null>(null)
+    const [encryptedFileData, setEncryptedFileData] = useState<string|null>(null)
+
 
     const [signMessage,setSignMessage] = useState<boolean>(true);
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+    const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
+
 
     const encryptMessage = async(privateKey?:string)=>{
-        if(message==="" || selectedPubKey===""){
+        if((message==="" && (!fileData || fileData.length===0)) || selectedPubKey===""){
             return;
         }
         const pgpKey:Key|null = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
@@ -37,18 +45,70 @@ export default function Encryption({activeSection,previousTab,setActiveSection}:
             return;
         }
 
+        if(message !==""){
+            const pgpMessage:Message<string>|null = await createMessage({ text: message }).catch(e => { console.error(e); return null });
+            if(!pgpMessage){
+                console.log("Failed to create pgpMessage from literal message");
+                return;
+            }
+            const response:string = await encrypt({
+                message: pgpMessage,
+                encryptionKeys: pgpKey,
+                signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
+            }).then((encrypted) => {
+                return encrypted;
+            }).catch(e => {console.error(e); return ""});
+            setMessage("");
+            setEncryptedMessage(response);
+        }
+        if(fileData && fileData.length!==0){
+            const pgpMessage:Message<Uint8Array>|null = await createMessage({binary:fileData,filename:fileName,format:"binary"}).catch(e => { console.error(e); return null });
+            if(!pgpMessage){
+                console.log("Failed to create pgpMessage from binary data");
+                return;
+            }
+            setEncryptionInProgress(true);
+            const response:Uint8Array|null = await encrypt({
+                message: pgpMessage,
+                encryptionKeys: pgpKey,
+                format:"binary",
+                signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
+            }).then((encrypted) => {
+                setEncryptionInProgress(false);
+                return encrypted;
+            }).catch(e => {console.error(e);setEncryptionInProgress(false); return null});
+            
+            if(!response){
+                console.log("Failed to encrypt binary data");
+                return;
+            }
+            let blob = new Blob([response],{type:"application/octet-stream"})
+            setEncryptedFileData(window.URL.createObjectURL(blob));
+        }
+    }
 
-        const pgpMessage:Message<string> = await createMessage({ text: message });
-        const response:string = await encrypt({
-            message: pgpMessage,
-            encryptionKeys: pgpKey,
-            signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
-        }).then((encrypted) => {
-            return encrypted;
-        }).catch(e => {console.error(e); return ""});
+    const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>)=> {
+        if(!event?.target.files){
+            return;
+        }
+        
+        const file = event.target.files[0];
+        if(file.name){
+            setFileName(file.name);
+        }
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            if(!event.target){
+                return
+            }
+            if(event.target.result instanceof ArrayBuffer){
+                let uint = new Uint8Array(event.target.result);
+                setFileData(uint);
+                setEncryptedFileData(null);
+            }
 
-        setEncryptedMessage(response);
-        return response;
+        };
+        reader.readAsArrayBuffer(file);
     }
 
     return (
@@ -59,12 +119,20 @@ export default function Encryption({activeSection,previousTab,setActiveSection}:
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
                 <label htmlFor="message" className="block text-sm font-medium ">Message:</label>
                 <textarea id="message"
-                    className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" onChange={(e)=>{setMessage(e.target.value)}}></textarea>
-
+                    className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
+                {
+                    isPopup?(null):(
+                <div>
+                    <div className="divider">OR</div>
+                    <input type="file" className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>handleDataLoaded(e)}/>
+                </div>
+                    )
+                }
+                
                 <div className="mt-3">
-                    <KeyDropdown isActive={true} label="Recipient's public key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={privKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
 
-                    <KeyDropdown isActive={signMessage} label="Sign with private key:" privateKeysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown isActive={signMessage} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
                     
                     <div className="form-control">
                         <label className="label cursor-pointer">
@@ -77,14 +145,34 @@ export default function Encryption({activeSection,previousTab,setActiveSection}:
                     className="btn btn-info mt-2" onClick={()=>encryptMessage(selectedPrivKey)}>Encrypt</button>
             </div>
 
-{
-  (encryptedMessage === "") ? (
-    null
-  ) : (
-    <OutputTextarea textValue={encryptedMessage}/>
-  )
-}
-                
+            {
+            (encryptedMessage === "") ? (
+                null
+            ) : (
+                <OutputTextarea textValue={encryptedMessage}/>
+            )
+            
+            }
+            {
+                encryptionInProgress?(
+                    <button className="btn btn-square">
+                        <span className="loading loading-spinner"></span>
+                    </button>
+                ):(null)
+            }
+
+            {
+                (encryptedFileData && !encryptionInProgress)?(
+                    <a href={encryptedFileData || ""} download={`${fileName}.gpg`}>
+                        <button className="btn btn-success">
+                            <FontAwesomeIcon icon={faDownload} />
+        
+                            {`${fileName}.gpg`}
+                        </button>
+                    </a>
+                ):(null)
+            }
+                            
                
         </div>
     );

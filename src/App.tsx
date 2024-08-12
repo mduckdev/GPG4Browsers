@@ -55,7 +55,7 @@ useEffect(()=>{
         <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer text-xl" onClick={openTab} />
       ):(null)
     }
-      <Main activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection}/>
+      <Main activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} isPopup={isPopup}/>
       <Navbar activeSection={activeSection} setActiveSection={setActiveSection}/>
     </div>
   </div>
