@@ -1,9 +1,9 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import { CleartextMessage, Message, PrivateKey, createCleartextMessage, createMessage, decryptKey, readPrivateKey, sign } from "openpgp";
 import React, { useState } from "react";
-import PassphraseModal from "../PassphraseModal";
-import OutputTextarea from "../OutputTextarea";
-import KeyDropdown from "../keyDropdown";
+import PassphraseModal from "../../PassphraseModal";
+import OutputTextarea from "../../OutputTextarea";
+import KeyDropdown from "../../keyDropdown";
 import { sectionsPropsInterface } from "@src/types";
 
 export default function Signing({activeSection,setActiveSection}:sectionsPropsInterface) {
@@ -51,7 +51,7 @@ export default function Signing({activeSection,setActiveSection}:sectionsPropsIn
     }
     return (
     <div className="p-6">
-        <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} privateKey={selectedPrivKey} setIsVisible={setIsModalVisible} onConfirm={signMessage} onClose={()=>{}} />
+        <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} privateKeys={[selectedPrivKey]} setIsVisible={setIsModalVisible} onConfirm={signMessage} onClose={()=>{}} />
 
         <h2 className="text-2xl font-bold mb-4 text-center">Signatures</h2>
         <div className="w-full flex flex-col">

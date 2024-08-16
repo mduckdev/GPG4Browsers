@@ -26,3 +26,29 @@ export const getSignatureInfo = async (signaturesObject:VerifyMessageResult<stri
   return Promise.resolve(info);
 
 }
+
+export const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>,setFileName:React.Dispatch<React.SetStateAction<string|null>>,setFileData:React.Dispatch<React.SetStateAction<Uint8Array|null>>,setOppositeFileData:React.Dispatch<React.SetStateAction<string|null>>)=> {
+  if(!event?.target.files){
+      return;
+  }
+  
+  const file = event.target.files[0];
+  if(file.name){
+      setFileName(file.name);
+  }
+  const reader = new FileReader();
+  reader.onload = function(event) {
+      if(!event.target){
+          return
+      }
+      if(event.target.result instanceof ArrayBuffer){
+          let uint = new Uint8Array(event.target.result);
+          setFileData(uint);
+          setOppositeFileData(null);
+      }
+
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+

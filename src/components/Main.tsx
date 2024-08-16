@@ -14,7 +14,7 @@ export default function Main({activeSection,isPopup,previousTab,setActiveSection
           case 'addKey':
             return <AddKey activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'decryption':
-            return <Decryption />;
+            return <Decryption isPopup={isPopup} />;
           case 'signatures':
             return <Signatures  activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'options':

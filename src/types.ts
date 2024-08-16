@@ -12,6 +12,9 @@ export interface sectionsWithPreviousInterface extends sectionsPropsInterface{
 export interface MainProps extends sectionsWithPreviousInterface{
     isPopup:boolean;
 }
+export interface DecryptionProps{
+    isPopup:boolean;
+}
 export interface outputTextareaPropsInterface{
     textValue:string
 }
@@ -24,11 +27,11 @@ export interface KeyDropdownProps{
     setActiveSection:Function
 }
 export interface passphraseProps{
-    title:string;
-    text:string;
+    title?:string;
+    text?:string;
     isVisible:any;
-    privateKey:string;
-    setIsVisible:Function;
+    setIsVisible:React.Dispatch<React.SetStateAction<boolean>>;
+    privateKeys:string[];
     onClose?:Function;
     onConfirm:Function;
 }

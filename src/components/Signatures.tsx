@@ -1,7 +1,7 @@
 import { useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
-import Signing from "./tabs/Signing";
-import ValidatingSignatures from "./tabs/ValidatingSignatures";
+import Signing from "./tabs/signatures/Signing";
+import ValidatingSignatures from "./tabs/signatures/ValidatingSignatures";
 import { sectionsWithPreviousInterface } from "@src/types";
 export default function Signatures({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
      
