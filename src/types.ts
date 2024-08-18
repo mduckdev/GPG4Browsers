@@ -41,3 +41,8 @@ export interface themeTogglePropsInterface{
     currentTheme:string,
     setTheme:Function
 }
+
+export interface file{
+    data:Uint8Array,
+    fileName:string
+}

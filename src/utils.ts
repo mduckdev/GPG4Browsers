@@ -1,5 +1,6 @@
 import { VerifyMessageResult } from "openpgp";
 import { useEffect, useRef } from "react";
+import { file } from "./types";
 
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
@@ -27,28 +28,37 @@ export const getSignatureInfo = async (signaturesObject:VerifyMessageResult<stri
 
 }
 
-export const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>,setFileName:React.Dispatch<React.SetStateAction<string|null>>,setFileData:React.Dispatch<React.SetStateAction<Uint8Array|null>>,setOppositeFileData:React.Dispatch<React.SetStateAction<string|null>>)=> {
+export const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>):file[]|null=> {
   if(!event?.target.files){
-      return;
+      return null;
   }
-  
-  const file = event.target.files[0];
-  if(file.name){
-      setFileName(file.name);
-  }
-  const reader = new FileReader();
-  reader.onload = function(event) {
-      if(!event.target){
-          return
-      }
-      if(event.target.result instanceof ArrayBuffer){
-          let uint = new Uint8Array(event.target.result);
-          setFileData(uint);
-          setOppositeFileData(null);
-      }
+  let files:file[] = [];
+  for(let i =0; i<event.target.files.length;i++){
+    let file = event.target.files[i];
 
-  };
-  reader.readAsArrayBuffer(file);
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        if(!event.target){
+            return
+        }
+        if(event.target.result instanceof ArrayBuffer){
+
+          let uint = new Uint8Array(event.target.result);
+          files.push({
+            data:uint,
+            fileName:file.name
+          })
+        }
+
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  return files;
 }
 
 
+export const convertUint8ToUrl =(data:Uint8Array):string=>{
+  let blob = new Blob([data],{type:"application/octet-stream"});
+  let url = window.URL.createObjectURL(blob) 
+  return url;
+}

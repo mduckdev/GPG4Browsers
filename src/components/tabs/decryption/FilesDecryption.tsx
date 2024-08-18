@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
-import { handleDataLoaded } from "@src/utils";
+import { convertUint8ToUrl, handleDataLoaded } from "@src/utils";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DecryptionProps } from "@src/types";
+import { DecryptionProps, file } from "@src/types";
 export default function FilesDecryption() {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -17,8 +17,8 @@ export default function FilesDecryption() {
     const [signatureMessages,setSignatureMessages] = useState<string>("");
     const [fileName, setFileName] = useState<string|null>("")
 
-    const [encryptedFileData, setEncryptedFileData] = useState<Uint8Array|null>(null)
-    const [decryptedFileData, setDecryptedFileData] = useState<string|null>(null)
+    const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
+    const [decryptedFiles, setDecryptedFiles] = useState<file[]>([])
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
@@ -48,67 +48,13 @@ export default function FilesDecryption() {
         return false;
     }
 
-    const decryptMessage = async (privateKeys?:PrivateKey[])=>{
-        // setPrivateKeys([]);
-        // if((!encryptedFileData || encryptedFileData.length===0)){
-        //     return;
-        // }
-        // const filePgpMessage:Message<Uint8Array>|null =  await readMessage({binaryMessage:encryptedFileData}).catch(e => { console.error(e); return null });
-        // if(!filePgpMessage){
-        //     return;
-        //     //show alert with information
-        // }
-        // const fileEncryptionKeys:KeyID[] = filePgpMessage.getEncryptionKeyIDs();
-
-        // const fileDecryptionKey = await findDecryptionKeyInKeyring(fileEncryptionKeys);
-        // const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
-        // if(!fileDecryptionKey){
-        //     console.log(`Couldn't find a suitable key with IDs:${fileEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
-        //     return;
-        //     //show alert no key found
-        // }
-        // const areAllPrivateKeysDecrypted = privateKeys?.some((e)=>e.isDecrypted());
-        // if(!areAllPrivateKeysDecrypted || !privateKeys){
-        //         setIsModalVisible(true);
-        //         return;
-        // }
-        
-
-        // setDecryptionInProgress(true);
-        // const decryptedMessage:DecryptMessageResult|null = await decrypt({message:filePgpMessage,decryptionKeys:fileDecryptionKey,verificationKeys:pubKeys,format:"binary"}).catch(e => { console.error(e); return null });
-        // setDecryptionInProgress(false);
-
-        // if(!decryptedMessage){
-        //     console.log("Failed to decrypt the message.");
-        //     return;
-        // }
-
-        // let verified = false;
-        // setIsMessageVerified(false);
-        // let info = [];
-        // for (const signature of decryptedMessage.signatures){
-        //     let isVerified = await signature.verified.catch(e=>{return false});
-        //     if(isVerified){
-        //         info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
-        //         verified=true;
-        //         setIsMessageVerified(true)
-        //     }
-        // }
-        // info.push(verified?(""):("Message authenticity could not be verified."))
-
-        // let dataAsUint8 = new Uint8Array(decryptedMessage.data.)
-        // let blob = new Blob([decryptedMessage.data.toString()],{type:"application/octet-stream"})
-        // setEncryptedFileData(window.URL.createObjectURL(blob));
-        // setDecryptedFileData()
-        // setSignatureMessages(info.join("\n"))
-        
-
+    const decryptFiles = async (privateKeys?:PrivateKey[])=>{
                
-        if((!encryptedFileData || encryptedFileData.length===0)){
+        if(encryptedFiles.length===0 || !encryptedFiles[0]){
             return;
         }
 
-        const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:encryptedFileData}).catch(e => { console.error(e); return null });
+        const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:encryptedFiles[0].data}).catch(e => { console.error(e); return null });
 
         if(!pgpMessage ){
             return;
@@ -156,7 +102,7 @@ export default function FilesDecryption() {
 
         setDecryptionInProgress(false);
         let blob = new Blob([decryptedMessage.data as Uint8Array],{type:"application/octet-stream"})
-        setDecryptedFileData(window.URL.createObjectURL(blob))
+        setDecryptedFiles([{data:decryptedMessage.data as Uint8Array,fileName:decryptedMessage.filename}])
         setSignatureMessages(info.join("\n"))
         
     }
@@ -164,13 +110,13 @@ export default function FilesDecryption() {
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptMessage} onClose={()=>{}} />
+            <PassphraseModal title="Unlock private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptFiles} onClose={()=>{}} />
 
             <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
             <div className="w-full flex flex-col">
-                <input type="file" multiple={true} className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>handleDataLoaded(e,setFileName,setEncryptedFileData,setDecryptedFileData)}/>
+                <input type="file" multiple={true} className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>{setEncryptedFiles(handleDataLoaded(e) || []);setSignatureMessages("")}}/>
                 <button 
-                    className="mt-4 btn btn-info" onClick={()=>{decryptMessage()}}>Decrypt</button>
+                    className="mt-4 btn btn-info" onClick={()=>{decryptFiles()}}>Decrypt</button>
             </div>
 
        
@@ -182,14 +128,18 @@ export default function FilesDecryption() {
             ):(null)
         }
         {
-                (decryptedFileData && !decryptionInProgress)?(
-                    <a href={decryptedFileData || ""} download={fileName?.replace(/\.(gpg|pgp|asc|sig)$/, '')}>
-                        <button className="btn btn-success">
+            (decryptedFiles.length !== 0 && !decryptionInProgress) ? (
+                <div className="flex gap-2 mt-2">
+                {encryptedFiles.map((e: file,index:number) => (
+                        <a href={convertUint8ToUrl(e.data) || ""} download={e.fileName.replace(/\.(gpg|pgp|asc|sig)$/, '')} key={index}>
+                            <button className="btn btn-success">
                             <FontAwesomeIcon icon={faDownload} />
-                            {fileName?.replace(/\.(gpg|pgp|asc|sig)$/, '')}
-                        </button>
-                    </a>
-                ):(null)
+                            {e.fileName.replace(/\.(gpg|pgp|asc|sig)$/, '')}
+                            </button>
+                        </a>
+                ))}
+                </div>
+            ) : (null)
             }
 
         <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>

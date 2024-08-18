@@ -1,13 +1,12 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import { Key, MaybeArray, Message, PrivateKey, createMessage, decryptKey, encrypt, readKey, readPrivateKey } from "openpgp";
-import React, { useState } from "react";
+import { Key, MaybeArray, Message, PrivateKey, createMessage, encrypt, readKey, readPrivateKey } from "openpgp";
+import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
-import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
-import { MainProps } from "@src/types";
+import { MainProps, file } from "@src/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { handleDataLoaded } from "@src/utils";
+import { convertUint8ToUrl, handleDataLoaded } from "@src/utils";
 
 export default function FilesEncryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -16,21 +15,16 @@ export default function FilesEncryption({activeSection,isPopup,previousTab,setAc
     const [selectedPubKey,setSelectedPubKey] =  useState<string>(pubKeysList[0]?.keyValue || "");
     const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
 
-    const [message,setMessage] =  useState<string>("");
-    const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
-    const [fileName, setFileName] = useState<string|null>("")
-    const [fileData, setFileData] = useState<Uint8Array|null>(null)
-    const [encryptedFileData, setEncryptedFileData] = useState<string|null>(null)
+    const [files,setFiles] = useState<file[]>([])
+    const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
 
 
     const [signMessage,setSignMessage] = useState<boolean>(true);
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
     
-
-
     const encryptMessage = async(privateKey?:PrivateKey[])=>{
-        if((message==="" && (!fileData || fileData.length===0)) || selectedPubKey===""){
+        if(files.length===0 || selectedPubKey===""){
             return;
         }
         const pgpKey:Key|null = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
@@ -47,46 +41,31 @@ export default function FilesEncryption({activeSection,isPopup,previousTab,setAc
             return;
         }
 
-        if(message !==""){
-            const pgpMessage:Message<string>|null = await createMessage({ text: message }).catch(e => { console.error(e); return null });
-            if(!pgpMessage){
-                console.log("Failed to create pgpMessage from literal message");
-                return;
-            }
-            const response:string = await encrypt({
-                message: pgpMessage,
-                encryptionKeys: pgpKey,
-                signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
-            }).then((encrypted) => {
-                return encrypted;
-            }).catch(e => {console.error(e); return ""});
-            setMessage("");
-            setEncryptedMessage(response);
-        }
-        if(fileData && fileData.length!==0){
-            const pgpMessage:Message<Uint8Array>|null = await createMessage({binary:fileData,filename:fileName || "fileName.ext",format:"binary"}).catch(e => { console.error(e); return null });
+        setEncryptionInProgress(true);
+        const newEncryptedFiles:file[] = [];
+        for await(const currentFile of files){
+            const pgpMessage:Message<Uint8Array>|null = await createMessage({binary:currentFile.data,filename:currentFile.fileName || "fileName.ext",format:"binary"}).catch(e => { console.error(e); return null });
             if(!pgpMessage){
                 console.log("Failed to create pgpMessage from binary data");
                 return;
             }
-            setEncryptionInProgress(true);
             const response:Uint8Array|null = await encrypt({
                 message: pgpMessage,
                 encryptionKeys: pgpKey,
                 format:"binary",
                 signingKeys: (signMessage ? [pgpSignKey] : null) as MaybeArray<PrivateKey> | undefined
             }).then((encrypted) => {
-                setEncryptionInProgress(false);
                 return encrypted;
-            }).catch(e => {console.error(e);setEncryptionInProgress(false); return null});
+            }).catch(e => {console.error(e); return null});
             
             if(!response){
                 console.log("Failed to encrypt binary data");
                 return;
             }
-            let blob = new Blob([response],{type:"application/octet-stream"})
-            setEncryptedFileData(window.URL.createObjectURL(blob));
+            newEncryptedFiles.push({data:response,fileName:currentFile.fileName})
         }
+        setEncryptedFiles(newEncryptedFiles);
+        setEncryptionInProgress(false);
     }
 
 
@@ -94,8 +73,8 @@ export default function FilesEncryption({activeSection,isPopup,previousTab,setAc
     return (
         <div className="p-6">
             <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={[selectedPrivKey]} onConfirm={encryptMessage} onClose={()=>{}} />
-            <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
-            <input type="file" className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>handleDataLoaded(e,setFileName,setFileData,setEncryptedFileData)}/>
+            <div className={`flex flex-col`}>
+                <input type="file" multiple={true} className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>setFiles(handleDataLoaded(e) || [])}/>
                 
                 <div className="mt-3">
                     <KeyDropdown isActive={true} label="Recipient's public key:" keysList={privKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
@@ -122,15 +101,18 @@ export default function FilesEncryption({activeSection,isPopup,previousTab,setAc
             }
 
             {
-                (encryptedFileData && !encryptionInProgress)?(
-                    <a href={encryptedFileData || ""} download={`${fileName}.gpg`}>
-                        <button className="btn btn-success">
+            (encryptedFiles.length !== 0 && !encryptionInProgress) ? (
+                <div className="flex gap-2 mt-2">
+                {encryptedFiles.map((e: file,index:number) => (
+                        <a href={convertUint8ToUrl(e.data) || ""} download={`${e.fileName}.gpg`} key={index}>
+                            <button className="btn btn-success">
                             <FontAwesomeIcon icon={faDownload} />
-        
-                            {`${fileName}.gpg`}
-                        </button>
-                    </a>
-                ):(null)
+                            {`${e.fileName}.gpg`}
+                            </button>
+                        </a>
+                ))}
+                </div>
+            ) : (null)
             }
                             
                
