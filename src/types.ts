@@ -46,3 +46,7 @@ export interface file{
     data:Uint8Array,
     fileName:string
 }
+export interface decryptedFile extends file{
+    signatureMessages:string[],
+    signatureStatus:"text-success"|"text-info"|"text-error"
+}

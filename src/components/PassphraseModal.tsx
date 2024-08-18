@@ -35,7 +35,7 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         setCurrentKey(encryptedKeysLeft)
         setKeyInfo()
       }else{
-        console.log("All keys are unlocked")
+        // console.log(`All ${privateKeysParsed.length} keys are unlocked`)
         //triggers function (encryption or decryption) with all keys needed unlocked
         onConfirm(privateKeysParsed);
         setIsVisible(false);
@@ -44,18 +44,18 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
 
     useEffect(() => {
       if(isVisible){
+        const parsedKeys:PrivateKey[] = [];
         privateKeys.forEach(async e=>{
           const key:PrivateKey|null = await readPrivateKey({armoredKey:e}).catch(e => { console.error(e); return null });
           if(key){
-            setPrivateKeysParsed([
-              ...privateKeysParsed,
-              key
-            ]);
+            parsedKeys.push(key);
             setCurrentKey(key);
           }else{
             console.log("Failed to parse provided private key")
           }
-        })
+        });
+        setPrivateKeysParsed(parsedKeys);
+
       }else{
         setPrivateKeysParsed([]);
       }

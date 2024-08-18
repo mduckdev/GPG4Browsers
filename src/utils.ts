@@ -57,8 +57,20 @@ export const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>):file[]
 }
 
 
-export const convertUint8ToUrl =(data:Uint8Array):string=>{
+export const convertUint8ToUrl = (data:Uint8Array):string =>{
   let blob = new Blob([data],{type:"application/octet-stream"});
   let url = window.URL.createObjectURL(blob) 
   return url;
+}
+
+export const formatBytes = (size: number): string =>{
+  const units = ["B", "kB", "mB", "gB", "tB"];
+  let index = 0;
+
+  while (size >= 1000 && index < units.length - 1) {
+      size /= 1000;
+      index++;
+  }
+
+  return `${Math.floor(size)} ${units[index]}`;
 }
