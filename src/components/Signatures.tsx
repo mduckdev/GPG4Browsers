@@ -35,7 +35,9 @@ export default function Signatures({activeSection,previousTab,setActiveSection}:
                         Validating signatures
                     </a>
                 </div>
+                <div className="container mx-auto mb-5 pt-8">
                 {renderComponent()}
+                </div>
             </div>
             
             

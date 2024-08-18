@@ -24,7 +24,7 @@ export default function Main({activeSection,isPopup,previousTab,setActiveSection
         }
       };
     return (
-        <div className="container mx-auto mb-5 pt-8">
+        <div className="mx-auto mb-5 pt-8">
         {renderComponent()}
       </div>
     )
