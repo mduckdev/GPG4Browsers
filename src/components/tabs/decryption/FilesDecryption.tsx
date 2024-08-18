@@ -11,7 +11,8 @@ import { DecryptionProps } from "@src/types";
 export default function FilesDecryption() {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
-    const [privateKeys,setPrivateKeys] = useState<string[]>([]);
+    const [decryptionKeys,setDecryptionKeys] = useState<string[]>([]);
+
     
     const [signatureMessages,setSignatureMessages] = useState<string>("");
     const [fileName, setFileName] = useState<string|null>("")
@@ -38,7 +39,7 @@ export default function FilesDecryption() {
                 const decryptionKeyID = privKeyDecryptionKey.getKeyID();
                 for(const encryptionKey of encryptionKeys){
                     if(decryptionKeyID.equals(encryptionKey)){
-                        setPrivateKeys([...privateKeys,privKey.armor()]);
+                        setDecryptionKeys([...decryptionKeys,privKey.armor()]);
                         return privKey;
                     }
                 }
@@ -48,40 +49,98 @@ export default function FilesDecryption() {
     }
 
     const decryptMessage = async (privateKeys?:PrivateKey[])=>{
-        setPrivateKeys([]);
+        // setPrivateKeys([]);
+        // if((!encryptedFileData || encryptedFileData.length===0)){
+        //     return;
+        // }
+        // const filePgpMessage:Message<Uint8Array>|null =  await readMessage({binaryMessage:encryptedFileData}).catch(e => { console.error(e); return null });
+        // if(!filePgpMessage){
+        //     return;
+        //     //show alert with information
+        // }
+        // const fileEncryptionKeys:KeyID[] = filePgpMessage.getEncryptionKeyIDs();
+
+        // const fileDecryptionKey = await findDecryptionKeyInKeyring(fileEncryptionKeys);
+        // const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
+        // if(!fileDecryptionKey){
+        //     console.log(`Couldn't find a suitable key with IDs:${fileEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
+        //     return;
+        //     //show alert no key found
+        // }
+        // const areAllPrivateKeysDecrypted = privateKeys?.some((e)=>e.isDecrypted());
+        // if(!areAllPrivateKeysDecrypted || !privateKeys){
+        //         setIsModalVisible(true);
+        //         return;
+        // }
+        
+
+        // setDecryptionInProgress(true);
+        // const decryptedMessage:DecryptMessageResult|null = await decrypt({message:filePgpMessage,decryptionKeys:fileDecryptionKey,verificationKeys:pubKeys,format:"binary"}).catch(e => { console.error(e); return null });
+        // setDecryptionInProgress(false);
+
+        // if(!decryptedMessage){
+        //     console.log("Failed to decrypt the message.");
+        //     return;
+        // }
+
+        // let verified = false;
+        // setIsMessageVerified(false);
+        // let info = [];
+        // for (const signature of decryptedMessage.signatures){
+        //     let isVerified = await signature.verified.catch(e=>{return false});
+        //     if(isVerified){
+        //         info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
+        //         verified=true;
+        //         setIsMessageVerified(true)
+        //     }
+        // }
+        // info.push(verified?(""):("Message authenticity could not be verified."))
+
+        // let dataAsUint8 = new Uint8Array(decryptedMessage.data.)
+        // let blob = new Blob([decryptedMessage.data.toString()],{type:"application/octet-stream"})
+        // setEncryptedFileData(window.URL.createObjectURL(blob));
+        // setDecryptedFileData()
+        // setSignatureMessages(info.join("\n"))
+        
+
+               
         if((!encryptedFileData || encryptedFileData.length===0)){
             return;
         }
-        const filePgpMessage:Message<Uint8Array>|null =  await readMessage({binaryMessage:encryptedFileData}).catch(e => { console.error(e); return null });
-        if(!filePgpMessage){
+
+        const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:encryptedFileData}).catch(e => { console.error(e); return null });
+
+        if(!pgpMessage ){
             return;
             //show alert with information
         }
-        const fileEncryptionKeys:KeyID[] = filePgpMessage.getEncryptionKeyIDs();
 
-        const fileDecryptionKey = await findDecryptionKeyInKeyring(fileEncryptionKeys);
+        const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
+        let messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
+        
         const pubKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
-        if(!fileDecryptionKey){
-            console.log(`Couldn't find a suitable key with IDs:${fileEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
+        if(!messageDecryptionKey){
+            console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
             return;
             //show alert no key found
         }
-        const areAllPrivateKeysDecrypted = privateKeys?.some((e)=>e.isDecrypted());
-        if(!areAllPrivateKeysDecrypted || !privateKeys){
-                setIsModalVisible(true);
-                return;
+        if(!privateKeys){
+            const parsed = await Promise.all(decryptionKeys.map(async e=>await readPrivateKey({armoredKey:e})))
+
+            const areAllPrivateKeysDecrypted = parsed?.some((e) => !e.isDecrypted());
+            if(!areAllPrivateKeysDecrypted || !decryptionKeys){
+                    setIsModalVisible(true);
+                    return;
+            }
         }
         
-
         setDecryptionInProgress(true);
-        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:filePgpMessage,decryptionKeys:fileDecryptionKey,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });
-        setDecryptionInProgress(false);
+        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:privateKeys,verificationKeys:pubKeys,format:"binary"}).catch(e => { console.error(e); return null });
 
         if(!decryptedMessage){
             console.log("Failed to decrypt the message.");
             return;
         }
-
         let verified = false;
         setIsMessageVerified(false);
         let info = [];
@@ -95,7 +154,9 @@ export default function FilesDecryption() {
         }
         info.push(verified?(""):("Message authenticity could not be verified."))
 
-
+        setDecryptionInProgress(false);
+        let blob = new Blob([decryptedMessage.data as Uint8Array],{type:"application/octet-stream"})
+        setDecryptedFileData(window.URL.createObjectURL(blob))
         setSignatureMessages(info.join("\n"))
         
     }
@@ -103,7 +164,7 @@ export default function FilesDecryption() {
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={privateKeys} onConfirm={decryptMessage} onClose={()=>{}} />
+            <PassphraseModal title="Unlock private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptMessage} onClose={()=>{}} />
 
             <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
             <div className="w-full flex flex-col">
@@ -122,10 +183,10 @@ export default function FilesDecryption() {
         }
         {
                 (decryptedFileData && !decryptionInProgress)?(
-                    <a href={decryptedFileData || ""} download={`${fileName}.gpg`}>
+                    <a href={decryptedFileData || ""} download={fileName?.replace(/\.(gpg|pgp|asc|sig)$/, '')}>
                         <button className="btn btn-success">
                             <FontAwesomeIcon icon={faDownload} />
-                            {`${fileName}.gpg`}
+                            {fileName?.replace(/\.(gpg|pgp|asc|sig)$/, '')}
                         </button>
                     </a>
                 ):(null)

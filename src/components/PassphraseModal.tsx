@@ -35,7 +35,7 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         setCurrentKey(encryptedKeysLeft)
         setKeyInfo()
       }else{
-        console.log("test")
+        console.log("All keys are unlocked")
         //triggers function (encryption or decryption) with all keys needed unlocked
         onConfirm(privateKeysParsed);
         setIsVisible(false);
