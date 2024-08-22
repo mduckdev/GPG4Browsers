@@ -1,4 +1,6 @@
+import { IPublicKey } from "@src/redux/publicKeySlice";
 import { KeyDropdownProps } from "@src/types";
+import { Key, readKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {
@@ -6,6 +8,8 @@ export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setA
     const [searchQuery,setSearchQuery]=useState<string>("");
     const [dropdownText,setDropdownText]=useState<string>(keysList[0]?.userID || ("Select key"));
     const ref = useRef<HTMLDivElement | null>(null);
+
+
 
     const handleClickOutside = (event: MouseEvent) => {
         if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -44,11 +48,11 @@ export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setA
                             <div id="dropdown-menu" onBlur={()=>setIsOpen(false)}  className="w-full absolute right-0 bg-slate-100 dark:bg-gray-700 rounded-md shadow-lg p-1 space-y-1 z-50 overflow-auto max-h-36">
                                 <input id="search-input" className="block w-full px-4 py-2 border rounded-md  focus:outline-none" type="text" placeholder="Search items" autoComplete="off" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
                                 {
-                                    keysList.map(element=>{
+                                    keysList.map( (element:IPublicKey,index:number)=>{
                                         if(searchQuery === ""){
-                                            return <option value={element.keyValue} key={element.keyValue} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
+                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
                                         }else if(element.userID.includes(searchQuery) || element.fingerprint.includes(searchQuery)){
-                                            return <option value={element.keyValue} key={element.keyValue} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
+                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
                                         }else{
                                             return null;
                                         }

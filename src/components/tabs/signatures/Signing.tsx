@@ -22,7 +22,6 @@ export default function Signing({activeSection,setActiveSection}:sectionsPropsIn
             //show alert with info
         }
 
-
         let signKey:PrivateKey|null;
         if(unlockedPrivateKey instanceof PrivateKey){
             signKey=unlockedPrivateKey;

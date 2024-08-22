@@ -77,7 +77,7 @@ export default function FilesEncryption({activeSection,isPopup,previousTab,setAc
                 <input type="file" multiple={true} className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>setFiles(handleDataLoaded(e) || [])}/>
                 
                 <div className="mt-3">
-                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={privKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
 
                     <KeyDropdown isActive={signMessage} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
                     

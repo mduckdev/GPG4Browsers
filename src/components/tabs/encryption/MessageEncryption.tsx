@@ -99,7 +99,7 @@ export default function MessageEncryption({activeSection,isPopup,previousTab,set
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
                 
                 <div className="mt-3">
-                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={privKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
 
                     <KeyDropdown isActive={signMessage} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
                     
@@ -111,7 +111,10 @@ export default function MessageEncryption({activeSection,isPopup,previousTab,set
                     </div>
                 </div>
                 <button id="encryptBtn"
-                    className="btn btn-info mt-2" onClick={async ()=>{const key = await readPrivateKey({armoredKey:selectedPrivKey});encryptMessage([key])}}>Encrypt</button>
+                    className="btn btn-info mt-2" onClick={async ()=>{
+                        const key = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
+                        encryptMessage(key?[key]:[])
+                    }}>Encrypt</button>
             </div>
 
             {

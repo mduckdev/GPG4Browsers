@@ -109,7 +109,6 @@ export default function MessageDecryption() {
         <div className="p-6">
             <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptMessage} onClose={()=>{}} />
 
-            <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
             <div className="w-full flex flex-col">
                 <label htmlFor="message" className="block text-sm font-medium">Encrypted message:</label>
                 <textarea id="message"

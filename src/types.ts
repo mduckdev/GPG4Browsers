@@ -1,3 +1,4 @@
+import { Key } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 
@@ -26,14 +27,17 @@ export interface KeyDropdownProps{
     setSelectedKey:Function,
     setActiveSection:Function
 }
-export interface passphraseProps{
+export interface modalProps{
     title?:string;
     text?:string;
-    isVisible:any;
+    isVisible:boolean;
     setIsVisible:React.Dispatch<React.SetStateAction<boolean>>;
-    privateKeys:string[];
     onClose?:Function;
     onConfirm:Function;
+}
+
+export interface passphraseProps extends modalProps{
+    privateKeys:string[];
 }
 
 export interface themeTogglePropsInterface{
@@ -49,4 +53,23 @@ export interface file{
 export interface decryptedFile extends file{
     signatureMessages:string[],
     signatureStatus:"text-success"|"text-info"|"text-error"
+}
+export interface alert{
+    text:string,
+    style:"alert-error"|"alert-warning"|"alert-success"|"alert-info"|""
+}
+export interface alertProps{
+    alerts:alert[],
+    setAlerts:React.Dispatch<React.SetStateAction<alert[]>>;
+}
+
+export interface keyUpdates{
+    key:Key,
+    confirmed:boolean,
+    isUniquePublic:boolean,
+    isUniquePrivate:boolean,
+}
+
+export interface keyUpdateModal extends modalProps{
+    keys:keyUpdates[]
 }

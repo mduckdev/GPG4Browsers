@@ -1,16 +1,17 @@
-import { passphraseProps } from "@src/types";
+import { alert, passphraseProps } from "@src/types";
 import { PrivateKey, decryptKey, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
+import Alert from "./Alert";
 
 export default function PassphraseModal({title,text, isVisible,privateKeys, setIsVisible ,onClose, onConfirm}:passphraseProps) {
     const modalRef = useRef<HTMLDialogElement|null>(null);
-    const [isPassphraseValid,setIsPassphraseValid] =  useState<boolean>(true);
     
     const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
     const [currentKeyInfo,setCurrentKeyInfo] =  useState<string>("");
     
     const [currentKey, setCurrentKey] = useState<PrivateKey|null>();
     const [privateKeysParsed, setPrivateKeysParsed] = useState<PrivateKey[]>([]);
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
 
     const setKeyInfo = async ()=>{
@@ -35,7 +36,6 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         setCurrentKey(encryptedKeysLeft)
         setKeyInfo()
       }else{
-        // console.log(`All ${privateKeysParsed.length} keys are unlocked`)
         //triggers function (encryption or decryption) with all keys needed unlocked
         onConfirm(privateKeysParsed);
         setIsVisible(false);
@@ -60,7 +60,7 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         setPrivateKeysParsed([]);
       }
 
-      setIsPassphraseValid(true);
+      // setIsPassphraseValid(true);
       setPrivateKeyPassphrase("");
       if (!modalRef.current) {
         return;
@@ -91,7 +91,14 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
     });
 
     if(!decrytpedKey){
-      setIsPassphraseValid(false);
+      setAlerts([
+        ...alerts,
+        {
+          text:"Error! Failed to unlock the private key.",
+          style:"alert-error"
+        }
+      ])
+      // setIsPassphraseValid(false);
       return;
     }else{
       const newArray = privateKeysParsed.map(e=>{
@@ -115,7 +122,6 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
 
 
   return (
-    <div>
         <dialog ref={modalRef} id="my_modal_4" className="modal" onCancel={handleESC}>
             <div className="modal-box w-11/12 max-w-5xl">
                 <h3 className="font-bold text-lg">{title}</h3>
@@ -132,27 +138,7 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
                     </div>
                 </div>
             </div>
-            {
-            isPassphraseValid?(null):(
-          <div role="alert" className="alert alert-error w-11/12 absolute bottom-5 inset-x-auto ">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Error! Failed to unlock the private key.</span>
-          </div>
-            )
-          }
+              <Alert alerts={alerts} setAlerts={setAlerts} />
             </dialog>
-          
-            
-    </div>
     )
 }

@@ -130,8 +130,6 @@ export default function FilesDecryption() {
     return (
         <div className="p-6">
             <PassphraseModal title="Unlock private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptFiles} onClose={()=>{}} />
-
-            <h2 className="text-2xl font-bold mb-4 text-center">Decryption</h2>
             <div className="w-full flex flex-col">
                 <input type="file" multiple={true} className="file-input file-input-bordered file-input-info w-full max-w-xs" onChange={(e)=>{setEncryptedFiles(handleDataLoaded(e) || []);setSignatureMessages("")}}/>
                 <button 

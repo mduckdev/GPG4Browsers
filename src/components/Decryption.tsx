@@ -34,7 +34,7 @@ export default function Decryption({isPopup}:DecryptionProps) {
                         Files decryption
                     </a>
                 </div>
-                <div className="container mx-auto mb-5 pt-8">
+                <div className="container mx-auto mb-5 pt-3">
                 {renderComponent()}
 
                 </div>
