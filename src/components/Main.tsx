@@ -1,10 +1,10 @@
 import React from "react";
-import Options from './Options';
-import AddKey from "./AddKey";
-import Signatures from "./Signatures";
+import Options from './sections/Options';
+import AddKey from "./sections/AddKey";
+import Signatures from "./sections/Signatures";
 import { MainProps } from "@src/types";
-import EncryptionAndDecryption from "./EncryptionAndDecryption";
-import KeysManagment from "./KeysManagment";
+import EncryptionAndDecryption from "./sections/EncryptionAndDecryption";
+import KeysManagment from "./sections/KeysManagment";
 export default function Main({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const renderComponent = () => {
         switch (activeSection) {

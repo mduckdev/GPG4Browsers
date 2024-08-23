@@ -6,8 +6,8 @@ import { IPrivateKey, addPrivateKey } from "@src/redux/privateKeySlice";
 import {  Key,PrimaryUser, readKeys} from "openpgp"
 import { IPublicKey, addPublicKey } from "@src/redux/publicKeySlice";
 import { alert, keyUpdates, sectionsWithPreviousInterface } from "@src/types";
-import Alert from "./Alert";
-import KeyUpdateModal from "./KeyUpdateModal";
+import Alert from "../Alert";
+import KeyUpdateModal from "../KeyUpdateModal";
 
 
 export default function AddKey({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {

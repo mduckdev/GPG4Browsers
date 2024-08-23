@@ -43,7 +43,6 @@ export default function ValidatingSignatures({activeSection,setActiveSection}:se
 
     return (
     <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4 text-center">Signatures</h2>
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">Signed message</label>
             <textarea id="message"

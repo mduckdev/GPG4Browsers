@@ -8,6 +8,7 @@ import { MainProps, file } from "@src/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { convertUint8ToUrl, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import PassphraseTextInput from "@src/components/PassphraseTextInput";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -17,6 +18,8 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
 
     const [message,setMessage] =  useState<string>("");
+    const [password,setPassword] =  useState<string>("");
+
     const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
 
 
@@ -24,6 +27,8 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
 
     const [signMessage,setSignMessage] = useState<boolean>(true);
+    const [usePassword,setUsePassword] = useState<boolean>(false);
+
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
     
@@ -104,7 +109,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
         <div className="p-6">
             <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={[selectedPrivKey]} onConfirm={encryptData} onClose={()=>{}} />
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
-                <label htmlFor="message" className="block text-sm font-medium ">Message:</label>
+                <label htmlFor="message" className="block text-sm font-medium ">Message</label>
                 <textarea id="message"
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
                 {
@@ -127,20 +132,32 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                         </div>
                     )
                 }
-                <div className="mt-3">
-                    <KeyDropdown isActive={true} label="Recipient's public key:" keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
-
+                <div className="mt-1">
+                    {
+                        usePassword?(
+                            <PassphraseTextInput value={password} setOnChange={setPassword} />
+                        ):(
+                            <KeyDropdown isActive={true} label="Recipient's public key:" keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
+                        )
+                    }
+                    
                     <KeyDropdown isActive={signMessage} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
                     
                     <div className="form-control">
                         <label className="label cursor-pointer">
                             <span className="label-text">Sign the message</span>
-                            <input type="checkbox" defaultChecked={signMessage} className="checkbox" onChange={(e)=>{setSignMessage(e.target.checked);}}/>
+                            <input type="checkbox" checked={signMessage} className="checkbox" onChange={(e)=>{setSignMessage(e.target.checked);}}/>
+                        </label>
+                    </div>
+                    <div className="form-control">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">Encrypt with password</span>
+                            <input type="checkbox" className="checkbox" checked={usePassword} onChange={(e)=>{setUsePassword(e.target.checked);}}/>
                         </label>
                     </div>
                 </div>
                 <button id="encryptBtn"
-                    className="btn btn-info mt-2" onClick={async ()=>{
+                    className="btn btn-info mt-1" onClick={async ()=>{
                         const key = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
                         encryptData(key?[key]:[])
                     }}>Encrypt</button>

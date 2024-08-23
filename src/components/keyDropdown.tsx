@@ -2,7 +2,7 @@ import { IPublicKey } from "@src/redux/publicKeySlice";
 import { KeyDropdownProps } from "@src/types";
 import React, { useEffect, useRef, useState } from "react";
 
-export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {
+export default function KeyDropdown({label,style,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {
     const [isOpen,setIsOpen]=useState<boolean>(false);
     const [searchQuery,setSearchQuery]=useState<string>("");
     const [dropdownText,setDropdownText]=useState<string>(keysList[0]?.userID || ("Select key"));
@@ -31,8 +31,8 @@ export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setA
     },[isOpen])
 
     return (
-    <div>
-        <label htmlFor="keys" className="block text-sm font-medium pt-3" >{label}</label>
+    <div className={style}>
+        <label htmlFor="keys" className="block text-sm font-medium mt-3" >{label}</label>
         <div className="flex gap-2">
             <div className="flex basis-5/6 min-w-0" ref={ref}>
                 <div className={`w-full relative group ${!isActive?('line-through opacity-50'):('')}`}>

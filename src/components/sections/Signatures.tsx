@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Signing from "./tabs/signatures/Signing";
-import ValidatingSignatures from "./tabs/signatures/ValidatingSignatures";
+import Signing from "../tabs/signatures/Signing";
+import ValidatingSignatures from "../tabs/signatures/ValidatingSignatures";
 import { sectionsWithPreviousInterface } from "@src/types";
 export default function Signatures({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
      
@@ -34,7 +34,7 @@ export default function Signatures({activeSection,previousTab,setActiveSection}:
                         Validating signatures
                     </a>
                 </div>
-                <div className="container mx-auto mb-5 pt-8">
+                <div className="container mx-auto mb-5 pt-3">
                 {renderComponent()}
                 </div>
             </div>

@@ -34,7 +34,7 @@ export default function EncryptionAndDecryption({activeSection,isPopup,previousT
                         Decryption
                     </a>
                 </div>
-                <div className="container mx-auto mb-5 pt-8">
+                <div className="container mx-auto mb-5 pt-3">
                 {renderComponent()}
                 </div>
             </div>

@@ -51,8 +51,6 @@ export default function Signing({activeSection,setActiveSection}:sectionsPropsIn
     return (
     <div className="p-6">
         <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} privateKeys={[selectedPrivKey]} setIsVisible={setIsModalVisible} onConfirm={signMessage} onClose={()=>{}} />
-
-        <h2 className="text-2xl font-bold mb-4 text-center">Signatures</h2>
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">Message</label>
             <textarea id="message"

@@ -21,6 +21,7 @@ export interface outputTextareaPropsInterface{
 }
 
 export interface KeyDropdownProps{
+    style?:string,
     label:string,
     isActive:boolean,
     keysList:IPublicKey[]|IPrivateKey[],
@@ -72,4 +73,8 @@ export interface keyUpdates{
 
 export interface keyUpdateModal extends modalProps{
     keys:keyUpdates[]
+}
+export interface PassphraseTextInputProps{
+    value:string,
+    setOnChange:React.Dispatch<React.SetStateAction<string>>;
 }

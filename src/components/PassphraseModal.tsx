@@ -2,6 +2,7 @@ import { alert, passphraseProps } from "@src/types";
 import { PrivateKey, decryptKey, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
+import PassphraseTextInput from "./PassphraseTextInput";
 
 export default function PassphraseModal({title,text, isVisible,privateKeys, setIsVisible ,onClose, onConfirm}:passphraseProps) {
     const modalRef = useRef<HTMLDialogElement|null>(null);
@@ -125,14 +126,11 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         <dialog ref={modalRef} id="my_modal_4" className="modal" onCancel={handleESC}>
             <div className="modal-box w-11/12 max-w-5xl">
                 <h3 className="font-bold text-lg">{title}</h3>
-                <p className="py-4">Enter passphrase for key: {currentKeyInfo}</p>
+                <p className="py-2">Enter passphrase for key: {currentKeyInfo}</p>
                 <div className="w-full flex flex-col">
-                    <input required type="password" id="passphrase" className="border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 " 
-                    value={privateKeyPassphrase}
-                      onChange={(e)=>{setPrivateKeyPassphrase(e.target.value)}}
-                      />
+                    <PassphraseTextInput value={privateKeyPassphrase} setOnChange={setPrivateKeyPassphrase}/>
                     
-                    <div className="flex gap-2 mx-0">
+                    <div className="flex gap-2 mx-0 mt-3">
                       <button className="btn btn-info" onClick={handleConfirm}>Unlock</button>
                       <button className="btn" onClick={handleClose}>Cancel</button>
                     </div>
