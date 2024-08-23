@@ -1,7 +1,7 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import { sectionsPropsInterface } from "@src/types";
 import { getSignatureInfo } from "@src/utils";
-import { CleartextMessage, Key, Signature, VerificationResult, VerifyMessageResult, readCleartextMessage, readKey, readSignature, verify } from "openpgp";
+import { CleartextMessage, Key, VerifyMessageResult, readCleartextMessage, readKey, verify } from "openpgp";
 import React, { useState } from "react";
 export default function ValidatingSignatures({activeSection,setActiveSection}:sectionsPropsInterface) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);

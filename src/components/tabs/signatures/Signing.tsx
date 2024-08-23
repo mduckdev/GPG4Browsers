@@ -1,5 +1,5 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import { CleartextMessage, Message, PrivateKey, createCleartextMessage, createMessage, decryptKey, readPrivateKey, sign } from "openpgp";
+import { CleartextMessage, PrivateKey, createCleartextMessage, readPrivateKey, sign } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "../../PassphraseModal";
 import OutputTextarea from "../../OutputTextarea";

@@ -1,4 +1,4 @@
-import { keyUpdateModal, keyUpdates, modalProps } from "@src/types";
+import { keyUpdateModal, keyUpdates } from "@src/types";
 import { Key } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisible, onClose, onConfirm}:keyUpdateModal) {

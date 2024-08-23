@@ -1,7 +1,4 @@
 import React from "react";
-
-import Encryption from './tabs/encryptionAndDecryption/Encryption';
-import Decryption from './tabs/encryptionAndDecryption/Decryption';
 import Options from './Options';
 import AddKey from "./AddKey";
 import Signatures from "./Signatures";

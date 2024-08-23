@@ -1,5 +1,5 @@
 import { RootState, useAppSelector } from "@src/redux/store";
-import { Key, MaybeArray, Message, PrivateKey, createMessage, decryptKey, encrypt, readKey, readPrivateKey } from "openpgp";
+import { Key, MaybeArray, Message, PrivateKey, createMessage, encrypt, readKey, readPrivateKey } from "openpgp";
 import React, { useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";

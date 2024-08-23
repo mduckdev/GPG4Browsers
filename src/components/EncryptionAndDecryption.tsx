@@ -1,7 +1,6 @@
-import { useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
 import Decryption from "@src/components/tabs/encryptionAndDecryption/Decryption";
-import { MainProps, sectionsWithPreviousInterface } from "@src/types";
+import { MainProps } from "@src/types";
 import Encryption from "@src/components/tabs/encryptionAndDecryption/Encryption";
 export default function EncryptionAndDecryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
      

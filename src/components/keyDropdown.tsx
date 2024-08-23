@@ -1,6 +1,5 @@
 import { IPublicKey } from "@src/redux/publicKeySlice";
 import { KeyDropdownProps } from "@src/types";
-import { Key, readKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {

@@ -1,4 +1,3 @@
-import { useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
 import Signing from "./tabs/signatures/Signing";
 import ValidatingSignatures from "./tabs/signatures/ValidatingSignatures";

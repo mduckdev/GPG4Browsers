@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
-import { IPrivateKey, addPrivateKey, deletePrivateKey } from "@src/redux/privateKeySlice";
-import {  Key,PrimaryUser,readKey, readKeys} from "openpgp"
-import { IPublicKey, addPublicKey, deletePublicKey } from "@src/redux/publicKeySlice";
+import { IPrivateKey, addPrivateKey } from "@src/redux/privateKeySlice";
+import {  Key,PrimaryUser, readKeys} from "openpgp"
+import { IPublicKey, addPublicKey } from "@src/redux/publicKeySlice";
 import { alert, keyUpdates, sectionsWithPreviousInterface } from "@src/types";
 import Alert from "./Alert";
 import KeyUpdateModal from "./KeyUpdateModal";
