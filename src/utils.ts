@@ -55,6 +55,23 @@ export const handleDataLoaded=(event:React.ChangeEvent<HTMLInputElement>):file[]
   }
   return files;
 }
+export const handleDataLoadedOnDrop = (files: File[]): file[] | null => {
+  let filesLoaded: file[] = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      if (!event.target || !(event.target.result instanceof ArrayBuffer)) return;
+      const uint = new Uint8Array(event.target.result);
+      filesLoaded.push({
+        data: uint,
+        fileName: file.name
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  return filesLoaded;
+};
 
 
 export const convertUint8ToUrl = (data:Uint8Array):string =>{

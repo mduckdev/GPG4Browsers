@@ -64,7 +64,7 @@ export default function KeyDropdown({label,keysList,isActive,setSelectedKey,setA
                    
                 </div>
             </div>
-        <button className="bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveSection('addKey')}>+</button>
+        <button className="bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveSection('AddKey')}>+</button>
         </div>
         
     </div>

@@ -13,7 +13,7 @@ import { usePrevious } from './utils';
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const fetchedTheme  = useAppSelector(state=>state.theme.prefferedTheme);
-  const [activeSection, setActiveSection] = useState<string>('encryption');
+  const [activeSection, setActiveSection] = useState<string>('EncryptionAndDecryption');
   const [isPopup, setIsPopup] = useState<boolean>(true);
   const [theme, setThemeLocal] = useState<string>(fetchedTheme);
   const previousTab = usePrevious(activeSection);
