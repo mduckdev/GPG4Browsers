@@ -4,15 +4,15 @@ import React, { useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
-import { MainProps, decryptedFile, file } from "@src/types";
-import { convertUint8ToUrl, formatBytes, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import { DecryptionMaterial, MainProps, decryptedFile, file } from "@src/types";
+import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 export default function Decryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
 
-    const [decryptionKeys,setDecryptionKeys] = useState<string[]>([]);
+    const [decryptionKeys,setDecryptionKeys] = useState<DecryptionMaterial[]>([]);
     
     const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const [decryptedMessage,setDecryptedMessage] = useState<string>("");
@@ -42,7 +42,6 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 const decryptionKeyID = privKeyDecryptionKey.getKeyID();
                 for(const encryptionKey of encryptionKeys){
                     if(decryptionKeyID.equals(encryptionKey)){
-                        // setDecryptionKeys([...decryptionKeys,privKey.armor()]);
                         return privKey.armor();
                     }
                 }
@@ -52,8 +51,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     }
 
 
-    const decryptData = async (privateKeys?:PrivateKey[])=>{
-        const decryptionKeysNeeded:string[] = [];
+    const decryptData = async (decryptionData?:DecryptionMaterial[])=>{
+        const decryptionKeysNeeded:DecryptionMaterial[] = [];
         let parsedFiles:Message<Uint8Array>[]=[];
         for await(const currentFile of encryptedFiles){
             const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:currentFile.data}).catch(e => { console.error(e); return null });
@@ -63,63 +62,79 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 //show alert with information
             }
             const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
-            let messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
+            if(messageEncryptionKeys.length===0){
+                decryptionKeysNeeded.push({data:currentFile.data,isPrivateKey:false,isUnlocked:false,filename:currentFile.fileName})
+            }else{
+                let messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
 
-            if(!messageDecryptionKey){
-                console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
-                continue;
-                //show alert no key found
+                if(!messageDecryptionKey){
+                    console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
+                    continue;
+                    //show alert no key found
+                }
+                const isKeyUnlocked =  (await readPrivateKey({armoredKey:messageDecryptionKey})).isDecrypted();
+                if(messageDecryptionKey && 
+                    decryptionKeysNeeded.filter(e=>e.data===messageDecryptionKey).length===0
+                ){
+                    decryptionKeysNeeded.push({data:messageDecryptionKey,isPrivateKey:true,isUnlocked:isKeyUnlocked});
+                }
             }
+            
             parsedFiles.push(pgpMessage);
-            if(messageDecryptionKey && !decryptionKeysNeeded.includes(messageDecryptionKey)){
-                decryptionKeysNeeded.push(messageDecryptionKey);
-            }
+            
         }
         const pgpMessage:Message<string>|null = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
         if(pgpMessage){
             const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
-            const messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
-            if(!messageDecryptionKey){
-                console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
-                // return;
-                //show alert no key found
+            if(messageEncryptionKeys.length===0){
+                decryptionKeysNeeded.push({data:encryptedMessage,isPrivateKey:false,isUnlocked:false})
+            }else{
+                const messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
+                if(!messageDecryptionKey){
+                    console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
+                    // return;
+                    //show alert no key found
+                }
+                if(messageDecryptionKey && 
+                    decryptionKeysNeeded.filter(e=>e.data===messageDecryptionKey).length===0
+                ){
+                    decryptionKeysNeeded.push({data:messageDecryptionKey,isPrivateKey:true,isUnlocked:false});
+                }
             }
-            if(messageDecryptionKey && !decryptionKeysNeeded.includes(messageDecryptionKey)){
-                decryptionKeysNeeded.push(messageDecryptionKey)
-            }
+            
         }
         setDecryptionKeys(decryptionKeysNeeded);
         if(decryptionKeysNeeded.length === 0){
             return;
         };
 
-        let parsedPrivateKeys:PrivateKey[]=[];
-        if(!privateKeys || privateKeys.length===0){
-            parsedPrivateKeys = await Promise.all(decryptionKeysNeeded.map(async e=>await readPrivateKey({armoredKey:e})))
-            const areAllPrivateKeysDecrypted = parsedPrivateKeys.every((e) => e.isDecrypted());
+        let parsedDecryptionData:DecryptionMaterial[]=[];
+        if(!decryptionData || decryptionData.length===0){
+            const areAllPrivateKeysDecrypted = decryptionKeysNeeded.every((e) => e.isUnlocked);
             if(!areAllPrivateKeysDecrypted){
                     setIsModalVisible(true);
                     return;
             }
         }else{
-            parsedPrivateKeys=privateKeys;
+            parsedDecryptionData=decryptionData;
         }
         const parsedPublicKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
 
         if(pgpMessage){
-            decryptMessage(pgpMessage,parsedPrivateKeys,parsedPublicKeys)
+            decryptMessage(pgpMessage,parsedDecryptionData,parsedPublicKeys)
         }
         if(encryptedFiles.length>0){
-            decryptFiles(parsedPrivateKeys,parsedPublicKeys)
+            decryptFiles(parsedDecryptionData,parsedPublicKeys)
         }
     }
 
-    const decryptMessage = async (pgpMessage:Message<string>,privateKeys:PrivateKey[],publicKeys:Key[])=>{
+    const decryptMessage = async (pgpMessage:Message<string>,decryptionMaterials:DecryptionMaterial[],publicKeys:Key[])=>{
         if(encryptedMessage===""){
             return;
         }
+        const {unlockedDecryptionKeysParsed,passwordsFiltered} = await getPrivateKeysAndPasswords(decryptionMaterials);
         
-        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:privateKeys,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
+        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:unlockedDecryptionKeysParsed,passwords:passwordsFiltered,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
 
         if(!decryptedMessage){
             console.log("Failed to decrypt the message.");
@@ -141,7 +156,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         setSignatureMessages(info.join("\n"))
         setDecryptedMessage(decryptedMessage.data.toString());
     }
-    const decryptFiles = async (privateKeys:PrivateKey[],publicKeys:Key[])=>{
+    const decryptFiles = async (decryptionMaterials:DecryptionMaterial[],publicKeys:Key[])=>{
         if(encryptedFiles.length===0 || !encryptedFiles[0]){
             return;
         }
@@ -152,7 +167,9 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             if(!pgpMessage ){
                 continue;
             }
-            const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:privateKeys,verificationKeys:publicKeys,format:"binary"}).catch(e => { console.error(e); return null });
+            const {unlockedDecryptionKeysParsed,passwordsFiltered} = await getPrivateKeysAndPasswords(decryptionMaterials);
+
+            const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:unlockedDecryptionKeysParsed,passwords:passwordsFiltered,verificationKeys:publicKeys,format:"binary"}).catch(e => { console.error(e); return null });
 
             if(!decryptedMessage){
                 console.log(`Failed to decrypt file ${currentFile.fileName}.`);
@@ -185,7 +202,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} setIsVisible={setIsModalVisible} privateKeys={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
+            <PassphraseModal title="Passphrase" text="Enter your passphrase to unlock:" isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
 
             <div className="w-full flex flex-col">
                 <label htmlFor="message" className="block text-sm font-medium">Encrypted message:</label>

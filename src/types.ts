@@ -1,4 +1,4 @@
-import { Key } from "openpgp";
+import { Key, Message, PrivateKey } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 
@@ -37,8 +37,16 @@ export interface modalProps{
     onConfirm:Function;
 }
 
+
+export interface DecryptionMaterial{
+    data:string|Uint8Array,
+    filename?:string,
+    isPrivateKey:boolean,
+    isUnlocked:boolean
+}
+
 export interface passphraseProps extends modalProps{
-    privateKeys:string[];
+    dataToUnlock:DecryptionMaterial[];
 }
 
 export interface themeTogglePropsInterface{
@@ -78,3 +86,4 @@ export interface PassphraseTextInputProps{
     value:string,
     setOnChange:React.Dispatch<React.SetStateAction<string>>;
 }
+

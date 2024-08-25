@@ -1,25 +1,29 @@
-import { alert, passphraseProps } from "@src/types";
-import { PrivateKey, decryptKey, readPrivateKey } from "openpgp";
+import { DecryptionMaterial, alert, passphraseProps } from "@src/types";
+import { DecryptMessageResult, Message, PrivateKey, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
 import PassphraseTextInput from "./PassphraseTextInput";
 
-export default function PassphraseModal({title,text, isVisible,privateKeys, setIsVisible ,onClose, onConfirm}:passphraseProps) {
+export default function PassphraseModal({title,text, isVisible, dataToUnlock, setIsVisible ,onClose, onConfirm}:passphraseProps) {
     const modalRef = useRef<HTMLDialogElement|null>(null);
     
-    const [privateKeyPassphrase,setPrivateKeyPassphrase] =  useState<string>("");
+    const [currentPassphrase,setCurrentPassphrase] =  useState<string>("");
     const [currentKeyInfo,setCurrentKeyInfo] =  useState<string>("");
     
-    const [currentKey, setCurrentKey] = useState<PrivateKey|null>();
-    const [privateKeysParsed, setPrivateKeysParsed] = useState<PrivateKey[]>([]);
+    const [currentKey, setCurrentKey] = useState<DecryptionMaterial|null>();
+    const [tempKeys, setTempKeys] = useState<DecryptionMaterial[]>([]);
     const [alerts,setAlerts] = useState<alert[]>([]);
 
 
     const setKeyInfo = async ()=>{
-      if(currentKey){
-        const userid = await currentKey.getPrimaryUser();
-        const fingerprint = currentKey.getFingerprint();
-        setCurrentKeyInfo(`${userid.user.userID?.userID}, Key Fingerprint: ${fingerprint}`)
+      if(currentKey?.isPrivateKey && typeof currentKey.data ==="string"){
+        const key = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
+        const userid = await key?.getPrimaryUser();
+        const fingerprint = key?.getFingerprint();
+        setCurrentKeyInfo(`${userid?.user.userID?.userID}, Key Fingerprint: ${fingerprint}`)
+      }
+      if(!currentKey?.isPrivateKey){
+        setCurrentKeyInfo(currentKey?.filename?`Encrypted file: ${currentKey?.filename}`:"Encrypted message.")
       }
       
     }
@@ -29,40 +33,31 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
     },[currentKey])
 
     useEffect(()=>{
-      if(privateKeys.length <= 0 || privateKeysParsed.length <= 0){
+      if(dataToUnlock.length <= 0 || tempKeys.length <= 0){
         return;
       }
-      const encryptedKeysLeft = privateKeysParsed.find(e=>!e.isDecrypted());
+      const encryptedKeysLeft = tempKeys.find(e=>!e.isUnlocked);
       if(encryptedKeysLeft){
         setCurrentKey(encryptedKeysLeft)
         setKeyInfo()
       }else{
         //triggers function (encryption or decryption) with all keys needed unlocked
-        onConfirm(privateKeysParsed);
+        onConfirm(tempKeys);
         setIsVisible(false);
       }
-    },[privateKeysParsed])
+    },[tempKeys])
 
     useEffect(() => {
       if(isVisible){
-        const parsedKeys:PrivateKey[] = [];
-        privateKeys.forEach(async e=>{
-          const key:PrivateKey|null = await readPrivateKey({armoredKey:e}).catch(e => { console.error(e); return null });
-          if(key){
-            parsedKeys.push(key);
-            setCurrentKey(key);
-          }else{
-            console.log("Failed to parse provided private key")
-          }
-        });
-        setPrivateKeysParsed(parsedKeys);
+        
+        setTempKeys(dataToUnlock);
 
       }else{
-        setPrivateKeysParsed([]);
+        setTempKeys([]);
       }
 
       // setIsPassphraseValid(true);
-      setPrivateKeyPassphrase("");
+      setCurrentPassphrase("");
       if (!modalRef.current) {
         return;
       }
@@ -80,38 +75,100 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
     }
 
     const handleConfirm = async () => {
-      if(!currentKey){
+    if(!currentKey){
+      return;
+    }
+
+    if(currentKey.isPrivateKey && typeof currentKey.data==="string"){ //current key is a locked private key
+      const parsedCurrentKey = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
+      if(!parsedCurrentKey){
         return;
       }
-    const decrytpedKey:PrivateKey|null = await decryptKey({
-      privateKey:currentKey,
-      passphrase:privateKeyPassphrase
-    }).catch(e=>{
-      console.error(e);
-      return null;
-    });
 
-    if(!decrytpedKey){
-      setAlerts([
-        ...alerts,
-        {
-          text:"Error! Failed to unlock the private key.",
-          style:"alert-error"
-        }
-      ])
-      // setIsPassphraseValid(false);
-      return;
-    }else{
-      const newArray = privateKeysParsed.map(e=>{
-        if(e.getFingerprint() === decrytpedKey.getFingerprint()){
-          return decrytpedKey;
+      const decrytpedKey:PrivateKey|null = await decryptKey({
+        privateKey:parsedCurrentKey,
+        passphrase:currentPassphrase
+      }).catch(e=>{
+        console.error(e);
+        return null;
+      });
+
+      if(!decrytpedKey){
+        setAlerts([
+          ...alerts,
+          {
+            text:"Error! Failed to unlock the private key.",
+            style:"alert-error"
+          }
+        ])
+        return;
+      }else{
+        const newArray = await Promise.all(tempKeys.map(async e=>{
+        if(e.isPrivateKey && typeof e.data==="string"){
+          const key = await readPrivateKey({armoredKey:e.data}).catch(e => { console.error(e); return null });
+          if(!key){
+            return e;
+          }
+          if(key.getFingerprint() === decrytpedKey.getFingerprint()){
+            return {data:decrytpedKey.armor(),isPrivateKey:true,isUnlocked:true};
+          }else{
+            return e;
+          }
         }else{
           return e;
         }
-      });
-      setPrivateKeysParsed(newArray);
-      setPrivateKeyPassphrase("");
+          
+        }))
+        setTempKeys(newArray);
+        setCurrentPassphrase("");
+      }
     }
+
+    if(!currentKey.isPrivateKey){ //message/file encrypted with password
+      let decryptedMessage:DecryptMessageResult|null
+      if(currentKey.data instanceof Uint8Array){
+        const encryptedMessage = await readMessage({binaryMessage:currentKey.data}).catch(e => { console.error(e); return null });
+        if(!encryptedMessage){
+          return
+        }
+         decryptedMessage = await decrypt({message:encryptedMessage,passwords:currentPassphrase,format:"binary"}).catch(e => { console.error(e); return null });
+      }else{
+        const encryptedMessage = await readMessage({armoredMessage:currentKey.data}).catch(e => { console.error(e); return null });
+        if(!encryptedMessage){
+          return
+        }
+         decryptedMessage = await decrypt({message:encryptedMessage,passwords:currentPassphrase}).catch(e => { console.error(e); return null });
+      }
+      if(!decryptedMessage){
+        setAlerts([
+          ...alerts,
+          {
+            text:`Error! Incorrect passphrase for `+(currentKey.filename?(`file:${currentKey.filename}`):"encrypted message"),
+            style:"alert-error"
+          }
+        ])
+        return;
+      }else{
+        const newArray = await Promise.all(tempKeys.map(async e=>{
+          if(!e.isPrivateKey){
+            if(e.data === currentKey.data){
+              return {data:currentPassphrase, isPrivateKey:false,isUnlocked:true};
+            }else{
+              return e;
+            }
+          }else{
+            return e;
+          }
+          }));
+          setTempKeys(newArray);
+          setCurrentPassphrase("");
+      }
+      
+    }
+
+    
+
+   
   }
 
   const handleESC = (event: React.SyntheticEvent<HTMLDialogElement, Event>) => {
@@ -126,9 +183,9 @@ export default function PassphraseModal({title,text, isVisible,privateKeys, setI
         <dialog ref={modalRef} id="my_modal_4" className="modal" onCancel={handleESC}>
             <div className="modal-box w-11/12 max-w-5xl">
                 <h3 className="font-bold text-lg">{title}</h3>
-                <p className="py-2">Enter passphrase for key: {currentKeyInfo}</p>
+                <p className="py-2">Enter passphrase for: {currentKeyInfo}</p>
                 <div className="w-full flex flex-col">
-                    <PassphraseTextInput value={privateKeyPassphrase} setOnChange={setPrivateKeyPassphrase}/>
+                    <PassphraseTextInput value={currentPassphrase} setOnChange={setCurrentPassphrase}/>
                     
                     <div className="flex gap-2 mx-0 mt-3">
                       <button className="btn btn-info" onClick={handleConfirm}>Unlock</button>
