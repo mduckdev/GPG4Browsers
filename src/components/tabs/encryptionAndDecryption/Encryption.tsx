@@ -35,11 +35,11 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
 
     const encryptData = async (privateKey?:PrivateKey[])=>{
-        if(selectedPubKey===""){
+        if(selectedPubKey==="" && password===""){
             return;
         }
         const pgpKey:Key|null = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
-        if(!pgpKey){
+        if(!pgpKey && password === ""){
             return;
         }
         let pgpSignKey:PrivateKey|null=null;
@@ -50,34 +50,46 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
             setIsModalVisible(true);
             return;
         }
-        encryptMessage([pgpKey],pgpSignKey?[pgpSignKey]:null);
-        encryptFiles([pgpKey],pgpSignKey?[pgpSignKey]:null);
+        encryptMessage(pgpKey?[pgpKey]:password,pgpSignKey?[pgpSignKey]:null);
+        encryptFiles(pgpKey?[pgpKey]:password,pgpSignKey?[pgpSignKey]:null);
 
     }
 
-    const encryptMessage = async(encryptionKeys:Key[],pgpSignKey?:PrivateKey[]|null)=>{
+    const encryptMessage = async(encryptionKeys:Key[]|string,pgpSignKey?:PrivateKey[]|null)=>{
         if(message !==""){
             const pgpMessage:Message<string>|null = await createMessage({ text: message }).catch(e => { console.error(e); return null });
             if(!pgpMessage){
                 console.log("Failed to create pgpMessage from literal message");
                 return;
             }
-            const response:string = await encrypt({
-                message: pgpMessage,
-                encryptionKeys: encryptionKeys,
-                signingKeys: (signMessage ? pgpSignKey : null) as MaybeArray<PrivateKey> | undefined
-            }).then((encrypted) => {
+            let params;
+            if(Array.isArray(encryptionKeys)){
+                params = {
+                    message: pgpMessage,
+                    encryptionKeys: encryptionKeys,
+                    signingKeys: (signMessage ? pgpSignKey : null) as MaybeArray<PrivateKey> | undefined
+                }
+            }else{
+                params = {
+                    message: pgpMessage,
+                    passwords: encryptionKeys,
+                    signingKeys: (signMessage ? pgpSignKey : null) as MaybeArray<PrivateKey> | undefined
+                }
+            }
+            const response:string = await encrypt(params).then((encrypted) => {
                 return encrypted;
             }).catch(e => {console.error(e); return ""});
             setMessage("");
+            setPassword("");
             setEncryptedMessage(response);
         }
     }
 
-    const encryptFiles = async(encryptionKeys:Key[],pgpSignKey?:PrivateKey[]|null)=>{
+    const encryptFiles = async(encryptionKeys:Key[]|string,pgpSignKey?:PrivateKey[]|null)=>{
         if(files.length===0){
             return;
         }
+        
         setEncryptionInProgress(true);
         const newEncryptedFiles:file[] = [];
         for await(const currentFile of files){
@@ -86,12 +98,17 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                 console.log("Failed to create pgpMessage from binary data");
                 return;
             }
-            const response:Uint8Array|null = await encrypt({
-                message: pgpMessage,
-                encryptionKeys: encryptionKeys,
-                format:"binary",
-                signingKeys: (signMessage ? pgpSignKey : null) as MaybeArray<PrivateKey> | undefined
-            }).then((encrypted) => {
+            let params;
+            if(Array.isArray(encryptionKeys)){
+                params = {
+                    encryptionKeys: encryptionKeys,
+                }
+            }else{
+                params = {
+                    passwords: encryptionKeys,
+                }
+            }
+            const response:Uint8Array|null = await encrypt({...params,...{message: pgpMessage, signingKeys: (signMessage ? pgpSignKey : null) as MaybeArray<PrivateKey> | undefined ,format:"binary"}}).then((encrypted) => {
                 return encrypted;
             }).catch(e => {console.error(e); return null});
             
