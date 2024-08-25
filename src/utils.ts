@@ -1,4 +1,4 @@
-import { PrivateKey, VerifyMessageResult, readPrivateKey } from "openpgp";
+import { DecryptMessageResult, PrivateKey, VerifyMessageResult, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
 import { CryptoKeys, file } from "./types";
 
@@ -124,4 +124,56 @@ export const updateIsKeyUnlocked = async(selectedPrivKey:string,setIsSelectedPri
   if(parsed){
       setIsSelectedPrivateKeyUnlocked(parsed.isDecrypted())
   }
+}
+
+export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)=>{
+  if(dataToUnlock.isPrivateKey && typeof dataToUnlock.data==="string"){ //current key is a locked private key
+    const parsedCurrentKey = await readPrivateKey({armoredKey:dataToUnlock.data}).catch(e => { console.error(e); return null });
+    if(!parsedCurrentKey){
+      return;
+    }
+
+    const decrytpedKey:PrivateKey|null = await decryptKey({
+      privateKey:parsedCurrentKey,
+      passphrase:passphrase
+    }).catch(e=>{
+      console.error(e);
+      return null;
+    });
+
+    if(!decrytpedKey){
+      return Promise.reject("Error! Failed to unlock the private key.");
+    }else{
+      return Promise.resolve(decrytpedKey)
+    }
+  }
+
+  if(!dataToUnlock.isPrivateKey){ //message/file encrypted with password
+    let decryptedMessage:DecryptMessageResult|null
+    if(dataToUnlock.data instanceof Uint8Array){
+      const encryptedMessage = await readMessage({binaryMessage:dataToUnlock.data}).catch(e => { console.error(e); return null });
+      if(!encryptedMessage){
+        return
+      }
+       decryptedMessage = await decrypt({message:encryptedMessage,passwords:passphrase,format:"binary"}).catch(e => { console.error(e); return null });
+    }else{
+      const encryptedMessage = await readMessage({armoredMessage:dataToUnlock.data}).catch(e => { console.error(e); return null });
+      if(!encryptedMessage){
+        return
+      }
+       decryptedMessage = await decrypt({message:encryptedMessage,passwords:passphrase}).catch(e => { console.error(e); return null });
+    }
+    if(!decryptedMessage){
+      return Promise.reject(`Error! Incorrect passphrase for `+(dataToUnlock.filename?(`file: ${dataToUnlock.filename}`):"encrypted message"));
+    }else{
+      return Promise.resolve(passphrase);
+    }
+    
+  }
+}
+
+
+
+export const attempToDecryptAll = async (dataToUnlock:CryptoKeys[],passphrase:string)=>{
+  
 }

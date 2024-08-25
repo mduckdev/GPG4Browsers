@@ -3,6 +3,7 @@ import { DecryptMessageResult, Message, PrivateKey, decrypt, decryptKey, readMes
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
 import PassphraseTextInput from "./PassphraseTextInput";
+import { attempToDecrypt } from "@src/utils";
 
 export default function PassphraseModal({title,text, isVisible, dataToUnlock, setIsVisible ,onClose, onConfirm}:passphraseProps) {
     const modalRef = useRef<HTMLDialogElement|null>(null);
@@ -15,7 +16,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     const [alerts,setAlerts] = useState<alert[]>([]);
 
 
-    const setKeyInfo = async ()=>{
+    const setKeyInfo = async (currentKey:CryptoKeys)=>{
       if(currentKey?.isPrivateKey && typeof currentKey.data ==="string"){
         const key = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
         const userid = await key?.getPrimaryUser();
@@ -29,7 +30,9 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     }
 
     useEffect(()=>{
-      setKeyInfo();
+      if(currentKey){
+        setKeyInfo(currentKey);
+      }
     },[currentKey])
 
     useEffect(()=>{
@@ -39,7 +42,6 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
       const encryptedKeysLeft = tempKeys.find(e=>!e.isUnlocked);
       if(encryptedKeysLeft){
         setCurrentKey(encryptedKeysLeft)
-        setKeyInfo()
       }else{
         //triggers function (encryption or decryption) with all keys needed unlocked
         onConfirm(tempKeys);
@@ -54,6 +56,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
 
       }else{
         setTempKeys([]);
+        setAlerts([])
       }
 
       // setIsPassphraseValid(true);
@@ -67,8 +70,8 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     const handleClose = () => {
       if (onClose) {
         onClose();
-        modalRef?.current?.close();
       }
+      modalRef?.current?.close();
       if(setIsVisible){
         setIsVisible(false);
       }
@@ -78,94 +81,53 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     if(!currentKey){
       return;
     }
-
-    if(currentKey.isPrivateKey && typeof currentKey.data==="string"){ //current key is a locked private key
-      const parsedCurrentKey = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
-      if(!parsedCurrentKey){
-        return;
-      }
-
-      const decrytpedKey:PrivateKey|null = await decryptKey({
-        privateKey:parsedCurrentKey,
-        passphrase:currentPassphrase
-      }).catch(e=>{
-        console.error(e);
-        return null;
-      });
-
-      if(!decrytpedKey){
-        setAlerts([
-          ...alerts,
-          {
-            text:"Error! Failed to unlock the private key.",
-            style:"alert-error"
-          }
-        ])
-        return;
-      }else{
-        const newArray = await Promise.all(tempKeys.map(async e=>{
+    
+    const response = await attempToDecrypt(currentKey,currentPassphrase).catch(e=>{
+      setAlerts([
+        ...alerts,
+        {
+          text:e,
+          style:"alert-error"
+        }
+      ]);
+      return undefined;
+    });
+    if(!response){
+      return;
+    }
+    let newArray:CryptoKeys[]=[];
+    if(response instanceof PrivateKey){
+      newArray = await Promise.all(tempKeys.map(async e=>{
         if(e.isPrivateKey && typeof e.data==="string"){
           const key = await readPrivateKey({armoredKey:e.data}).catch(e => { console.error(e); return null });
           if(!key){
             return e;
           }
-          if(key.getFingerprint() === decrytpedKey.getFingerprint()){
-            return {data:decrytpedKey.armor(),isPrivateKey:true,isUnlocked:true};
+          if(key.getFingerprint() === response.getFingerprint()){
+            return {data:response.armor(),isPrivateKey:true,isUnlocked:true};
           }else{
             return e;
           }
         }else{
           return e;
         }
-          
-        }))
-        setTempKeys(newArray);
-        setCurrentPassphrase("");
-      }
-    }
-
-    if(!currentKey.isPrivateKey){ //message/file encrypted with password
-      let decryptedMessage:DecryptMessageResult|null
-      if(currentKey.data instanceof Uint8Array){
-        const encryptedMessage = await readMessage({binaryMessage:currentKey.data}).catch(e => { console.error(e); return null });
-        if(!encryptedMessage){
-          return
-        }
-         decryptedMessage = await decrypt({message:encryptedMessage,passwords:currentPassphrase,format:"binary"}).catch(e => { console.error(e); return null });
-      }else{
-        const encryptedMessage = await readMessage({armoredMessage:currentKey.data}).catch(e => { console.error(e); return null });
-        if(!encryptedMessage){
-          return
-        }
-         decryptedMessage = await decrypt({message:encryptedMessage,passwords:currentPassphrase}).catch(e => { console.error(e); return null });
-      }
-      if(!decryptedMessage){
-        setAlerts([
-          ...alerts,
-          {
-            text:`Error! Incorrect passphrase for `+(currentKey.filename?(`file:${currentKey.filename}`):"encrypted message"),
-            style:"alert-error"
-          }
-        ])
-        return;
-      }else{
-        const newArray = await Promise.all(tempKeys.map(async e=>{
-          if(!e.isPrivateKey){
-            if(e.data === currentKey.data){
-              return {data:currentPassphrase, isPrivateKey:false,isUnlocked:true};
-            }else{
-              return e;
-            }
+        }));
+    }else{
+      newArray = await Promise.all(tempKeys.map(async e=>{
+        if(!e.isPrivateKey){
+          if(e.data === currentKey.data){
+            return {data:currentPassphrase, isPrivateKey:false,isUnlocked:true};
           }else{
             return e;
           }
-          }));
-          setTempKeys(newArray);
-          setCurrentPassphrase("");
-      }
-      
+        }else{
+          return e;
+        }
+        }));
     }
-
+      setTempKeys(newArray);
+      setCurrentPassphrase("");
+      
     
 
    
