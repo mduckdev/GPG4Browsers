@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
-import { DecryptionMaterial, MainProps, decryptedFile, file } from "@src/types";
+import { CryptoKeys, MainProps, decryptedFile, file } from "@src/types";
 import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
@@ -12,7 +12,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
 
-    const [decryptionKeys,setDecryptionKeys] = useState<DecryptionMaterial[]>([]);
+    const [decryptionKeys,setDecryptionKeys] = useState<CryptoKeys[]>([]);
     
     const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const [decryptedMessage,setDecryptedMessage] = useState<string>("");
@@ -51,8 +51,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     }
 
 
-    const decryptData = async (decryptionData?:DecryptionMaterial[])=>{
-        const decryptionKeysNeeded:DecryptionMaterial[] = [];
+    const decryptData = async (decryptionData?:CryptoKeys[])=>{
+        const decryptionKeysNeeded:CryptoKeys[] = [];
         let parsedFiles:Message<Uint8Array>[]=[];
         for await(const currentFile of encryptedFiles){
             const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:currentFile.data}).catch(e => { console.error(e); return null });
@@ -108,7 +108,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             return;
         };
 
-        let parsedDecryptionData:DecryptionMaterial[]=[];
+        let parsedDecryptionData:CryptoKeys[]=[];
         if(!decryptionData || decryptionData.length===0){
             const areAllPrivateKeysDecrypted = decryptionKeysNeeded.every((e) => e.isUnlocked);
             if(!areAllPrivateKeysDecrypted){
@@ -128,13 +128,18 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
     }
 
-    const decryptMessage = async (pgpMessage:Message<string>,decryptionMaterials:DecryptionMaterial[],publicKeys:Key[])=>{
+    const decryptMessage = async (pgpMessage:Message<string>,decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
         if(encryptedMessage===""){
             return;
         }
-        const {unlockedDecryptionKeysParsed,passwordsFiltered} = await getPrivateKeysAndPasswords(decryptionMaterials);
-        
-        const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:unlockedDecryptionKeysParsed,passwords:passwordsFiltered,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
+        const {privateKeys,passwords} = await getPrivateKeysAndPasswords(decryptionKeys);
+        let cfg;
+        if(passwords.length===0){
+            cfg={message:pgpMessage,decryptionKeys:privateKeys,verificationKeys:publicKeys} // if passwords are specified but encrypted message wasn't encrypted with password, decrypt() throws error
+        }else{
+            cfg={message:pgpMessage,decryptionKeys:privateKeys,passwords:passwords,verificationKeys:publicKeys};
+        }
+        const decryptedMessage:DecryptMessageResult|null = await decrypt(cfg).catch(e => { console.error(e); return null });
 
         if(!decryptedMessage){
             console.log("Failed to decrypt the message.");
@@ -156,7 +161,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         setSignatureMessages(info.join("\n"))
         setDecryptedMessage(decryptedMessage.data.toString());
     }
-    const decryptFiles = async (decryptionMaterials:DecryptionMaterial[],publicKeys:Key[])=>{
+    const decryptFiles = async (decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
         if(encryptedFiles.length===0 || !encryptedFiles[0]){
             return;
         }
@@ -167,9 +172,15 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             if(!pgpMessage ){
                 continue;
             }
-            const {unlockedDecryptionKeysParsed,passwordsFiltered} = await getPrivateKeysAndPasswords(decryptionMaterials);
+            const {privateKeys,passwords} = await getPrivateKeysAndPasswords(decryptionKeys);
 
-            const decryptedMessage:DecryptMessageResult|null = await decrypt({message:pgpMessage,decryptionKeys:unlockedDecryptionKeysParsed,passwords:passwordsFiltered,verificationKeys:publicKeys,format:"binary"}).catch(e => { console.error(e); return null });
+            let cfg;
+            if(passwords.length===0){
+                cfg={message:pgpMessage,decryptionKeys:privateKeys,verificationKeys:publicKeys} // if passwords are specified but encrypted message wasn't encrypted with password, decrypt() throws error
+            }else{
+                cfg={message:pgpMessage,decryptionKeys:privateKeys,passwords:passwords,verificationKeys:publicKeys};
+            }
+            const decryptedMessage:DecryptMessageResult|null = await decrypt({...cfg,...{format:"binary"}}).catch(e => { console.error(e); return null });
 
             if(!decryptedMessage){
                 console.log(`Failed to decrypt file ${currentFile.fileName}.`);

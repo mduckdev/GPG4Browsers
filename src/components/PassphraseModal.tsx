@@ -1,4 +1,4 @@
-import { DecryptionMaterial, alert, passphraseProps } from "@src/types";
+import { CryptoKeys, alert, passphraseProps } from "@src/types";
 import { DecryptMessageResult, Message, PrivateKey, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
@@ -10,8 +10,8 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     const [currentPassphrase,setCurrentPassphrase] =  useState<string>("");
     const [currentKeyInfo,setCurrentKeyInfo] =  useState<string>("");
     
-    const [currentKey, setCurrentKey] = useState<DecryptionMaterial|null>();
-    const [tempKeys, setTempKeys] = useState<DecryptionMaterial[]>([]);
+    const [currentKey, setCurrentKey] = useState<CryptoKeys|null>();
+    const [tempKeys, setTempKeys] = useState<CryptoKeys[]>([]);
     const [alerts,setAlerts] = useState<alert[]>([]);
 
 

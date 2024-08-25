@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
-import { MainProps, file } from "@src/types";
+import { CryptoKeys, MainProps, file } from "@src/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { convertUint8ToUrl, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import { convertUint8ToUrl, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -30,9 +30,12 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [usePassword,setUsePassword] = useState<boolean>(false);
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+    const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);
+
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
     
     useEffect(()=>{
+        setPassword("");
         if(usePassword){
             setSelectedPubKey("");
         }else{
@@ -40,8 +43,12 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
         }
     },[usePassword])
 
+    
+    useEffect(()=>{
+        updateIsKeyUnlocked(selectedPrivKey,setIsSelectedPrivateKeyUnlocked);
+    },[selectedPrivKey])
 
-    const encryptData = async (privateKey?:PrivateKey[])=>{
+    const encryptData = async (privateKey?:CryptoKeys[])=>{
         if(selectedPubKey==="" && password===""){
             return;
         }
@@ -50,8 +57,8 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
             return;
         }
         let pgpSignKey:PrivateKey|null=null;
-        if(privateKey && privateKey[0]){
-            pgpSignKey = privateKey[0]
+        if(privateKey && privateKey[0].isPrivateKey && typeof privateKey[0].data === "string"){
+            pgpSignKey = await readPrivateKey({armoredKey:privateKey[0].data}).catch(e=>{console.error(e);return null});
         }
         if(pgpSignKey && !pgpSignKey.isDecrypted() && signMessage){
             setIsModalVisible(true);
@@ -131,7 +138,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:false}]} onConfirm={encryptData} onClose={()=>{}} />
+            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={encryptData} onClose={()=>{}} />
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
                 <label htmlFor="message" className="block text-sm font-medium ">Message</label>
                 <textarea id="message"
@@ -182,8 +189,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                 </div>
                 <button id="encryptBtn"
                     className="btn btn-info mt-1" onClick={async ()=>{
-                        const key = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
-                        encryptData(key?[key]:[])
+                        encryptData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])
                     }}>Encrypt</button>
             </div>
 

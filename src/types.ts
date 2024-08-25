@@ -38,7 +38,7 @@ export interface modalProps{
 }
 
 
-export interface DecryptionMaterial{
+export interface CryptoKeys{
     data:string|Uint8Array,
     filename?:string,
     isPrivateKey:boolean,
@@ -46,7 +46,7 @@ export interface DecryptionMaterial{
 }
 
 export interface passphraseProps extends modalProps{
-    dataToUnlock:DecryptionMaterial[];
+    dataToUnlock:CryptoKeys[];
 }
 
 export interface themeTogglePropsInterface{

@@ -1,6 +1,6 @@
 import { PrivateKey, VerifyMessageResult, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
-import { DecryptionMaterial, file } from "./types";
+import { CryptoKeys, file } from "./types";
 
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
@@ -92,7 +92,7 @@ export const formatBytes = (size: number): string =>{
   return `${Math.floor(size)} ${units[index]}`;
 }
 
-export const getPrivateKeysAndPasswords=async(decryptionKeys:DecryptionMaterial[])=>{
+export const getPrivateKeysAndPasswords=async(decryptionKeys:CryptoKeys[])=>{
   const unlockedDecryptionKeys = decryptionKeys.map((e)=>{
     if(e.isPrivateKey && e.isUnlocked && typeof e.data === "string"){
         return e.data;
@@ -100,21 +100,28 @@ export const getPrivateKeysAndPasswords=async(decryptionKeys:DecryptionMaterial[
         return null;
     }
 });
-const unlockedDecryptionKeysFiltered:string[] = unlockedDecryptionKeys.filter((e):e is string=>{
-    return typeof e === "string";
-});
-const unlockedDecryptionKeysParsed:PrivateKey[] = await Promise.all(unlockedDecryptionKeysFiltered.map(async e=>await readPrivateKey({armoredKey:e})));
+  const unlockedDecryptionKeysFiltered:string[] = unlockedDecryptionKeys.filter((e):e is string=>{
+      return typeof e === "string";
+  });
+  const unlockedDecryptionKeysParsed:PrivateKey[] = await Promise.all(unlockedDecryptionKeysFiltered.map(async e=>await readPrivateKey({armoredKey:e})));
 
-const passwords = decryptionKeys.map((e)=>{
-    if(!e.isPrivateKey && e.isUnlocked && typeof e.data === "string"){
-        return e.data;
-    }else{
-        return null;
-    }
-});
-const passwordsFiltered:string[] = passwords.filter((e):e is string=>{
-    return typeof e === "string";
-});
+  const passwords = decryptionKeys.map((e)=>{
+      if(!e.isPrivateKey && e.isUnlocked && typeof e.data === "string"){
+          return e.data;
+      }else{
+          return null;
+      }
+  });
+  const passwordsFiltered:string[] = passwords.filter((e):e is string=>{
+      return typeof e === "string";
+  });
 
-  return {unlockedDecryptionKeysParsed,passwordsFiltered};
+  return {privateKeys:unlockedDecryptionKeysParsed,passwords:passwordsFiltered};
+}
+
+export const updateIsKeyUnlocked = async(selectedPrivKey:string,setIsSelectedPrivateKeyUnlocked:React.Dispatch<React.SetStateAction<boolean>>)=>{
+  const parsed = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
+  if(parsed){
+      setIsSelectedPrivateKeyUnlocked(parsed.isDecrypted())
+  }
 }
