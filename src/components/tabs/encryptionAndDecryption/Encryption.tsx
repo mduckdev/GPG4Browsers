@@ -1,6 +1,6 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import { Key, MaybeArray, Message, PrivateKey, createMessage, encrypt, readKey, readPrivateKey } from "openpgp";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
@@ -32,6 +32,13 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
     
+    useEffect(()=>{
+        if(usePassword){
+            setSelectedPubKey("");
+        }else{
+            setSelectedPubKey(privKeysList[0]?.keyValue || "");
+        }
+    },[usePassword])
 
 
     const encryptData = async (privateKey?:PrivateKey[])=>{
