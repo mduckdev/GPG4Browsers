@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import Signing from "../tabs/signatures/Signing";
 import ValidatingSignatures from "../tabs/signatures/ValidatingSignatures";
-import { sectionsWithPreviousInterface } from "@src/types";
-export default function Signatures({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
+import { MainProps, sectionsWithPreviousInterface } from "@src/types";
+export default function Signatures({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
      
     const [selectedTab,setSelectedTab]=useState("signing");
     const renderComponent = () => {
         switch (selectedTab) {
             case 'signing':
-                return <Signing activeSection="signatures" setActiveSection={setActiveSection}/>;
+                return <Signing isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection}/>;
             case 'validatingSignatures':
-                return <ValidatingSignatures activeSection="signatures" setActiveSection={setActiveSection} />
+                return <ValidatingSignatures isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />
             default:
-                return <Signing activeSection="signatures" setActiveSection={setActiveSection} />;
+                return <Signing isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
         }
       };
         return (

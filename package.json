@@ -1,5 +1,5 @@
 {
-  "name": "pgp4browsers",
+  "name": "gpg4browsers",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

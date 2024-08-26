@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "PGP4Browsers",
+    "name": "GPG4Browsers",
     "version": "0.0.1",
     "description": "Extension for encrypting data with OpenPGP",
     "permissions": [

@@ -5,10 +5,9 @@ import PassphraseModal from "@src/components/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
 import { CryptoKeys, MainProps, file } from "@src/types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { convertUint8ToUrl, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
+import {  handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
+import ShowGPGFiles from "@src/components/ShowGPGFiles";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -211,16 +210,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
             {
             (encryptedFiles.length !== 0 && !encryptionInProgress) ? (
-                <div className="flex gap-2 mt-2">
-                {encryptedFiles.map((e: file,index:number) => (
-                        <a href={convertUint8ToUrl(e.data) || ""} download={`${e.fileName}.gpg`} key={index}>
-                            <button className="btn btn-success">
-                            <FontAwesomeIcon icon={faDownload} />
-                            {`${e.fileName}.gpg`}
-                            </button>
-                        </a>
-                ))}
-                </div>
+                <ShowGPGFiles files={encryptedFiles}/>
             ) : (null)
             }
                

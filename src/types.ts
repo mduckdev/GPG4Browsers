@@ -87,3 +87,6 @@ export interface PassphraseTextInputProps{
     setOnChange:React.Dispatch<React.SetStateAction<string>>;
 }
 
+export interface ShowFilesProps{
+    files:file[]
+}
