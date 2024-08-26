@@ -5,9 +5,10 @@ import PassphraseModal from "@src/components/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
 import { CryptoKeys, MainProps, decryptedFile, file } from "@src/types";
-import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import ShowFilesInTable from "@src/components/ShowFilesInTable";
 export default function Decryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -146,19 +147,17 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             return;
         }
 
-        let verified = false;
-        setIsMessageVerified(false);
-        let info = [];
-        for (const signature of decryptedMessage.signatures){
-            let isVerified = await signature.verified.catch(e=>{return false});
-            if(isVerified){
-                info.push(`Valid message signature with keyID: ${signature.keyID.toHex()}`)
-                verified=true;
-                setIsMessageVerified(true)
-            }
+
+        const results = await getSignatureInfo(decryptedMessage.signatures).catch(e=>{console.error(e);return null});
+
+        if(!results){
+            setSignatureMessages("Message authenticity could not be verified.");
+            setIsMessageVerified(false);
+            return;
         }
-        info.push(verified?(""):("Message authenticity could not be verified."))
-        setSignatureMessages(info.join("\n"))
+
+        setIsMessageVerified(true)
+        setSignatureMessages(results.join("\n"))
         setDecryptedMessage(decryptedMessage.data.toString());
     }
     const decryptFiles = async (decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
@@ -186,22 +185,20 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 console.log(`Failed to decrypt file ${currentFile.fileName}.`);
                 continue;
             }
-            let verified = false;
-            let info = [];
-            for (const signature of decryptedMessage.signatures){
-                let isVerified = await signature.verified.catch(e=>{return false});
-                if(isVerified){
-                    info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
-                    verified=true;
-                }
-            }
-            if(!verified){
-                info=["Message authenticity could not be verified."]
+
+            let results = await getSignatureInfo(decryptedMessage.signatures).catch(e=>{console.error(e);return null});
+            let verified:boolean;
+            
+            if(!results){
+                results=["Message authenticity could not be verified."];
+                verified=false;
+            }else{
+                verified=true;
             }
             const newDecryptedFile:decryptedFile = {
                 data:decryptedMessage.data as Uint8Array,
                 fileName:currentFile.fileName,
-                signatureMessages:info,
+                signatureMessages:results,
                 signatureStatus:verified?"text-info":"text-error"
             } 
             newDecryptedFiles.push(newDecryptedFile);
@@ -260,41 +257,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
         {
             (decryptedFiles.length !== 0 && !decryptionInProgress) ? (
-                <div className="overflow-x-auto mb-3">
-                    <div className="divider">FILES</div>
-
-                    <table className="table">
-                        {/* head */}
-                        <thead>
-                            <tr>
-                                <th>Nr</th>
-                                <th>File</th>
-                                <th>Signature info</th>
-                                <th>Size</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {/* row 1 */}
-                        {decryptedFiles.map((e: decryptedFile,index:number) => (
-                            <tr key={index}>
-                                <th>{++index}</th>
-                                <td>
-                                    <a href={convertUint8ToUrl(e.data) || ""} download={e.fileName.replace(/\.(gpg|pgp|asc|sig)$/, '')} key={index}>
-                                        <button className="btn btn-success">
-                                        <FontAwesomeIcon icon={faDownload} />
-                                        {e.fileName.replace(/\.(gpg|pgp|asc|sig)$/, '')}
-                                        </button>
-                                    </a>
-                                </td>
-                                <td className={`${e.signatureStatus}`}>{e.signatureMessages}</td>
-                                <td>{formatBytes(e.data.length)}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                
+                <ShowFilesInTable files={decryptedFiles} removeExtensions={true}/>
             ) : (null)
             }
 

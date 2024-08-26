@@ -1,7 +1,7 @@
-import { DecryptMessageResult, PrivateKey, VerifyMessageResult, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
+import { DecryptMessageResult, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
 import { CryptoKeys, file } from "./types";
-
+const extensionsRegex:RegExp = /(\.gpg|\.pgp|\.asc|\.sig)$/i;
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
     useEffect(() => {
@@ -9,11 +9,16 @@ export const usePrevious = (value:string):string =>{
     });
     return ref.current || "encryption";
   }
-
-export const getSignatureInfo = async (signaturesObject:VerifyMessageResult<string>):Promise<string[]|false>=>{
+export const removeFileExtension = (input:string):string=>{
+  return input.replace(extensionsRegex, '')
+}
+export const testFileExtension = (input:string):boolean=>{
+  return extensionsRegex.test(input);
+}
+export const getSignatureInfo = async (signatures:VerificationResult[]):Promise<string[]>=>{
   let verified = false;
   let info = [];
-  for (const signature of signaturesObject.signatures){
+  for (const signature of signatures){
       let isVerified:boolean = await signature.verified.catch(e=>{return false});
       if(isVerified){
           info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
@@ -21,7 +26,7 @@ export const getSignatureInfo = async (signaturesObject:VerifyMessageResult<stri
       }
   }
   if(!verified){
-    return Promise.reject(false);
+    return Promise.reject(["Failed to verify message"]);
   }
 
   return Promise.resolve(info);

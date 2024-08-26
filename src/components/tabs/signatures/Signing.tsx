@@ -136,7 +136,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
 
     {
         (fileSignatures.length !== 0 && !signingInProgress) ? (
-            <ShowGPGFiles files={fileSignatures}/>
+            <ShowGPGFiles files={fileSignatures} extension=".sig"/>
         ) : (null)
     }
     </div>

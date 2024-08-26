@@ -1,7 +1,8 @@
+import ShowFilesInTable from "@src/components/ShowFilesInTable";
 import { RootState, useAppSelector } from "@src/redux/store";
-import { MainProps, file, sectionsPropsInterface } from "@src/types";
-import { getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
-import { CleartextMessage, Key, VerifyMessageResult, readCleartextMessage, readKey, verify } from "openpgp";
+import { MainProps, decryptedFile, file, sectionsPropsInterface } from "@src/types";
+import { getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop, removeFileExtension, testFileExtension } from "@src/utils";
+import { CleartextMessage, Key, Message, Signature, VerifyMessageResult, createMessage, readCleartextMessage, readKey, readSignature, verify } from "openpgp";
 import React, { useState } from "react";
 export default function ValidatingSignatures({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
@@ -11,36 +12,117 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     const [signatureMessages,setSignatureMessages] = useState<string>("");
 
     const [fileSignatures, setFileSignatures] = useState<file[]>([])
+    const [checkedFiles, setCheckedFiles] = useState<decryptedFile[]>([])
 
-    const verifySignature = async ()=>{
+    const [validatingInProgress,setValidatingInProgress] = useState<boolean>(false);
+
+
+    const verifyData = async ()=>{
+        const pubKeys:Key[] = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
+        if(pubKeys.length===0){
+            //show alert
+            return;
+        }
+        verifyMessage(pubKeys);
+        verifyFiles(pubKeys)
+    }
+    const verifyMessage = async (publicKeys:Key[])=>{
+        if(signedMessage===""){
+            return;
+        }
         const signatureParsed:CleartextMessage|null = await readCleartextMessage({cleartextMessage:signedMessage}).catch(e => { console.error(e); return null });
         if(!signatureParsed){
-            setSignatureMessages("Failed to parse the message.");
+            setSignatureMessages("Failed to parse the message");
             setIsMessageVerified(false);
             return;
         }
-        const pubKeys:Key[] = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
 
-        const signatureInfo:VerifyMessageResult<string> | null = await verify({message:signatureParsed,verificationKeys:pubKeys}).catch(e => { console.error(e); return null });
+        const signatureInfo:VerifyMessageResult<string> | null = await verify({message:signatureParsed,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
 
         if(!signatureInfo){
-            setSignatureMessages("Failed to check signatures.");
+            setSignatureMessages("Failed to check signatures");
             setIsMessageVerified(false);
             return;
         }
 
-        const results = await getSignatureInfo(signatureInfo);
+        const results = await getSignatureInfo(signatureInfo.signatures).catch(e=>{console.error(e);return null});
 
         if(!results){
-            setSignatureMessages("Message authenticity could not be verified.");
+            setSignatureMessages("Message authenticity could not be verified");
             setIsMessageVerified(false);
             return;
         }
         
 
         setIsMessageVerified(true)
-        setSignatureMessages(results.join("\n"))
+        setSignatureMessages(results.join("\n"));
+    }
+    const verifyFiles = async (publicKeys:Key[])=>{
+        if(fileSignatures.length===0){
+            return;
+        }
+        const newCheckedFiles:decryptedFile[] = [];
 
+        setValidatingInProgress(true)
+        for await(const currentFile of fileSignatures){
+
+            if(!testFileExtension(currentFile.fileName)){ //if the file is not a signature file continue
+                continue;
+            }
+            const signatureParsed:Signature|null = await readSignature({binarySignature:currentFile.data}).catch(e => { console.error(e); return null });
+            const correspondingFile:file|undefined = fileSignatures.find(e=>removeFileExtension(currentFile.fileName)===e.fileName);
+            let newCheckedFile:decryptedFile={
+                data:currentFile.data,
+                fileName:currentFile.fileName,
+                signatureMessages:[],
+                signatureStatus:"text-error"
+            } ;
+            
+            if(!signatureParsed){
+                newCheckedFile.signatureMessages.push("Failed to parse the file signature");
+                newCheckedFiles.push(newCheckedFile);
+                continue;
+            }
+            if(!correspondingFile){
+                newCheckedFile.signatureMessages.push("Failed to find corresponding file for this signature");
+                newCheckedFiles.push(newCheckedFile);
+                continue;
+            }
+            const correspondingFileParsed:Message<Uint8Array>|null = await createMessage({binary:correspondingFile.data,format:"binary"}).catch(e => { console.error(e); return null });
+            if(!correspondingFileParsed){
+                newCheckedFile.signatureMessages.push("Failed to parse corresponding file for this signature");
+                newCheckedFiles.push(newCheckedFile);
+                continue;
+            }
+
+            const signatureInfo:VerifyMessageResult<Uint8Array> | null = await verify({message:correspondingFileParsed,signature:signatureParsed,format:"binary",verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
+    
+            if(!signatureInfo){
+                newCheckedFile.signatureMessages.push("Failed to verify the file");
+                newCheckedFiles.push(newCheckedFile);
+                continue;
+            }
+            let results = await getSignatureInfo(signatureInfo.signatures).catch(e=>{console.error(e);return null});
+    
+            let verified:boolean;
+                
+            if(!results){
+                results=["Message authenticity could not be verified"];
+                verified=false;
+            }else{
+                verified=true;
+            }
+             newCheckedFile= {
+                data:correspondingFile.data,
+                fileName:correspondingFile.fileName,
+                signatureMessages:results,
+                signatureStatus:verified?"text-info":"text-error"
+            } 
+            newCheckedFiles.push(newCheckedFile);
+        }
+        setValidatingInProgress(false)
+        setCheckedFiles(newCheckedFiles);
+        
     }
 
     return (
@@ -70,9 +152,22 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
                     )
                 }
             <button 
-                className="mt-4 btn btn-info" onClick={verifySignature}>Verify</button>
+                className="mt-4 btn btn-info" onClick={verifyData}>Verify</button>
         </div>
         <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
+        {
+        validatingInProgress?(
+            <button className="btn btn-square">
+                <span className="loading loading-spinner"></span>
+            </button>
+        ):(null)
+    }
+
+    {
+        (checkedFiles.length !== 0 && !validatingInProgress) ? (
+            <ShowFilesInTable files={checkedFiles} removeExtensions={false}/>
+        ) : (null)
+    }
     </div>
     )
 }

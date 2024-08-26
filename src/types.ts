@@ -88,5 +88,10 @@ export interface PassphraseTextInputProps{
 }
 
 export interface ShowFilesProps{
-    files:file[]
+    files:file[],
+    extension:".gpg"|".asc"|".pgp"|".sig"
+}
+export interface ShowFilesInTableProps{
+    files:decryptedFile[],
+    removeExtensions:boolean
 }

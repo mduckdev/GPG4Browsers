@@ -210,7 +210,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
             {
             (encryptedFiles.length !== 0 && !encryptionInProgress) ? (
-                <ShowGPGFiles files={encryptedFiles}/>
+                <ShowGPGFiles files={encryptedFiles} extension=".gpg"/>
             ) : (null)
             }
                

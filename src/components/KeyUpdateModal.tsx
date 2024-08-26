@@ -50,14 +50,12 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
       return;
     }
     const unconfirmedKeysLeft = confirmedKeys.find(e=>!e.confirmed);
-    console.log(unconfirmedKeysLeft)
     if(unconfirmedKeysLeft){
       setCurrentKey(unconfirmedKeysLeft)
       setKeyInfo()
     }else{
       //triggers function saving to keyring with confirmed keys
       const PGPKeys:Key[] = confirmedKeys.map(e=>{return e.key})
-      console.log(PGPKeys)
       onConfirm(PGPKeys);
       setIsVisible(false);
     }
@@ -87,7 +85,6 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
       return e;
     })
     
-    console.log(temp)
     setConfirmedKeys(temp);
   }
   const handleESC = (event: React.SyntheticEvent<HTMLDialogElement, Event>) => {
