@@ -108,6 +108,8 @@ export interface keyInfo{
     allKeys:(Key|Subkey)[],
 
 }
-export interface KeyDetailsProps extends modalProps{
+
+export interface KeyDetailsTabProps{
     selectedKey:keyInfo
 }
+export interface KeyDetailsProps extends modalProps,KeyDetailsTabProps{}

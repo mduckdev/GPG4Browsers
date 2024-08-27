@@ -1,7 +1,8 @@
-import { KeyDetailsProps, keyUpdateModal, keyUpdates } from "@src/types";
-import { publicKeyEnumToReadable } from "@src/utils";
-import { Key } from "openpgp";
+import { KeyDetailsProps} from "@src/types";
+import { Key, Subkey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
+import BasicKeyInfo from "./tabs/KeyDetails/BasicKeyInfo";
+import AllKeys from "./tabs/KeyDetails/AllKeys";
 export default function KeyDetails({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const modalRef = useRef<HTMLDialogElement|null>(null);
   const handleConfirm = async () => {
@@ -32,15 +33,7 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
         <div role="tablist" className="tabs tabs-lifted">
         <input type="radio" defaultChecked  name="my_tabs_2" role="tab" className="tab" aria-label="Info" />
         <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-            <p>Name: <span className="font-bold">{selectedKey.primaryName}</span></p>
-            <p>Email: <span className="font-bold">{selectedKey.primaryEmail}</span></p>
-            <p>Is this a private key? {selectedKey.isPrivate?(<span className="font-bold">Yes</span>):(<span className="font-bold">No</span>)}</p>
-            <p>Creation date: <span className="font-bold"> {selectedKey.creationDate.toLocaleDateString()}</span></p>
-            <p>Expiration date: <span className={`font-bold ${(selectedKey.expirationDate==="Invalid/revoked key")?("text-error"):("text-success")}`}>{selectedKey.expirationDate}</span></p>
-            <p>Algorithm: <span className="font-bold">{`${publicKeyEnumToReadable(selectedKey.algorithm.algorithm)} ${selectedKey.algorithm.bits?(`(${selectedKey.algorithm.bits} bits)`):('')} ${selectedKey.algorithm.curve?(`(${selectedKey.algorithm.curve})`):('')}`}</span></p>
-            <p>Key fingerprint: <span className="font-bold">{selectedKey.fingerprint.toUpperCase()}</span></p>
-
-
+            <BasicKeyInfo selectedKey={selectedKey}/>
         </div>
 
         <input
@@ -56,7 +49,8 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
 
         <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Keys" />
         <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-            Keys
+            <AllKeys selectedKey={selectedKey} />
+            
         </div>
         </div>
           <div className="w-full flex flex-col mt-2">

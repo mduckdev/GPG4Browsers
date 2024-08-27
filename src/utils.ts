@@ -205,18 +205,34 @@ export const mergeKeysLists = async (publicKeys:IPublicKey[],privateKeys:IPrivat
   return result;
 }
 
+export const expirationDateToString = (expirationDate:Date|null|number)=>{
+  let expirationDateAsString;
+  if(expirationDate instanceof Date){
+    expirationDateAsString = expirationDate.toLocaleDateString();
+  }else if(typeof expirationDate === "number"){
+    expirationDateAsString = "∞";
+  }else{
+    expirationDateAsString = "Invalid/revoked key";
+  }
+  return expirationDateAsString;
+}
+export const expirationDateToStyle = (expirationDate:Date|null|number)=>{
+  let expirationDateAsString;
+  if(expirationDate instanceof Date){
+    expirationDateAsString = "text-success";
+  }else if(typeof expirationDate === "number"){
+    expirationDateAsString = "text-success";
+  }else{
+    expirationDateAsString = "text-error";
+  }
+  return expirationDateAsString;
+}
+
 export const parseToKeyinfoObject = async (keys:Key[])=>{
   return Promise.all(keys.map(async (e)=>{
     const userID:PrimaryUser = await e.getPrimaryUser();
     const expirationDate = await e.getExpirationTime()
-    let expirationDateAsString;
-    if(expirationDate instanceof Date){
-      expirationDateAsString = expirationDate.toLocaleDateString();
-    }else if(typeof expirationDate === "number"){
-      expirationDateAsString = "∞";
-    }else{
-      expirationDateAsString = "Invalid/revoked key";
-    }
+    let expirationDateAsString = expirationDateToString(expirationDate);
     const keyInfoObject:keyInfo = {
         isPrivate:e.isPrivate(),
         primaryName:userID.user.userID?.name || userID.user.userID?.userID || "",

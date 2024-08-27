@@ -53,7 +53,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
                     <td>{currentKey.fingerprint}</td>
                     <td>{currentKey.creationDate.toLocaleDateString()}</td>
                     <td className={(currentKey.expirationDate==="Invalid/revoked key")?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
-                    <td><button className="btn btn-info" onClick={()=>{setIsModalVisible(true);setSelectedKey(currentKey)}}>Details</button></td>
+                    <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>Details</button></td>
                 </tr>
             ))}
             </tbody>
