@@ -49,6 +49,7 @@ export interface passphraseProps extends modalProps{
     dataToUnlock:CryptoKeys[];
 }
 
+
 export interface themeTogglePropsInterface{
     className:string,
     currentTheme:string,
@@ -106,4 +107,7 @@ export interface keyInfo{
     algorithm:AlgorithmInfo,
     allKeys:(Key|Subkey)[],
 
+}
+export interface KeyDetailsProps extends modalProps{
+    selectedKey:keyInfo
 }

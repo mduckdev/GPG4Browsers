@@ -1,4 +1,4 @@
-import { DecryptMessageResult, Key, PrimaryUser, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
+import { AlgorithmInfo, DecryptMessageResult, Key, PrimaryUser, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
 import { CryptoKeys, file, keyInfo } from "./types";
 import { IPublicKey } from "./redux/publicKeySlice";
@@ -231,4 +231,44 @@ export const parseToKeyinfoObject = async (keys:Key[])=>{
     return keyInfoObject
   }))
   
+}
+type publicKeyNames = 'rsaEncryptSign' | 'rsaEncrypt' | 'rsaSign' | 'elgamal' | 'dsa' | 'ecdh' | 'ecdsa' | 'eddsa' | 'aedh' | 'aedsa';
+
+export const publicKeyEnumToReadable = (keyName:publicKeyNames)=>{
+  switch(keyName){
+    case 'rsaEncryptSign':{
+      return "RSA (encrypt and sign)"
+    }
+    case 'rsaEncrypt':{
+      return "RSA (encrypt only)"
+    }
+    case 'rsaSign':{
+      return "RSA (sign only)"
+    }
+    case 'elgamal':{
+      return "Elgamal"
+    }
+    case 'dsa':{
+      return "DSA"
+    }
+    case 'ecdh':{
+      return "ECDH"
+    }
+    case 'ecdsa':{
+      return "ECDSA"
+    }
+    case 'eddsa':{
+      return "EDDSA"
+    }
+    case 'aedh':{
+      return "AEDH"
+    }
+    case 'aedsa':{
+      return "AEDSA"
+    }
+    default:{
+      return keyName;
+    }
+
+  }
 }
