@@ -13,7 +13,7 @@ export default function Main({activeSection,isPopup,previousTab,setActiveSection
           case 'AddKey':
             return <AddKey activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'KeysManagment':
-            return <KeysManagment />;
+            return <KeysManagment isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'Signatures':
             return <Signatures  isPopup={isPopup} activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} />;
           case 'Options':

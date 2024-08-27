@@ -1,6 +1,8 @@
-import { DecryptMessageResult, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
+import { DecryptMessageResult, Key, PrimaryUser, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
-import { CryptoKeys, file } from "./types";
+import { CryptoKeys, file, keyInfo } from "./types";
+import { IPublicKey } from "./redux/publicKeySlice";
+import { IPrivateKey } from "./redux/privateKeySlice";
 const extensionsRegex:RegExp = /(\.gpg|\.pgp|\.asc|\.sig)$/i;
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
@@ -176,9 +178,57 @@ export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)
     
   }
 }
-
-
-
 export const attempToDecryptAll = async (dataToUnlock:CryptoKeys[],passphrase:string)=>{
+  
+}
+export const mergeKeysLists = async (publicKeys:IPublicKey[],privateKeys:IPrivateKey[]):Promise<Key[]>=>{
+  const result:Key[]=[];
+  for await(const publicKey of publicKeys){
+    const key:Key|null = await readKey({armoredKey:publicKey.keyValue}).catch(e => { console.error(e); return null });
+    if(!key){
+      continue;
+    }
+    result.push(key);
+  }
+  for await(const privateKey of privateKeys){
+    const key:Key|null = await readKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
+    if(!key){
+      continue;
+    }
+    let index:number = result.findIndex(e=>e.getFingerprint()===key.getFingerprint())
+    if(index === -1){
+      result.push(key);
+    }else{
+      result[index] === key;
+    }
+  }
+  return result;
+}
+
+export const parseToKeyinfoObject = async (keys:Key[])=>{
+  return Promise.all(keys.map(async (e)=>{
+    const userID:PrimaryUser = await e.getPrimaryUser();
+    const expirationDate = await e.getExpirationTime()
+    let expirationDateAsString;
+    if(expirationDate instanceof Date){
+      expirationDateAsString = expirationDate.toLocaleDateString();
+    }else if(typeof expirationDate === "number"){
+      expirationDateAsString = "∞";
+    }else{
+      expirationDateAsString = "Invalid/revoked key";
+    }
+    const keyInfoObject:keyInfo = {
+        isPrivate:e.isPrivate(),
+        primaryName:userID.user.userID?.name || userID.user.userID?.userID || "",
+        primaryEmail:userID.user.userID?.email || "",
+        fingerprint:e.getFingerprint().toUpperCase(),
+        armoredKey:e.armor(),
+        expirationDate:expirationDateAsString,
+        creationDate:e.getCreationTime(),
+        algorithm:e.getAlgorithmInfo(),
+        allKeys:e.getKeys()
+    }
+    return keyInfoObject
+  }))
   
 }

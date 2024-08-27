@@ -1,4 +1,4 @@
-import { Key, Message, PrivateKey } from "openpgp";
+import { AlgorithmInfo, Key, Message, PrivateKey, Subkey } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 
@@ -94,4 +94,16 @@ export interface ShowFilesProps{
 export interface ShowFilesInTableProps{
     files:decryptedFile[],
     removeExtensions:boolean
+}
+export interface keyInfo{
+    isPrivate:boolean,
+    primaryName:string,
+    primaryEmail:string,
+    fingerprint:string,
+    armoredKey:string,
+    expirationDate:string,
+    creationDate:Date,
+    algorithm:AlgorithmInfo,
+    allKeys:(Key|Subkey)[],
+
 }
