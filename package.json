@@ -8,11 +8,14 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@openpgp/web-stream-tools": "^0.0.11-patch-0",
     "@reduxjs/toolkit": "^2.2.6",
+    "i18next": "^23.14.0",
+    "i18next-browser-languagedetector": "^8.0.0",
     "next": "14.2.4",
     "openpgp": "^5.11.1",
     "path": "^0.12.7",
     "react": "^18",
     "react-dom": "^18",
+    "react-i18next": "^15.0.1",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
@@ -49,7 +52,7 @@
   },
   "browser": {
     "crypto": false
-},
+  },
   "scripts": {
     "ext": "npx web-ext run",
     "dev": "npx grunt ext-dev",

@@ -4,7 +4,10 @@ import { MainProps, decryptedFile, file, sectionsPropsInterface } from "@src/typ
 import { getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop, removeFileExtension, testFileExtension } from "@src/utils";
 import { CleartextMessage, Key, Message, Signature, VerifyMessageResult, createMessage, readCleartextMessage, readKey, readSignature, verify } from "openpgp";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 export default function ValidatingSignatures({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
+
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
 
     const [signedMessage,setSignedMessage] = useState<string>("");
@@ -32,7 +35,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         }
         const signatureParsed:CleartextMessage|null = await readCleartextMessage({cleartextMessage:signedMessage}).catch(e => { console.error(e); return null });
         if(!signatureParsed){
-            setSignatureMessages("Failed to parse the message");
+            setSignatureMessages(t("failedToParseTheMessage"));
             setIsMessageVerified(false);
             return;
         }
@@ -40,7 +43,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         const signatureInfo:VerifyMessageResult<string> | null = await verify({message:signatureParsed,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
 
         if(!signatureInfo){
-            setSignatureMessages("Failed to check signatures");
+            setSignatureMessages(t("failedToCheckSignatures"));
             setIsMessageVerified(false);
             return;
         }
@@ -48,7 +51,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         const results = await getSignatureInfo(signatureInfo.signatures).catch(e=>{console.error(e);return null});
 
         if(!results){
-            setSignatureMessages("Message authenticity could not be verified");
+            setSignatureMessages(t("messageUnathenticated"));
             setIsMessageVerified(false);
             return;
         }
@@ -79,18 +82,18 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             } ;
             
             if(!signatureParsed){
-                newCheckedFile.signatureMessages.push("Failed to parse the file signature");
+                newCheckedFile.signatureMessages.push(t("failedToParseTheFile"));
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }
             if(!correspondingFile){
-                newCheckedFile.signatureMessages.push("Failed to find corresponding file for this signature");
+                newCheckedFile.signatureMessages.push(t("failedToFindCorrespondingFile"));
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }
             const correspondingFileParsed:Message<Uint8Array>|null = await createMessage({binary:correspondingFile.data,format:"binary"}).catch(e => { console.error(e); return null });
             if(!correspondingFileParsed){
-                newCheckedFile.signatureMessages.push("Failed to parse corresponding file for this signature");
+                newCheckedFile.signatureMessages.push(t("failedToParseCorrespondingFile"));
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }
@@ -98,7 +101,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             const signatureInfo:VerifyMessageResult<Uint8Array> | null = await verify({message:correspondingFileParsed,signature:signatureParsed,format:"binary",verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
     
             if(!signatureInfo){
-                newCheckedFile.signatureMessages.push("Failed to verify the file");
+                newCheckedFile.signatureMessages.push(t("failedToVerifyFile"));
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }
@@ -107,7 +110,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             let verified:boolean;
                 
             if(!results){
-                results=["Message authenticity could not be verified"];
+                results=[t("messageUnathenticated")];
                 verified=false;
             }else{
                 verified=true;
@@ -128,13 +131,13 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     return (
     <div className="p-6">
         <div className="w-full flex flex-col">
-            <label htmlFor="message" className="block text-sm font-medium">Signed message</label>
+            <label htmlFor="message" className="block text-sm font-medium">{t("signedMessage")}</label>
             <textarea id="message"
                 className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={signedMessage} onChange={(e)=>{setSignedMessage(e.target.value)}}></textarea>
             {
                     isPopup?(null):(
                         <div className="flex w-full flex-col border-opacity-50">
-                            <div className="divider">OR</div>
+                            <div className="divider">{t("or")}</div>
                                 <input 
                                 className="file-input file-input-bordered w-full max-w-xs file-input-info"
                                 draggable={true} type="file" multiple={true}
@@ -152,7 +155,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
                     )
                 }
             <button 
-                className="mt-4 btn btn-info" onClick={verifyData}>Verify</button>
+                className="mt-4 btn btn-info" onClick={verifyData}>{t("verify")}</button>
         </div>
         <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
         {

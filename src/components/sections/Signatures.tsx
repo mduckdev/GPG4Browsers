@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import Signing from "../tabs/signatures/Signing";
 import ValidatingSignatures from "../tabs/signatures/ValidatingSignatures";
 import { MainProps, sectionsWithPreviousInterface } from "@src/types";
+import { useTranslation } from "react-i18next";
 export default function Signatures({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
      
     const [selectedTab,setSelectedTab]=useState("signing");
     const renderComponent = () => {
@@ -23,7 +25,7 @@ export default function Signatures({activeSection,isPopup,previousTab,setActiveS
                         className={`${selectedTab==="signing"?"tab tab-active text-primary":"tab"}`}
                         onClick={()=>setSelectedTab("signing")}
                     >
-                        Signing
+                        {t("signing")}
                     </a>
                     <a
                         role="tab"
@@ -31,7 +33,7 @@ export default function Signatures({activeSection,isPopup,previousTab,setActiveS
                         onClick={()=>setSelectedTab("validatingSignatures")}
                     
                     >
-                        Validating signatures
+                        {t("validatingSignatures")}
                     </a>
                 </div>
                 <div className="container mx-auto mb-5 pt-3">

@@ -2,7 +2,10 @@ import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faCog, faFileSignature, faKey } from '@fortawesome/free-solid-svg-icons';
 import { sectionsPropsInterface } from "@src/types";
+import { useTranslation } from "react-i18next";
 export default function Navbar({activeSection, setActiveSection}:sectionsPropsInterface) {
+  const { t } = useTranslation();
+
     return (
       <nav className="btm-nav">
         <button
@@ -10,14 +13,14 @@ export default function Navbar({activeSection, setActiveSection}:sectionsPropsIn
           onClick={() => setActiveSection('EncryptionAndDecryption')}
         >
           <FontAwesomeIcon icon={faLock}/>
-          <span className="btm-nav-label">Encryption</span>
+          <span className="btm-nav-label">{t("encryption")}</span>
         </button>
         <button
           className={`${activeSection === 'Signatures' ? 'active' : ''} hover:opacity-75`}
           onClick={() => setActiveSection('Signatures')}
         >
           <FontAwesomeIcon icon={faFileSignature} />
-          <span className="btm-nav-label">Signatures</span>
+          <span className="btm-nav-label">{t("signatures")}</span>
 
         </button>
         <button
@@ -26,7 +29,7 @@ export default function Navbar({activeSection, setActiveSection}:sectionsPropsIn
         >
           
           <FontAwesomeIcon icon={faKey} />
-          <span className="btm-nav-label">My keys </span>
+          <span className="btm-nav-label">{t("myKeys")}</span>
 
         </button>
         <button
@@ -34,7 +37,7 @@ export default function Navbar({activeSection, setActiveSection}:sectionsPropsIn
           onClick={() => setActiveSection('Options')}
         >
           <FontAwesomeIcon icon={faCog} />
-          <span className="btm-nav-label">Options</span>
+          <span className="btm-nav-label">{t("options")}</span>
 
         </button>
       </nav>

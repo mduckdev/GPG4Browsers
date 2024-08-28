@@ -8,10 +8,11 @@ import { IPublicKey, addPublicKey } from "@src/redux/publicKeySlice";
 import { alert, keyUpdates, sectionsWithPreviousInterface } from "@src/types";
 import Alert from "../Alert";
 import KeyUpdateModal from "../KeyUpdateModal";
+import { useTranslation } from "react-i18next";
 
 
 export default function AddKey({activeSection,previousTab,setActiveSection}:sectionsWithPreviousInterface) {
-
+    const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const privateKeysList:IPrivateKey[] = useAppSelector((state:RootState)=>state.privateKeys);
     const publicKeysList:IPublicKey[] = useAppSelector((state:RootState)=>state.publicKeys);
@@ -64,7 +65,7 @@ export default function AddKey({activeSection,previousTab,setActiveSection}:sect
             setAlerts([
                 ...alerts,
                 {
-                    text:"Error! Failed to read the keys.",
+                    text:t("errorFailedToReadKeys"),
                     style:"alert-error"
                 }
             ])
@@ -103,13 +104,13 @@ export default function AddKey({activeSection,previousTab,setActiveSection}:sect
 
     return (
     <div className="p-4 flex flex-col items-center">
-    <KeyUpdateModal title="Confirm updating the key" text="" isVisible={isModalVisible} setIsVisible={setIsModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
+    <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isModalVisible} setIsVisible={setIsModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Add to keyring</h2>
-        <label htmlFor="keyValue" className="text-lg mb-2">Paste your armored key:</label>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("addToKeyring")}</h2>
+        <label htmlFor="keyValue" className="text-lg mb-2">{t("pasteArmoredKey")}:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
-        <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>Save</button>
-        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+        <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
+        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
                 <Alert alerts={alerts} setAlerts={setAlerts}/>
     </div>
     )

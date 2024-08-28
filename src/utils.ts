@@ -178,7 +178,7 @@ export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)
     
   }
 }
-export const attempToDecryptAll = async (dataToUnlock:CryptoKeys[],passphrase:string)=>{
+export const attempToDecryptAll = async (dataToUnlock:CryptoKeys[],passphrase:string)=>{ // so that same passwords doesn't need to be entered multiple times
   
 }
 export const mergeKeysLists = async (publicKeys:IPublicKey[],privateKeys:IPrivateKey[]):Promise<Key[]>=>{
@@ -212,7 +212,7 @@ export const expirationDateToString = (expirationDate:Date|null|number)=>{
   }else if(typeof expirationDate === "number"){
     expirationDateAsString = "∞";
   }else{
-    expirationDateAsString = "Invalid/revoked key";
+    expirationDateAsString = "❌";
   }
   return expirationDateAsString;
 }

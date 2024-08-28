@@ -3,7 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ShowFilesInTableProps, ShowFilesProps, decryptedFile, file } from "@src/types";
 import { convertUint8ToUrl, formatBytes, removeFileExtension } from "@src/utils";
 import React from "react";
+import { useTranslation } from "react-i18next";
 export default function ShowFilesInTable({files,removeExtensions}:ShowFilesInTableProps) {
+  const { t } = useTranslation();
+
     return (
         <div className="overflow-x-auto mb-3">
             <div className="divider">FILES</div>
@@ -13,9 +16,9 @@ export default function ShowFilesInTable({files,removeExtensions}:ShowFilesInTab
                 <thead>
                     <tr>
                         <th>Nr</th>
-                        <th>File</th>
-                        <th>Signature info</th>
-                        <th>Size</th>
+                        <th>{t("file")}</th>
+                        <th>{t("signatureInfo")}</th>
+                        <th>{t("size")}</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -4,8 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Alert from "./Alert";
 import PassphraseTextInput from "./PassphraseTextInput";
 import { attempToDecrypt } from "@src/utils";
+import { useTranslation } from "react-i18next";
 
 export default function PassphraseModal({title,text, isVisible, dataToUnlock, setIsVisible ,onClose, onConfirm}:passphraseProps) {
+  const { t } = useTranslation();
     const modalRef = useRef<HTMLDialogElement|null>(null);
     
     const [currentPassphrase,setCurrentPassphrase] =  useState<string>("");
@@ -21,10 +23,10 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         const key = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
         const userid = await key?.getPrimaryUser();
         const fingerprint = key?.getFingerprint();
-        setCurrentKeyInfo(`${userid?.user.userID?.userID}, Key Fingerprint: ${fingerprint}`)
+        setCurrentKeyInfo(`${userid?.user.userID?.userID}, ${t("keyFingerprint")}: ${fingerprint}`)
       }
       if(!currentKey?.isPrivateKey){
-        setCurrentKeyInfo(currentKey?.filename?`Encrypted file: ${currentKey?.filename}`:"Encrypted message.")
+        setCurrentKeyInfo(currentKey?.filename?`${t("encryptedFile")}: ${currentKey?.filename}`:`${t("encryptedMessage")}.`)
       }
       
     }
@@ -145,13 +147,13 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         <dialog ref={modalRef} id="my_modal_4" className="modal" onCancel={handleESC}>
             <div className="modal-box w-11/12 max-w-5xl">
                 <h3 className="font-bold text-lg">{title}</h3>
-                <p className="py-2">Enter passphrase for: {currentKeyInfo}</p>
+                <p className="py-2">{t("enterPassphrase")}: {currentKeyInfo}</p>
                 <div className="w-full flex flex-col">
                     <PassphraseTextInput value={currentPassphrase} setOnChange={setCurrentPassphrase}/>
                     
                     <div className="flex gap-2 mx-0 mt-3">
-                      <button className="btn btn-info" onClick={handleConfirm}>Unlock</button>
-                      <button className="btn" onClick={handleClose}>Cancel</button>
+                      <button className="btn btn-info" onClick={handleConfirm}>{t("unlock")}</button>
+                      <button className="btn" onClick={handleClose}>{t("cancel")}</button>
                     </div>
                 </div>
             </div>

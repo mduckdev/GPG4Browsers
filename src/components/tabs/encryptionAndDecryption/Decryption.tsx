@@ -9,7 +9,9 @@ import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, getSignatur
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import ShowFilesInTable from "@src/components/ShowFilesInTable";
+import { useTranslation } from "react-i18next";
 export default function Decryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
 
@@ -190,7 +192,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             let verified:boolean;
             
             if(!results){
-                results=["Message authenticity could not be verified."];
+                results=[t("messageUnathenticated")];
                 verified=false;
             }else{
                 verified=true;
@@ -210,16 +212,16 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Passphrase" text="Enter your passphrase to unlock:" isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
+            <PassphraseModal title={t("passphrase")}text={t("enterPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
 
             <div className="w-full flex flex-col">
-                <label htmlFor="message" className="block text-sm font-medium">Encrypted message:</label>
+                <label htmlFor="message" className="block text-sm font-medium">{t("encryptedMessage")}:</label>
                 <textarea id="message"
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={encryptedMessage} onChange={(e)=>{setEncryptedMessage(e.target.value)}}></textarea>
  {
                     isPopup?(null):(
                         <div className="flex w-full flex-col border-opacity-50">
-                            <div className="divider">OR</div>
+                            <div className="divider">{t("or")}</div>
                                 <input 
                                 className="file-input file-input-bordered w-full max-w-xs file-input-info"
                                 draggable={true} type="file" multiple={true}
@@ -237,7 +239,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                     )
                 }
                 <button 
-                    className="mt-4 btn btn-info" onClick={()=>{decryptData()}}>Decrypt</button>
+                    className="mt-4 btn btn-info" onClick={()=>{decryptData()}}>{t("decrypt")}</button>
             </div>
         <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
         {

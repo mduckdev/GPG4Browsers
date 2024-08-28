@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import Decryption from "@src/components/tabs/encryptionAndDecryption/Decryption";
 import { MainProps } from "@src/types";
 import Encryption from "@src/components/tabs/encryptionAndDecryption/Encryption";
+import { useTranslation } from "react-i18next";
 export default function EncryptionAndDecryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
      
     const [selectedTab,setSelectedTab]=useState("encryption");
     const renderComponent = () => {
@@ -23,7 +25,7 @@ export default function EncryptionAndDecryption({activeSection,isPopup,previousT
                         className={`${selectedTab==="encryption"?"tab tab-active text-primary":"tab"}`}
                         onClick={()=>setSelectedTab("encryption")}
                     >
-                        Encryption
+                        {t("encryption")}
                     </a>
                     <a
                         role="tab"
@@ -31,7 +33,8 @@ export default function EncryptionAndDecryption({activeSection,isPopup,previousT
                         onClick={()=>setSelectedTab("Decryption")}
                     
                     >
-                        Decryption
+                        {t("decryption")}
+
                     </a>
                 </div>
                 <div className="container mx-auto mb-5 pt-3">

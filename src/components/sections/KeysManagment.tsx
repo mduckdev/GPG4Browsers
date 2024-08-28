@@ -4,7 +4,10 @@ import {  mergeKeysLists, parseToKeyinfoObject } from "@src/utils";
 import { Key, PrimaryUser } from "openpgp";
 import React, { useEffect, useState } from "react";
 import KeyDetails from "../KeyDetails";
+import { useTranslation } from "react-i18next";
 export default function KeysManagment({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
+
     const privateKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const publicKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const [mergedKeysList,setMergedKeysList] = useState<keyInfo[]>([]);
@@ -36,12 +39,12 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
             {/* head */}
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Fingerprint</th>
-                    <th>Creation date</th>
-                    <th>Expiration date</th>
-                    <th>Manage</th>
+                    <th>{t("name")}</th>
+                    <th>{t("email")}</th>
+                    <th>{t("keyFingerprint")}</th>
+                    <th>{t("creationDate")}</th>
+                    <th>{t("expirationDate")}</th>
+                    <th>{t("manage")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,12 +55,15 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
                     <td>{currentKey.primaryEmail}</td>
                     <td>{currentKey.fingerprint}</td>
                     <td>{currentKey.creationDate.toLocaleDateString()}</td>
-                    <td className={(currentKey.expirationDate==="Invalid/revoked key")?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
-                    <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>Details</button></td>
+                    <td className={(currentKey.expirationDate==="❌")?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
+                    <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>{t("details")}</button></td>
                 </tr>
             ))}
             </tbody>
         </table>
+        <div className="flex justify-end m-5">
+            <button className="btn btn-success" onClick={()=>{setActiveSection("AddKey")}}>{t("addNewKey")}</button>
+        </div>
     </div>
     )
 }

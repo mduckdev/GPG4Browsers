@@ -2,12 +2,15 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PassphraseTextInputProps } from "@src/types";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 export default function PassphraseTextInput({value,setOnChange}:PassphraseTextInputProps) {
+  const { t } = useTranslation();
+
     const [showPassword,setShowPassword] = useState<boolean>(false);
 
     return (
         <div className="max-w-sm">
-        <label  className="block text-sm font-medium mt-3" >Password</label>
+        <label  className="block text-sm font-medium mt-3" >{t("password")}</label>
 
         <div className="relative">
           <input id="hs-toggle-password" type={showPassword?"text":"password"} value={value} onChange={(e)=>setOnChange(e.target.value)} className="w-full border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4" placeholder="Enter password" />

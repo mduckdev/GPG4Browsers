@@ -1,7 +1,10 @@
 import { keyUpdateModal, keyUpdates } from "@src/types";
 import { Key } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisible, onClose, onConfirm}:keyUpdateModal) {
+  const { t } = useTranslation();
+
   const modalRef = useRef<HTMLDialogElement|null>(null);
   const [currentKeyInfo,setCurrentKeyInfo] =  useState<string>("");
   const [confirmationText,setConfirmationText] =  useState<string>("");
@@ -15,16 +18,16 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
     if(currentKey){
       let text = "";
       if(!currentKey.isUniquePublic && !currentKey.isUniquePrivate){
-        text="This certificate's public and private key is already stored in your keyring, should the keys be updated?"
+        text=t("publicAndPrivateUpdateConfirmation"+"?")
       }else if(!currentKey.isUniquePrivate){
-        text="This certificate's private key is already stored in your keyring, should the key be updated?"
+        text=t("privateUpdateConfirmation"+"?")
       }else if(!currentKey.isUniquePublic){
-        text="This certificate's public key is already stored in your keyring, should the key be updated?"
+        text=t("publicUpdateConfirmation"+"?")
       }
       setConfirmationText(text);
       const userid = await currentKey.key.getPrimaryUser();
       const fingerprint = currentKey.key.getFingerprint();
-      setCurrentKeyInfo(`${userid.user.userID?.userID}, Key Fingerprint: ${fingerprint}`)
+      setCurrentKeyInfo(`${userid.user.userID?.userID}, ${t("keyFingerprint")}: ${fingerprint}`)
     }
     
   }
@@ -103,8 +106,8 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
             </div>
           <div className="w-full flex flex-col">
               <div className="flex gap-2 mx-0">
-                <button className="btn btn-info" onClick={handleConfirm}>Confirm</button>
-                <button className="btn" onClick={handleClose}>Cancel</button>
+                <button className="btn btn-info" onClick={handleConfirm}>{t("confirm")}</button>
+                <button className="btn" onClick={handleClose}>{t("cancel")}</button>
               </div>
           </div>
       </div>

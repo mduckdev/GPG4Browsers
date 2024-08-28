@@ -2,12 +2,15 @@ import { KeyDetailsTabProps } from "@src/types";
 import { expirationDateToString, expirationDateToStyle, publicKeyEnumToReadable } from "@src/utils";
 import { AllowedKeyPackets, AnyKeyPacket, BasePublicKeyPacket, Key, KeyID, PacketList, PublicKeyPacket, PublicSubkeyPacket, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, Subkey,enums, readKey, readKeys } from "openpgp";
 import React, {  ReactNode, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
+    const { t } = useTranslation();
+
     const [rows,setRows] = useState<ReactNode>()
 
     const uint8ToFlagStrings = (flag:Uint8Array):string[]=>{
         const results:string[]=[]
-        const descriptions = ["Certify","Sign","Encrypt","Encrypt","Private key is split", "Authenticate", "Private component of this key is in possesion of more than one person"] //https://www.rfc-editor.org/rfc/rfc9580.html#name-key-flags
+        const descriptions = [t("certifyFlag"),t("signFlag"),t("encryptFlag"),t("encryptFlag"),t("privKeySplitFlag"), t("authenticateFlag"), t("privKeyMoreThanOnePersonFlag")] //https://www.rfc-editor.org/rfc/rfc9580.html#name-key-flags
         for (let i = 0; i < flag.length; i++) {
             if(i==1){
                 switch(flag[i]){
@@ -39,11 +42,13 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
     const getKeyFlags =  (key:Key|Subkey)=>{
         const results:string[]=[]
         if(!("getPrimaryUser" in key)){
+            results.push(t("subkeyFlag")+", ")
             key.bindingSignatures.forEach((e)=>{
                 results.push(uint8ToFlagStrings(e.keyFlags || new Uint8Array()).join(" "))
             })
         }else{
-            results.push("Certify")
+            results.push(t("primaryKeyFlag")+", ")
+            results.push(t("certifyFlag"))
         }
         return results
         
@@ -60,9 +65,9 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
             <tr key={index}>
                 {
                     ("getPrimaryUser" in key)?(
-                        <td>Yes</td>
+                        <td>{t("yes")}</td>
                     ):(
-                        <td>No</td>
+                        <td>{t("no")}</td>
                     )
                 }
                 <td>{key.getKeyID().toHex().toUpperCase()}</td>
@@ -83,11 +88,11 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
     <table className="table table-zebra">
         <thead>
             <tr>
-                <th>Primary key</th>
-                <th>Key ID</th>
-                <th>Creation date</th>
-                <th>Expiration date</th>
-                <th>Usage</th>
+                <th>{t("primaryKeyFlag")}</th>
+                <th>{t("keyID")}</th>
+                <th>{t("creationDate")}</th>
+                <th>{t("expirationDate")}</th>
+                <th>{t("type")}</th>
             </tr>
         </thead>
         <tbody>

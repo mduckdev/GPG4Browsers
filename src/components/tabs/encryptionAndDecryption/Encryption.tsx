@@ -8,8 +8,11 @@ import { CryptoKeys, MainProps, file } from "@src/types";
 import {  handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
+import { useTranslation } from "react-i18next";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
+
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
@@ -137,15 +140,15 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     return (
         <div className="p-6">
-            <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key" isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={encryptData} onClose={()=>{}} />
+            <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={encryptData} onClose={()=>{}} />
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
-                <label htmlFor="message" className="block text-sm font-medium ">Message</label>
+                <label htmlFor="message" className="block text-sm font-medium ">{t("message")}</label>
                 <textarea id="message"
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
                 {
                     isPopup?(null):(
                         <div className="flex w-full flex-col border-opacity-50">
-                            <div className="divider">OR</div>
+                            <div className="divider">{t("or")}</div>
                                 <input 
                                 className="file-input file-input-bordered w-full max-w-xs file-input-info"
                                 draggable={true} type="file" multiple={true}
@@ -167,21 +170,21 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                         usePassword?(
                             <PassphraseTextInput value={password} setOnChange={setPassword} />
                         ):(
-                            <KeyDropdown isActive={true} label="Recipient's public key:" keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
+                            <KeyDropdown isActive={true} label={t("recipientPubKey")} keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
                         )
                     }
                     
-                    <KeyDropdown isActive={signMessage} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown isActive={signMessage} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
                     
                     <div className="form-control">
                         <label className="label cursor-pointer">
-                            <span className="label-text">Sign the message</span>
+                            <span className="label-text">{t("signTheMessage")}</span>
                             <input type="checkbox" checked={signMessage} className="checkbox" onChange={(e)=>{setSignMessage(e.target.checked);}}/>
                         </label>
                     </div>
                     <div className="form-control">
                         <label className="label cursor-pointer">
-                            <span className="label-text">Encrypt with password</span>
+                            <span className="label-text">{t("encryptWithPassword")}</span>
                             <input type="checkbox" className="checkbox" checked={usePassword} onChange={(e)=>{setUsePassword(e.target.checked);}}/>
                         </label>
                     </div>
@@ -189,7 +192,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                 <button id="encryptBtn"
                     className="btn btn-info mt-1" onClick={async ()=>{
                         encryptData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])
-                    }}>Encrypt</button>
+                    }}>{t("encrypt")}</button>
             </div>
 
             {

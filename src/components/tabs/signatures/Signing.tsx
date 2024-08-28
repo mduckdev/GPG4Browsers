@@ -7,8 +7,11 @@ import KeyDropdown from "../../keyDropdown";
 import { CryptoKeys, MainProps, file, sectionsPropsInterface } from "@src/types";
 import { getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
+import { useTranslation } from "react-i18next";
 
 export default function Signing({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
+    const { t } = useTranslation();
+
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
     const [message,setMessage] = useState<string>("");
@@ -89,15 +92,15 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     }
     return (
     <div className="p-6">
-        <PassphraseModal title="Unlock private key" text="Enter your passphrase to unlock your private key:" isVisible={isModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} setIsVisible={setIsModalVisible} onConfirm={signData} onClose={()=>{}} />
+        <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} setIsVisible={setIsModalVisible} onConfirm={signData} onClose={()=>{}} />
         <div className="w-full flex flex-col">
-            <label htmlFor="message" className="block text-sm font-medium">Message</label>
+            <label htmlFor="message" className="block text-sm font-medium">{t("message")}</label>
             <textarea id="message"
                 className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={message} onChange={(e)=>{setMessage(e.target.value)}}></textarea>
                 {
                     isPopup?(null):(
                         <div className="flex w-full flex-col border-opacity-50">
-                            <div className="divider">OR</div>
+                            <div className="divider">{t("or")}</div>
                                 <input 
                                 className="file-input file-input-bordered w-full max-w-xs file-input-info"
                                 draggable={true} type="file" multiple={true}
@@ -114,9 +117,9 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
                         </div>
                     )
                 }
-                <KeyDropdown isActive={true} label="Sign with private key:" keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                <KeyDropdown isActive={true} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
             <button 
-                className="mt-4 btn btn-info" onClick={()=>signData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])}>Sign message</button>
+                className="mt-4 btn btn-info" onClick={()=>signData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])}>{t("signMessage")}</button>
         </div>
     {       
         (signedMessage === "") ? (
