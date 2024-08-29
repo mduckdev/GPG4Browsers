@@ -97,6 +97,9 @@
         "3years":"3 Years",
         "5years":"5 Years",
         "never":"Never",
-        "enterEmail":"Enter your email"
+        "enterEmail":"Enter your email",
+        "users":"Users",
+        "isKeyValid":"Is key valid",
+        "isUserValid":"Is user valid"
     }
 }

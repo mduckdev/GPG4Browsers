@@ -97,6 +97,9 @@
       "3years":"3 lata",
       "5years":"5 lat",
       "never":"Nigdy",
-      "enterEmail":"Wprowadź swój email"
+      "enterEmail":"Wprowadź swój email",
+      "users":"Użytkownicy",
+      "isKeyValid":"Czy klucz jest prawidłowy",
+      "isUserValid":"Czy użytkownik jest prawidłowy"
     }
   }

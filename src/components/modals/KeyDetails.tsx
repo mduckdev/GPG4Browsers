@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import BasicKeyInfo from "../tabs/KeyDetails/BasicKeyInfo";
 import AllKeys from "../tabs/KeyDetails/AllKeys";
 import { useTranslation } from "react-i18next";
+import AllUsers from "../tabs/KeyDetails/AllUsers";
 export default function KeyDetails({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();
 
@@ -44,10 +45,11 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
             name="my_tabs_2"
             role="tab"
             className="tab"
-            aria-label={t("certifications")}
+            aria-label={t("users")}
             />
         <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-            Certifications
+        {t("users")}
+        <AllUsers selectedKey={selectedKey}/>
         </div>
 
         <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label={t("keys")} />

@@ -242,7 +242,8 @@ export const parseToKeyinfoObject = async (keys:Key[])=>{
         expirationDate:expirationDateAsString,
         creationDate:e.getCreationTime(),
         algorithm:e.getAlgorithmInfo(),
-        allKeys:e.getKeys()
+        allKeys:e.getKeys(),
+        users:e.users,
     }
     return keyInfoObject
   }))

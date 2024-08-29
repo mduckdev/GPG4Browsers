@@ -1,4 +1,4 @@
-import { KeyDetailsTabProps } from "@src/types";
+import { KeyDetailsTabProps, keyRowInfo } from "@src/types";
 import { expirationDateToString, expirationDateToStyle, publicKeyEnumToReadable } from "@src/utils";
 import { AllowedKeyPackets, AnyKeyPacket, BasePublicKeyPacket, Key, KeyID, PacketList, PublicKeyPacket, PublicSubkeyPacket, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, Subkey,enums, readKey, readKeys } from "openpgp";
 import React, {  ReactNode, useEffect, useState } from "react";
@@ -40,40 +40,61 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
     }
 
     const getKeyFlags =  (key:Key|Subkey)=>{
-        const results:string[]=[]
+        let results:string[]=[]
         if(!("getPrimaryUser" in key)){
-            results.push(t("subkeyFlag")+", ")
+            results.push(t("subkeyFlag"))
             key.bindingSignatures.forEach((e)=>{
-                results.push(uint8ToFlagStrings(e.keyFlags || new Uint8Array()).join(" "))
+                results = results.concat(uint8ToFlagStrings(e.keyFlags || new Uint8Array()))
             })
         }else{
-            results.push(t("primaryKeyFlag")+", ")
-            results.push(t("certifyFlag"))
+            results.push(t("primaryKeyFlag"))
+            selectedKey.users.pop()?.selfCertifications.forEach((e)=>{
+                results = results.concat(uint8ToFlagStrings(e.keyFlags || new Uint8Array()))
+            })
         }
         return results
         
     }
     const getRows = async (keys:(Key|Subkey)[])=>{
         let masterKey:Key;
-        
-        const result = await Promise.all(keys.map(async (key:Key|Subkey,index:number)=>{
+        const keyInformations:keyRowInfo[] = [];
+        for await(const key of keys){
+            let isCurrentKeyValid = false;
             if("getPrimaryUser" in key){
                 masterKey=key
+                try{
+                   await key.verifyPrimaryKey();
+                    isCurrentKeyValid=true;
+                }catch(e){
+                    console.error(e);
+                }
+            }else{
+                try{
+                    await key.verify()
+                    isCurrentKeyValid=true;
+                }catch(e){
+                    console.error(e);
+                }
             }
+            keyInformations.push({
+                isValid:isCurrentKeyValid,
+                keyID:key.getKeyID(),
+                creationDate:key.getCreationTime(),
+                expirationDate:(await key.getExpirationTime()),
+                keyFlags:getKeyFlags(key)
+            })
+
+        }
+
+        const result = await Promise.all(keyInformations.map(async (key:keyRowInfo,index:number)=>{
             
            return (
             <tr key={index}>
-                {
-                    ("getPrimaryUser" in key)?(
-                        <td>{t("yes")}</td>
-                    ):(
-                        <td>{t("no")}</td>
-                    )
-                }
-                <td>{key.getKeyID().toHex().toUpperCase()}</td>
-                <td>{key.getCreationTime().toLocaleDateString()}</td>
-                <td className={expirationDateToStyle((await key.getExpirationTime()))}>{expirationDateToString((await key.getExpirationTime()))}</td>
-                <td>{getKeyFlags(key)}</td>
+                <td>{key.isValid?(t("yes")):(t("no"))}</td>
+                <td>{key.keyID.toHex().toUpperCase()}</td>
+                <td>{key.creationDate.toLocaleDateString()}</td>
+                <td className={expirationDateToStyle(key.expirationDate)}>{expirationDateToString(key.expirationDate)}</td>
+                <td>{key.keyFlags.join(", ")}</td>
 
             </tr>
         )
@@ -88,7 +109,7 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
     <table className="table table-zebra">
         <thead>
             <tr>
-                <th>{t("primaryKeyFlag")}</th>
+                <th>{t("isKeyValid")}</th>
                 <th>{t("keyID")}</th>
                 <th>{t("creationDate")}</th>
                 <th>{t("expirationDate")}</th>

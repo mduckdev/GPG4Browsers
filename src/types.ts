@@ -1,7 +1,8 @@
-import { AlgorithmInfo, Key, Message, PrivateKey, Subkey } from "openpgp";
+import { AlgorithmInfo, Key, KeyID, Message, PrivateKey, Subkey, UserID } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { User } from "openpgp";
 
 export interface sectionsPropsInterface{
     activeSection:string,
@@ -107,8 +108,16 @@ export interface keyInfo{
     creationDate:Date,
     algorithm:AlgorithmInfo,
     allKeys:(Key|Subkey)[],
-
+    users:User[]
 }
+export interface keyRowInfo{
+    isValid:boolean,
+    keyID:KeyID,
+    creationDate:Date,
+    expirationDate:Date|number|null,
+    keyFlags:string[]
+}
+
 
 export interface KeyDetailsTabProps{
     selectedKey:keyInfo

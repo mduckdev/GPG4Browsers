@@ -18,11 +18,11 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
     if(currentKey){
       let text = "";
       if(!currentKey.isUniquePublic && !currentKey.isUniquePrivate){
-        text=t("publicAndPrivateUpdateConfirmation"+"?")
+        text=t("publicAndPrivateUpdateConfirmation")+"?"
       }else if(!currentKey.isUniquePrivate){
-        text=t("privateUpdateConfirmation"+"?")
+        text=t("privateUpdateConfirmation")+"?"
       }else if(!currentKey.isUniquePublic){
-        text=t("publicUpdateConfirmation"+"?")
+        text=t("publicUpdateConfirmation")+"?"
       }
       setConfirmationText(text);
       const userid = await currentKey.key.getPrimaryUser();
