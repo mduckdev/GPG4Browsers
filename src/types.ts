@@ -1,6 +1,7 @@
 import { AlgorithmInfo, Key, Message, PrivateKey, Subkey } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 export interface sectionsPropsInterface{
     activeSection:string,
@@ -113,3 +114,8 @@ export interface KeyDetailsTabProps{
     selectedKey:keyInfo
 }
 export interface KeyDetailsProps extends modalProps,KeyDetailsTabProps{}
+export interface TextInputProps extends PassphraseTextInputProps{
+    icon:IconProp,
+    placeholder:string,
+    labelText:string
+}

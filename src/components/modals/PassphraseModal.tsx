@@ -1,8 +1,8 @@
 import { CryptoKeys, alert, passphraseProps } from "@src/types";
 import { DecryptMessageResult, Message, PrivateKey, decrypt, decryptKey, readMessage, readPrivateKey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
-import Alert from "./Alert";
-import PassphraseTextInput from "./PassphraseTextInput";
+import Alert from "../Alert";
+import PassphraseTextInput from "../PassphraseTextInput";
 import { attempToDecrypt } from "@src/utils";
 import { useTranslation } from "react-i18next";
 

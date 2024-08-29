@@ -7,9 +7,10 @@ import {  Key,PrimaryUser, readKeys} from "openpgp"
 import { IPublicKey, addPublicKey } from "@src/redux/publicKeySlice";
 import { MainProps, alert, file, keyUpdates, sectionsWithPreviousInterface } from "@src/types";
 import Alert from "../Alert";
-import KeyUpdateModal from "../KeyUpdateModal";
+import KeyUpdateModal from "../modals/KeyUpdateModal";
 import { useTranslation } from "react-i18next";
 import { handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import KeyGeneration from "../modals/KeyGeneration";
 
 
 export default function AddKey({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -25,12 +26,13 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     const [alerts,setAlerts] = useState<alert[]>([]);
     const [keysToConfirm,setKeysToConfirm] = useState<keyUpdates[]>([]);
 
-    const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
+    const [isConfirmModalVisible,setIsConfirmModalVisible] = useState<boolean>(false);
+    const [isKeyGenerationVisible,setIsKeyGenerationVisible] = useState<boolean>(false);
+
 
 
     const saveToKeyring = async (confirmedKeysList?:Key[])=>{
         let keys:Key[]|null  = null;
-        let keysFromFile:Key[]|null  = null;
         let unconfirmedKeysList:keyUpdates[]=[];
         let allKeysUnique=true;
         if(!confirmedKeysList){
@@ -94,7 +96,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
         
         if(!allKeysUnique && !confirmedKeysList){
             setKeysToConfirm(unconfirmedKeysList);
-            setIsModalVisible(true);
+            setIsConfirmModalVisible(true);
             return;
         }
 
@@ -124,8 +126,8 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
 
     return (
     <div className="p-4 flex flex-col items-center">
-    <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isModalVisible} setIsVisible={setIsModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
-
+    <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
+    <KeyGeneration isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
         <h2 className="text-2xl font-bold mb-4 text-center">{t("addToKeyring")}</h2>
         <label htmlFor="keyValue" className="text-lg mb-2">{t("pasteArmoredKey")}:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
@@ -149,8 +151,11 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
                         </div>
         )
         }
-        <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
-        <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
+        <div className={`buttons ${isPopup?('w-3/5'):('w-1/5')}`}>
+            <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
+            <button className="w-full btn btn-success mb-4" onClick={()=>{setIsKeyGenerationVisible(true)}}>{t("generateNewKey")}</button>
+            <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
+        </div>
                 <Alert alerts={alerts} setAlerts={setAlerts}/>
     </div>
     )

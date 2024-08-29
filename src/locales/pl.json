@@ -88,7 +88,15 @@
       "files":"Pliki",
       "selectKey":"Wybierz klucz",
       "signMessage":"Podpisz wiadomość",
-      "verify":"Zweryfikuj"
-
+      "verify":"Zweryfikuj",
+      "generateNewKey":"Wygeneruj nowy klucz",
+      "enterName":"Wprowadź swoję imię",
+      "setExpirationDate":"Ustaw datę wygaśnięcia klucza",
+      "1year":"1 rok",
+      "2years":"2 lata",
+      "3years":"3 lata",
+      "5years":"5 lat",
+      "never":"Nigdy",
+      "enterEmail":"Wprowadź swój email"
     }
   }

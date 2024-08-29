@@ -1,8 +1,8 @@
 import { KeyDetailsProps} from "@src/types";
 import { Key, Subkey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
-import BasicKeyInfo from "./tabs/KeyDetails/BasicKeyInfo";
-import AllKeys from "./tabs/KeyDetails/AllKeys";
+import BasicKeyInfo from "../tabs/KeyDetails/BasicKeyInfo";
+import AllKeys from "../tabs/KeyDetails/AllKeys";
 import { useTranslation } from "react-i18next";
 export default function KeyDetails({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();

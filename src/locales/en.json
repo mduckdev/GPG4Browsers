@@ -88,6 +88,15 @@
         "files":"Files",
         "selectKey":"Select key",
         "signMessage":"Sign message",
-        "verify":"Verify"
+        "verify":"Verify",
+        "generateNewKey":"Generate new key",
+        "enterName":"Enter your name",
+        "setExpirationDate":"Set key expiration date",
+        "1year":"1 Year",
+        "2years":"2 Years",
+        "3years":"3 Years",
+        "5years":"5 Years",
+        "never":"Never",
+        "enterEmail":"Enter your email"
     }
 }

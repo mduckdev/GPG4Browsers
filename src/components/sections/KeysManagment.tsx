@@ -3,7 +3,7 @@ import { MainProps, keyInfo } from "@src/types";
 import {  mergeKeysLists, parseToKeyinfoObject } from "@src/utils";
 import { Key, PrimaryUser } from "openpgp";
 import React, { useEffect, useState } from "react";
-import KeyDetails from "../KeyDetails";
+import KeyDetails from "../modals/KeyDetails";
 import { useTranslation } from "react-i18next";
 export default function KeysManagment({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();

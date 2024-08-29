@@ -1,7 +1,7 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import { Key, MaybeArray, Message, PrivateKey, createMessage, encrypt, readKey, readPrivateKey } from "openpgp";
 import React, { useEffect, useState } from "react";
-import PassphraseModal from "@src/components/PassphraseModal";
+import PassphraseModal from "@src/components/modals/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
 import { CryptoKeys, MainProps, file } from "@src/types";
