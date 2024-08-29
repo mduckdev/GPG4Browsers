@@ -39,7 +39,7 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
         return results
     }
 
-    const getKeyFlags =  (key:Key|Subkey)=>{
+    const getKeyFlags =  async (key:Key|Subkey)=>{
         let results:string[]=[]
         if(!("getPrimaryUser" in key)){
             results.push(t("subkeyFlag"))
@@ -47,10 +47,9 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
                 results = results.concat(uint8ToFlagStrings(e.keyFlags || new Uint8Array()))
             })
         }else{
-            results.push(t("primaryKeyFlag"))
-            selectedKey.users.pop()?.selfCertifications.forEach((e)=>{
-                results = results.concat(uint8ToFlagStrings(e.keyFlags || new Uint8Array()))
-            })
+            results.push(t("primaryKeyFlag"));
+            
+        results = results.concat(uint8ToFlagStrings((await key.getPrimaryUser()).selfCertification.keyFlags || new Uint8Array()))
         }
         return results
         
@@ -81,7 +80,7 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
                 keyID:key.getKeyID(),
                 creationDate:key.getCreationTime(),
                 expirationDate:(await key.getExpirationTime()),
-                keyFlags:getKeyFlags(key)
+                keyFlags:await getKeyFlags(key)
             })
 
         }
