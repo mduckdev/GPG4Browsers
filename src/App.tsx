@@ -9,10 +9,12 @@ import ThemeToggle from './components/ThemeToggle';
 import { useAppDispatch, useAppSelector } from './redux/store';
 import { setTheme } from './redux/themeSlice';
 import { usePrevious } from './utils';
+import { setLastSection } from './redux/historySlice';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
   const fetchedTheme  = useAppSelector(state=>state.theme.prefferedTheme);
+  const lastSection  = useAppSelector(state=>state.history.lastSection);
   const [activeSection, setActiveSection] = useState<string>('EncryptionAndDecryption');
   const [isPopup, setIsPopup] = useState<boolean>(true);
   const [theme, setThemeLocal] = useState<string>(fetchedTheme);
@@ -31,6 +33,10 @@ const App: React.FC = () => {
     }
     const params = new URLSearchParams(window.location.search);
     setIsPopup(params.get("popup")==="false"?false:true);
+    if(params.get("popup")==="false"){
+        setActiveSection(lastSection);
+        dispatch(setLastSection(""));
+    }
   },[])
 
 useEffect(()=>{
@@ -43,6 +49,7 @@ useEffect(()=>{
 
 
   const openTab = ()=>{
+    dispatch(setLastSection(activeSection));
     Browser.tabs.create({ url: "popup.html?popup=false" });
   }
 

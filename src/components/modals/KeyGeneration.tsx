@@ -72,9 +72,9 @@ export default function KeyGeneration({title,text, isVisible, setIsVisible ,onCl
         <TextInput labelText={t("email")} placeholder={t("enterEmail")} icon={faAt} value={email} setOnChange={setEmail} />
         <label className="mt-4">
           {t("setExpirationDate")}
-          <select className="select select-info focus:outline-none w-full max-w-xs" onChange={(e)=>{setExpirationDate(Number(e.target.value))}}>
+          <select className="select select-info focus:outline-none w-full max-w-xs" onChange={(e)=>{setExpirationDate(Number(e.target.value))}} defaultValue={31536000}>
             <option disabled>{t("setExpirationDate")}</option>
-            <option value={31536000} selected>{t("1year")}</option>
+            <option value={31536000}>{t("1year")}</option>
             <option value={63072000}>{t("2years")}</option>
             <option value={94608000}>{t("3years")}</option>
             <option value={157680000}>{t("5years")}</option>
