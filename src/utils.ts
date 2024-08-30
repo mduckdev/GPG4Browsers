@@ -1,9 +1,10 @@
-import { AlgorithmInfo, DecryptMessageResult, Key, PrimaryUser, PrivateKey, PublicKey, SignaturePacket, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
+import {  DecryptMessageResult, Key, PrimaryUser, PrivateKey, PublicKey, SignaturePacket, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
 import { CryptoKeys, file, keyInfo } from "./types";
 import { IPublicKey } from "./redux/publicKeySlice";
 import { IPrivateKey } from "./redux/privateKeySlice";
 import { User } from "openpgp";
+import { TFunction } from "i18next";
 const extensionsRegex:RegExp = /(\.gpg|\.pgp|\.asc|\.sig)$/i;
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
@@ -206,14 +207,14 @@ export const mergeKeysLists = async (publicKeys:IPublicKey[],privateKeys:IPrivat
   return result;
 }
 
-export const expirationDateToString = (expirationDate:Date|null|number)=>{
+export const expirationDateToString = (expirationDate:Date|null|number,t:TFunction<"translation", undefined>)=>{
   let expirationDateAsString;
   if(expirationDate instanceof Date){
     expirationDateAsString = expirationDate.toLocaleDateString();
   }else if(typeof expirationDate === "number"){
     expirationDateAsString = "∞";
   }else{
-    expirationDateAsString = "❌";
+    expirationDateAsString = t("expired");
   }
   return expirationDateAsString;
 }
@@ -229,15 +230,15 @@ export const expirationDateToStyle = (expirationDate:Date|null|number)=>{
   return expirationDateAsString;
 }
 
-export const parseToKeyinfoObject = async (keys:Key[])=>{
+export const parseToKeyinfoObject = async (keys:Key[],t:TFunction<"translation", undefined>)=>{
   return Promise.all(keys.map(async (e)=>{
-    const userID:PrimaryUser = await e.getPrimaryUser();
+    const userID:PrimaryUser|null = await e.getPrimaryUser().catch(e=>{console.error(e);return null});
     const expirationDate = await e.getExpirationTime()
-    let expirationDateAsString = expirationDateToString(expirationDate);
+    let expirationDateAsString = expirationDateToString(expirationDate,t);
     const keyInfoObject:keyInfo = {
         isPrivate:e.isPrivate(),
-        primaryName:userID.user.userID?.name || userID.user.userID?.userID || "",
-        primaryEmail:userID.user.userID?.email || "",
+        primaryName:userID?.user.userID?.name || userID?.user.userID?.userID || "",
+        primaryEmail:userID?.user.userID?.email || "",
         fingerprint:e.getFingerprint().toUpperCase(),
         armoredKey:e.armor(),
         expirationDate:expirationDateAsString,
@@ -245,6 +246,7 @@ export const parseToKeyinfoObject = async (keys:Key[])=>{
         algorithm:e.getAlgorithmInfo(),
         allKeys:e.getKeys(),
         users:e.users,
+        isExpired:!((expirationDate instanceof Date) || (typeof expirationDate === "number"))
     }
     return keyInfoObject
   }))

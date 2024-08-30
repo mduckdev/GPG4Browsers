@@ -17,7 +17,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
 
     const setupKeys = async()=>{
         const keys = await mergeKeysLists(privateKeysList,publicKeysList);
-        const keysInfo = await parseToKeyinfoObject(keys);
+        const keysInfo = await parseToKeyinfoObject(keys,t);
         setMergedKeysList(keysInfo);
     }
     useEffect(()=>{
@@ -55,7 +55,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
                     <td>{currentKey.primaryEmail}</td>
                     <td>{currentKey.fingerprint}</td>
                     <td>{currentKey.creationDate.toLocaleDateString()}</td>
-                    <td className={(currentKey.expirationDate==="❌")?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
+                    <td className={(currentKey.isExpired)?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
                     <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>{t("details")}</button></td>
                 </tr>
             ))}

@@ -106,6 +106,7 @@
         "validCertification":"Valid certification",
         "couldntVerifyCertification":"Failed to verify certification",
         "issuer":"Issuer",
-        "noPubKeyFound":"Failed to find corresponding public key"
+        "noPubKeyFound":"Failed to find corresponding public key",
+        "expired":"Expired"
     }
 }

@@ -25,9 +25,9 @@ export default function KeyUpdateModal({title, text, keys, isVisible, setIsVisib
         text=t("publicUpdateConfirmation")+"?"
       }
       setConfirmationText(text);
-      const userid = await currentKey.key.getPrimaryUser();
+      const userid = await currentKey.key.getPrimaryUser().catch(e=>{console.error(e);return null});
       const fingerprint = currentKey.key.getFingerprint();
-      setCurrentKeyInfo(`${userid.user.userID?.userID}, ${t("keyFingerprint")}: ${fingerprint}`)
+      setCurrentKeyInfo(`${userid?.user.userID?.userID}, ${t("keyFingerprint")}: ${fingerprint}`)
     }
     
   }

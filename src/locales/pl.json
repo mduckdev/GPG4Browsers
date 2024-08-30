@@ -106,6 +106,7 @@
       "validCertification":"Prawidłowa certyfikacja",
       "couldntVerifyCertification":"Nie udało się zweryfikować certyfikacji",
       "issuer":"Certyfikujący",
-      "noPubKeyFound":"Nie udało się znaleźć odpowiadającego klucza publicznego"
+      "noPubKeyFound":"Nie udało się znaleźć odpowiadającego klucza publicznego",
+      "expired":"Wygaśnięty"
     }
   }

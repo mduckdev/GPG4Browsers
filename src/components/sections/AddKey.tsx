@@ -105,10 +105,10 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
         for await(const key of keys){
             
             const keyFingerprint = key.getFingerprint();
-            const userID:PrimaryUser = await key.getPrimaryUser();
-            const name:string = userID.user.userID?.name || "";
-            const email:string = userID.user.userID?.email || "";
-            const userIDString:string = userID.user.userID?.userID || "";
+            const userID:PrimaryUser|null = await key.getPrimaryUser().catch(e=>{console.error(e);return null});
+            const name:string = userID?.user.userID?.name || "";
+            const email:string = userID?.user.userID?.email || "";
+            const userIDString:string = userID?.user.userID?.userID || "";
             if(key.isPrivate()){
                 const pubKeyFromPrivKey = key.toPublic();
     

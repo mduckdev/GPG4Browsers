@@ -48,8 +48,10 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
             })
         }else{
             results.push(t("primaryKeyFlag"));
-            
-        results = results.concat(uint8ToFlagStrings((await key.getPrimaryUser()).selfCertification.keyFlags || new Uint8Array()))
+            const primaryUser = (await key.getPrimaryUser().catch(e=>{console.error(e);return null}));
+            if(primaryUser){
+                results = results.concat(uint8ToFlagStrings(primaryUser.selfCertification.keyFlags || new Uint8Array()))
+            }
         }
         return results
         
@@ -92,7 +94,7 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
                 <td className={`${key.isValid?("text-success"):("text-error")}`}>{key.isValid?(t("yes")):(t("no"))}</td>
                 <td>{key.keyID.toHex().toUpperCase()}</td>
                 <td>{key.creationDate.toLocaleDateString()}</td>
-                <td className={expirationDateToStyle(key.expirationDate)}>{expirationDateToString(key.expirationDate)}</td>
+                <td className={expirationDateToStyle(key.expirationDate)}>{expirationDateToString(key.expirationDate,t)}</td>
                 <td>{key.keyFlags.join(", ")}</td>
 
             </tr>

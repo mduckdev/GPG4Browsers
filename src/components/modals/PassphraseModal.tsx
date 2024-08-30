@@ -21,7 +21,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
     const setKeyInfo = async (currentKey:CryptoKeys)=>{
       if(currentKey?.isPrivateKey && typeof currentKey.data ==="string"){
         const key = await readPrivateKey({armoredKey:currentKey.data}).catch(e => { console.error(e); return null });
-        const userid = await key?.getPrimaryUser();
+        const userid = await key?.getPrimaryUser().catch(e=>{console.error(e);return null});
         const fingerprint = key?.getFingerprint();
         setCurrentKeyInfo(`${userid?.user.userID?.userID}, ${t("keyFingerprint")}: ${fingerprint}`)
       }

@@ -108,7 +108,8 @@ export interface keyInfo{
     creationDate:Date,
     algorithm:AlgorithmInfo,
     allKeys:(Key|Subkey)[],
-    users:User[]
+    users:User[],
+    isExpired:boolean
 }
 export interface keyRowInfo{
     isValid:boolean,

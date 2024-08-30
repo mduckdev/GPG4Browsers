@@ -32,10 +32,10 @@ export default function KeyGeneration({title,text, isVisible, setIsVisible ,onCl
       }
       ).catch(e=>{console.error(e);return null})
       if(newKey){
-        const userID:PrimaryUser = await newKey.privateKey.getPrimaryUser();
-        const name:string = userID.user.userID?.name || "";
-        const email:string = userID.user.userID?.email || "";
-        const userIDString:string = userID.user.userID?.userID || "";
+        const userID:PrimaryUser|null = await newKey.privateKey.getPrimaryUser().catch(e=>{console.error(e);return null});
+        const name:string = userID?.user.userID?.name || "";
+        const email:string = userID?.user.userID?.email || "";
+        const userIDString:string = userID?.user.userID?.userID || "";
 
         dispatch(addPrivateKey({keyValue:newKey.privateKey.armor(),userID:userIDString,name:name,email:email, fingerprint:newKey.privateKey.getFingerprint()}));
         dispatch(addPublicKey({keyValue:newKey.publicKey.armor(),userID:userIDString,name:name,email:email, fingerprint:newKey.publicKey.getFingerprint()}));
