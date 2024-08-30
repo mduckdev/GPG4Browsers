@@ -1,8 +1,9 @@
-import { AlgorithmInfo, DecryptMessageResult, Key, PrimaryUser, PrivateKey, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
+import { AlgorithmInfo, DecryptMessageResult, Key, PrimaryUser, PrivateKey, PublicKey, SignaturePacket, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
 import { CryptoKeys, file, keyInfo } from "./types";
 import { IPublicKey } from "./redux/publicKeySlice";
 import { IPrivateKey } from "./redux/privateKeySlice";
+import { User } from "openpgp";
 const extensionsRegex:RegExp = /(\.gpg|\.pgp|\.asc|\.sig)$/i;
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
@@ -288,4 +289,26 @@ export const publicKeyEnumToReadable = (keyName:publicKeyNames)=>{
     }
 
   }
+}
+
+export const uint8ArrayToHex = (bytes:Uint8Array)=> {
+  const r = [];
+  const e = bytes.length;
+  let c = 0;
+  let h;
+  while (c < e) {
+    h = bytes[c++].toString(16);
+    while (h.length < 2) {
+      h = '0' + h;
+    }
+    r.push('' + h);
+  }
+  return r.join('');
+}
+
+
+export const verifyCertification = async(user:User,publicKeys:PublicKey[],signature:SignaturePacket):Promise<true|null>=>{
+  //@ts-ignore this function is not available in typescript :(
+  const result = await user.verifyCertificate(signature,publicKeys).catch(e=>{return null})
+  return result;
 }

@@ -1,4 +1,4 @@
-import { AlgorithmInfo, Key, KeyID, Message, PrivateKey, Subkey, UserID } from "openpgp";
+import { AlgorithmInfo, Key, KeyID, Message, PrivateKey, SignaturePacket, Subkey, UserID } from "openpgp";
 import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -127,4 +127,16 @@ export interface TextInputProps extends PassphraseTextInputProps{
     icon:IconProp,
     placeholder:string,
     labelText:string
+}
+export interface CertificationsTableProps{
+    certifications:SignaturePacket[],
+    user:User
+}
+
+export interface UserCertificationsRow{
+    status:string,
+    keyFingerprint:string,
+    keyID:string,
+    issuer:string,
+    isValid:boolean
 }

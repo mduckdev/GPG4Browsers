@@ -100,6 +100,12 @@
       "enterEmail":"Wprowadź swój email",
       "users":"Użytkownicy",
       "isKeyValid":"Czy klucz jest prawidłowy",
-      "isUserValid":"Czy użytkownik jest prawidłowy"
+      "isUserValid":"Czy użytkownik jest prawidłowy",
+      "selfCertifications":"Certifikacje samopodpisane",
+      "otherCertifications":"Inne certyfikacje",
+      "validCertification":"Prawidłowa certyfikacja",
+      "couldntVerifyCertification":"Nie udało się zweryfikować certyfikacji",
+      "issuer":"Certyfikujący",
+      "noPubKeyFound":"Nie udało się znaleźć odpowiadającego klucza publicznego"
     }
   }

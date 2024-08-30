@@ -89,7 +89,7 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
             
            return (
             <tr key={index}>
-                <td>{key.isValid?(t("yes")):(t("no"))}</td>
+                <td className={`${key.isValid?("text-success"):("text-error")}`}>{key.isValid?(t("yes")):(t("no"))}</td>
                 <td>{key.keyID.toHex().toUpperCase()}</td>
                 <td>{key.creationDate.toLocaleDateString()}</td>
                 <td className={expirationDateToStyle(key.expirationDate)}>{expirationDateToString(key.expirationDate)}</td>

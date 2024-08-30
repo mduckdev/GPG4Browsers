@@ -1,39 +1,30 @@
+import CertificationsTable from "@src/components/CertificationsTable";
 import { KeyDetailsTabProps } from "@src/types";
-import { User } from "openpgp";
-import React, {  ReactNode, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { PublicKey, SignaturePacket, User } from "openpgp";
+import React from "react";
 export default function AllUsers({selectedKey}:KeyDetailsTabProps) {
-    const { t } = useTranslation();
-
-    const [rows,setRows] = useState<ReactNode>()
-    const getRows = async (users:User[])=>{
     
-        for await(const user of users){
-            console.log(user);
-        }
-        setRows(<tr></tr>)
-        return <tr></tr>;
-    }
-
-    useEffect(() => {
-        getRows(selectedKey.users)
-      }, [selectedKey]);
-    return (
-    <table className="table table-zebra">
-        <thead>
-            <tr>
-                <th>{t("primaryKeyFlag")}</th>
-                <th>{t("keyID")}</th>
-                <th>{t("creationDate")}</th>
-                <th>{t("expirationDate")}</th>
-                <th>{t("type")}</th>
-            </tr>
-        </thead>
-        <tbody>
+    return(
+        <div>
         {
-            rows
+            selectedKey.users.map((e:User,index:number)=>{
+                return(
+                    <div className="collapse collapse-arrow bg-base-200 my-3" key={index}>
+                        <input type="radio" name="my-accordion-2"  />
+                        <div className="collapse-title text-xl font-medium">{e.userID?.userID}</div>
+                        <div className="collapse-content">
+                            <p>Self certifications:</p>
+                            <CertificationsTable certifications={e.selfCertifications} user={e}/>
+                            <p>Other certifications:</p>
+                            <CertificationsTable certifications={e.otherCertifications} user={e}/>
+
+                        </div>
+                    </div>
+                )
+            })
         }
-        </tbody>
-    </table>
+        </div>
+        
+        
     )
 }

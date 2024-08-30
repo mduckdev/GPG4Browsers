@@ -48,7 +48,6 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
             aria-label={t("users")}
             />
         <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-        {t("users")}
         <AllUsers selectedKey={selectedKey}/>
         </div>
 

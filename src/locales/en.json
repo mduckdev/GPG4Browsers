@@ -100,6 +100,12 @@
         "enterEmail":"Enter your email",
         "users":"Users",
         "isKeyValid":"Is key valid",
-        "isUserValid":"Is user valid"
+        "isUserValid":"Is user valid",
+        "selfCertifications":"Self certifications",
+        "otherCertifications":"Other certifications",
+        "validCertification":"Valid certification",
+        "couldntVerifyCertification":"Failed to verify certification",
+        "issuer":"Issuer",
+        "noPubKeyFound":"Failed to find corresponding public key"
     }
 }
