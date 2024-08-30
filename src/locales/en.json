@@ -107,6 +107,9 @@
         "couldntVerifyCertification":"Failed to verify certification",
         "issuer":"Issuer",
         "noPubKeyFound":"Failed to find corresponding public key",
-        "expired":"Expired"
+        "expired":"Expired",
+        "deleteKey":"Delete key",
+        "additionalConfirmationNeeded":"Additional confirmation needed",
+        "confirmDeletingThisKey":"Confirm deleting this key"
     }
 }

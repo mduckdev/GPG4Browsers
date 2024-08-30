@@ -107,6 +107,9 @@
       "couldntVerifyCertification":"Nie udało się zweryfikować certyfikacji",
       "issuer":"Certyfikujący",
       "noPubKeyFound":"Nie udało się znaleźć odpowiadającego klucza publicznego",
-      "expired":"Wygaśnięty"
+      "expired":"Wygaśnięty",
+      "deleteKey":"Usuń klucz",
+      "additionalConfirmationNeeded":"Potrzebne jest dodatkowe potwierdzenie",
+      "confirmDeletingThisKey":"Potwierdź usunięcie klucza"
     }
   }

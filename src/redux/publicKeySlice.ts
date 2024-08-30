@@ -36,8 +36,10 @@ export const publicKeySlice = createSlice({
             }
         },
         deletePublicKey:(state,action:PayloadAction<string>)=>{
-            state = state.filter((element)=>{
-                return element.fingerprint !== action.payload;
+            return state.filter((element)=>{
+                if(element.fingerprint !== action.payload){
+                    return element;
+                }
             })
         },
         editPublicKey:(state,action:PayloadAction<IPublicKey>)=>{

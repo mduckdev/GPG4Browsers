@@ -42,8 +42,10 @@ export const privateKeySlice = createSlice({
             
         },
         deletePrivateKey:(state,action:PayloadAction<string>)=>{
-            state = state.filter((element)=>{
-                return element.fingerprint !== action.payload;
+            return state.filter((element)=>{
+                if(element.fingerprint !== action.payload){
+                    return element;
+                }
             })
         },
         editprivateKey:(state,action:PayloadAction<updatePayload>)=>{
