@@ -6,15 +6,18 @@ import AllKeys from "../tabs/KeyDetails/AllKeys";
 import { useTranslation } from "react-i18next";
 import AllUsers from "../tabs/KeyDetails/AllUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faXmark } from "@fortawesome/free-solid-svg-icons";
 import ConfirmModal from "./ConfirmModal";
 import { useAppDispatch } from "@src/redux/store";
 import { deletePrivateKey } from "@src/redux/privateKeySlice";
 import { deletePublicKey } from "@src/redux/publicKeySlice";
 import { setLastSection } from "@src/redux/historySlice";
+import ExportKeysModal from "./ExportKeys";
 export default function KeyDetails({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();
   const [isConfirmModalVisible,setIsConfirmModalVisible] = useState<boolean>(false);
+  const [isExportModalVisible,setIsExportModalVisible] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
 
   const modalRef = useRef<HTMLDialogElement|null>(null);
@@ -51,6 +54,8 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
     return (
       <dialog ref={modalRef} id="my_confirm_modal" className="modal" onCancel={handleESC} >
         <ConfirmModal title={t("additionalConfirmationNeeded")} text={t("confirmDeletingThisKey")} isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} selectedKey={selectedKey} onConfirm={deleteKey} />
+        <ExportKeysModal  isVisible={isExportModalVisible} setIsVisible={setIsExportModalVisible} selectedKey={selectedKey} onConfirm={()=>{}} />
+
         <div className="modal-box w-11/12 max-w-5xl relative">
           <FontAwesomeIcon className="absolute top-5 right-5 cursor-pointer hover:opacity-50" icon={faXmark} onClick={e=>setIsVisible(false)} />
           <div role="tablist" className="tabs tabs-lifted">
@@ -78,9 +83,14 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
           </div>
             <div className="w-full flex flex-col mt-2">
                 <div className="flex gap-2 mx-0">
-                  <button className="btn btn-info" onClick={handleConfirm}>{t("confirm")}</button>
+                  <button className="btn btn-success" onClick={handleConfirm}>{t("save")}</button>
                   <button className="btn" onClick={()=>setIsVisible(false)}>{t("cancel")}</button>
-                  <button className="btn btn-error" onClick={()=>setIsConfirmModalVisible(true)}>{t("deleteKey")}</button>
+                  <button className="btn btn-error" onClick={()=>{setIsConfirmModalVisible(true);setIsVisible(false)}}>{t("deleteKey")}</button>
+                  <button className="btn" onClick={()=>{setIsVisible(false);setIsExportModalVisible(true)}}>
+                    {t("exportKeys")}
+                    <FontAwesomeIcon icon={faDownload}/>
+                  </button>
+
 
                 </div>
             </div>

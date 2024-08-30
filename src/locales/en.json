@@ -110,6 +110,10 @@
         "expired":"Expired",
         "deleteKey":"Delete key",
         "additionalConfirmationNeeded":"Additional confirmation needed",
-        "confirmDeletingThisKey":"Confirm deleting this key"
+        "confirmDeletingThisKey":"Confirm deleting this key",
+        "exportKeys":"Export keys",
+        "publicKey":"Public key",
+        "privateKey":"Private key",
+        "privateKeyWarning":"WARNING! This is your private key. Never share it with anyone."
     }
 }

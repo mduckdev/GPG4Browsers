@@ -110,6 +110,10 @@
       "expired":"Wygaśnięty",
       "deleteKey":"Usuń klucz",
       "additionalConfirmationNeeded":"Potrzebne jest dodatkowe potwierdzenie",
-      "confirmDeletingThisKey":"Potwierdź usunięcie klucza"
+      "confirmDeletingThisKey":"Potwierdź usunięcie klucza",
+      "exportKeys":"Eksportuj klucze",
+      "publicKey":"Klucz publiczny",
+      "privateKey":"Klucz prywatny",
+      "privateKeyWarning":"UWAGA! To jest twój klucz prywatny. Nie udostępniaj go nikomu."
     }
   }
