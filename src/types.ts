@@ -141,3 +141,9 @@ export interface UserCertificationsRow{
     issuer:string,
     isValid:boolean
 }
+
+export interface SearchKeyModalProps extends modalProps{
+    setKeyValue:React.Dispatch<React.SetStateAction<string>>,
+    parentAlerts:alert[],
+    setParentAlerts:React.Dispatch<React.SetStateAction<alert[]>>,
+}

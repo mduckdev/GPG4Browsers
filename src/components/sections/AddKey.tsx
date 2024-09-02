@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { IPrivateKey, addPrivateKey } from "@src/redux/privateKeySlice";
 import {  Key,PrimaryUser, readKeys} from "openpgp"
@@ -11,6 +11,7 @@ import KeyUpdateModal from "../modals/KeyUpdateModal";
 import { useTranslation } from "react-i18next";
 import { handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import KeyGeneration from "../modals/KeyGeneration";
+import SearchKeysModal from "../modals/SearchKeyModal";
 
 
 export default function AddKey({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -28,6 +29,8 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
 
     const [isConfirmModalVisible,setIsConfirmModalVisible] = useState<boolean>(false);
     const [isKeyGenerationVisible,setIsKeyGenerationVisible] = useState<boolean>(false);
+    const [isSearchModalVisible,setIsSearchModalVisible] = useState<boolean>(false);
+
 
 
 
@@ -127,6 +130,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     return (
     <div className="p-4 flex flex-col items-center">
     <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
+    <SearchKeysModal isVisible={isSearchModalVisible} setKeyValue={setKeyValue} setParentAlerts={setAlerts} parentAlerts={alerts} setIsVisible={setIsSearchModalVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
     <KeyGeneration isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
         <h2 className="text-2xl font-bold mb-4 text-center">{t("addToKeyring")}</h2>
         <label htmlFor="keyValue" className="text-lg mb-2">{t("pasteArmoredKey")}:</label>
@@ -153,6 +157,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
         }
         <div className={`buttons ${isPopup?('w-3/5'):('w-1/5')}`}>
             <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
+            <button className="w-full btn btn-info mb-4" onClick={()=>{setIsSearchModalVisible(true)}}><FontAwesomeIcon icon={faMagnifyingGlass} /> {t("searchOnKeyServer")}</button>
             <button className="w-full btn btn-success mb-4" onClick={()=>{setIsKeyGenerationVisible(true)}}>{t("generateNewKey")}</button>
             <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
         </div>

@@ -2,7 +2,7 @@ import { KeyDetailsProps} from "@src/types";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import OutputTextarea from "../OutputTextarea";
 import { Key, readKey } from "openpgp";
 import { convertUint8ToUrl } from "@src/utils";
@@ -56,6 +56,7 @@ export default function ExportKeysModal({title,text, isVisible, selectedKey, set
                 <p>{t("privateKeyWarning")}</p>
                 <OutputTextarea textValue={privateKey}/>
                 <ShowGPGFiles files={[{data:new TextEncoder().encode(privateKey),fileName:`${selectedKey.fingerprint}_PRIVATE_KEY`}]} extension=".asc"/>
+
 
             </div>
             </div>
