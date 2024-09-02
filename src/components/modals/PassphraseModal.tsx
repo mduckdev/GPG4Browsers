@@ -6,7 +6,7 @@ import PassphraseTextInput from "../PassphraseTextInput";
 import { attempToDecrypt } from "@src/utils";
 import { useTranslation } from "react-i18next";
 
-export default function PassphraseModal({title,text, isVisible, dataToUnlock, setIsVisible ,onClose, onConfirm}:passphraseProps) {
+export default function PassphraseModal({title,text, isVisible, dataToUnlock, setIsVisible ,onClose, onConfirm,setPassphraseValue}:passphraseProps) {
   const { t } = useTranslation();
     const modalRef = useRef<HTMLDialogElement|null>(null);
     
@@ -128,6 +128,9 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         }));
     }
       setTempKeys(newArray);
+      if(setPassphraseValue){
+        setPassphraseValue(currentPassphrase);
+      }
       setCurrentPassphrase("");
       
     

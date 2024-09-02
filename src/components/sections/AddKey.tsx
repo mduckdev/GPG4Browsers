@@ -10,8 +10,9 @@ import Alert from "../Alert";
 import KeyUpdateModal from "../modals/KeyUpdateModal";
 import { useTranslation } from "react-i18next";
 import { handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
-import KeyGeneration from "../modals/KeyGeneration";
+import KeyGeneration from "../modals/KeyGenerationModal";
 import SearchKeysModal from "../modals/SearchKeyModal";
+import KeyGenerationModal from "../modals/KeyGenerationModal";
 
 
 export default function AddKey({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -131,7 +132,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     <div className="p-4 flex flex-col items-center">
     <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
     <SearchKeysModal isVisible={isSearchModalVisible} setKeyValue={setKeyValue} setParentAlerts={setAlerts} parentAlerts={alerts} setIsVisible={setIsSearchModalVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
-    <KeyGeneration isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
+    <KeyGenerationModal isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
         <h2 className="text-2xl font-bold mb-4 text-center">{t("addToKeyring")}</h2>
         <label htmlFor="keyValue" className="text-lg mb-2">{t("pasteArmoredKey")}:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>

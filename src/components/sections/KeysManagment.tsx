@@ -1,12 +1,11 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import { MainProps, keyInfo } from "@src/types";
 import {  mergeKeysLists, parseToKeyinfoObject } from "@src/utils";
-import { Key, PrimaryUser } from "openpgp";
 import React, { useEffect, useState } from "react";
-import KeyDetails from "../modals/KeyDetails";
 import { useTranslation } from "react-i18next";
 import TextInput from "../TextInput";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import KeyDetailsModal from "../modals/KeyDetailsModal";
 export default function KeysManagment({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
 
@@ -36,7 +35,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
     <div className={`overflow-auto mt-2 mb-12 ${isPopup?('table-xs'):('table-md')}`}>
         {
             selectedKey?(
-                <KeyDetails isVisible={isModalVisible} setIsVisible={setIsModalVisible} selectedKey={selectedKey} onConfirm={handleConfirm} />
+                <KeyDetailsModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} selectedKey={selectedKey} onConfirm={handleConfirm} />
             ):(null)
         }
         <TextInput className="mx-auto" labelText="" placeholder={t("filterLocalKeysPlaceholder")} icon={faMagnifyingGlass} value={searchQuery} setOnChange={setSearchQuery} />

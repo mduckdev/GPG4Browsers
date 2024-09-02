@@ -11,7 +11,7 @@ import { addPrivateKey } from "@src/redux/privateKeySlice";
 import { addPublicKey } from "@src/redux/publicKeySlice";
 import { useAppDispatch } from "@src/redux/store";
 import { usePrevious } from "@src/utils";
-export default function KeyGeneration({title,text, isVisible, setIsVisible ,onClose, onConfirm}:modalProps) {
+export default function KeyGenerationModal({title,text, isVisible, setIsVisible ,onClose, onConfirm}:modalProps) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

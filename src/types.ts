@@ -48,7 +48,8 @@ export interface CryptoKeys{
 }
 
 export interface passphraseProps extends modalProps{
-    dataToUnlock:CryptoKeys[];
+    dataToUnlock:CryptoKeys[],
+    setPassphraseValue?:React.Dispatch<React.SetStateAction<string>>
 }
 
 
@@ -121,7 +122,8 @@ export interface keyRowInfo{
 
 
 export interface KeyDetailsTabProps{
-    selectedKey:keyInfo
+    selectedKey:keyInfo,
+    setParentVisible?:React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface KeyDetailsProps extends modalProps,KeyDetailsTabProps{}
 export interface TextInputProps extends PassphraseTextInputProps{

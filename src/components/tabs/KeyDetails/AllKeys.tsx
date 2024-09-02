@@ -1,13 +1,24 @@
+import SubkeyGenerationModal from "@src/components/modals/SubkeyGenerationModal";
 import { KeyDetailsTabProps, keyRowInfo } from "@src/types";
-import { expirationDateToString, expirationDateToStyle, publicKeyEnumToReadable } from "@src/utils";
-import { AllowedKeyPackets, AnyKeyPacket, BasePublicKeyPacket, Key, KeyID, PacketList, PublicKeyPacket, PublicSubkeyPacket, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, Subkey,enums, readKey, readKeys } from "openpgp";
+import { expirationDateToString, expirationDateToStyle } from "@src/utils";
+import { Key, Subkey} from "openpgp";
 import React, {  ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
+export default function AllKeys({selectedKey,setParentVisible}:KeyDetailsTabProps) {
     const { t } = useTranslation();
 
     const [rows,setRows] = useState<ReactNode>()
 
+    const [isSubkeyGenerationVisible,setIsSubkeyGenerationVisible] = useState<boolean>(false);
+
+
+    const handleAddNewSubkey = ()=>{
+        if(setParentVisible){
+            setParentVisible(false);
+        }
+        setIsSubkeyGenerationVisible(true);
+    }
+    
     const uint8ToFlagStrings = (flag:Uint8Array):string[]=>{
         const results:string[]=[]
         const descriptions = [t("certifyFlag"),t("signFlag"),t("encryptFlag"),t("encryptFlag"),t("privKeySplitFlag"), t("authenticateFlag"), t("privKeyMoreThanOnePersonFlag")] //https://www.rfc-editor.org/rfc/rfc9580.html#name-key-flags
@@ -104,24 +115,41 @@ export default function AllKeys({selectedKey}:KeyDetailsTabProps) {
         return result;
     }
     useEffect(() => {
-        getRows(selectedKey.allKeys)
+        getRows(selectedKey.allKeys);
+
       }, [selectedKey]);
     return (
-    <table className="table table-zebra">
-        <thead>
-            <tr>
-                <th>{t("isKeyValid")}</th>
-                <th>{t("keyID")}</th>
-                <th>{t("creationDate")}</th>
-                <th>{t("expirationDate")}</th>
-                <th>{t("type")}</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div>
         {
-            rows
+            selectedKey.isPrivate?(
+                <SubkeyGenerationModal selectedKey={selectedKey} isVisible={isSubkeyGenerationVisible} setIsVisible={setIsSubkeyGenerationVisible} onConfirm={()=>{}}/>
+            ):(null)
         }
-        </tbody>
-    </table>
+        <table className="table table-zebra">
+            <thead>
+                <tr>
+                    <th>{t("isKeyValid")}</th>
+                    <th>{t("keyID")}</th>
+                    <th>{t("creationDate")}</th>
+                    <th>{t("expirationDate")}</th>
+                    <th>{t("type")}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {
+                rows
+            }
+            </tbody>
+        </table>
+        {
+            selectedKey.isPrivate?(
+                <div className="flex gap-2 mx-0 mt-2">
+                    <button className="btn btn-success" onClick={handleAddNewSubkey}>{t("addNewSubkey")}</button>
+                </div>
+            ):(null)
+        }
+        
+    </div>
+    
     )
 }

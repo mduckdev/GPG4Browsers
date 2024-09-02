@@ -1,5 +1,4 @@
 import { KeyDetailsProps} from "@src/types";
-import { Key, Subkey } from "openpgp";
 import React, { useEffect, useRef, useState } from "react";
 import BasicKeyInfo from "../tabs/KeyDetails/BasicKeyInfo";
 import AllKeys from "../tabs/KeyDetails/AllKeys";
@@ -12,8 +11,8 @@ import { useAppDispatch } from "@src/redux/store";
 import { deletePrivateKey } from "@src/redux/privateKeySlice";
 import { deletePublicKey } from "@src/redux/publicKeySlice";
 import { setLastSection } from "@src/redux/historySlice";
-import ExportKeysModal from "./ExportKeys";
-export default function KeyDetails({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
+import ExportKeysModal from "./ExportKeysModal";
+export default function KeyDetailsModal({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();
   const [isConfirmModalVisible,setIsConfirmModalVisible] = useState<boolean>(false);
   const [isExportModalVisible,setIsExportModalVisible] = useState<boolean>(false);
@@ -77,7 +76,7 @@ export default function KeyDetails({title,text, isVisible, selectedKey, setIsVis
 
           <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label={t("keys")} />
           <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-              <AllKeys selectedKey={selectedKey} />
+              <AllKeys selectedKey={selectedKey} setParentVisible={setIsVisible}/>
               
           </div>
           </div>

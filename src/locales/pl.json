@@ -121,6 +121,9 @@
       "search":"Wyszukaj",
       "noKeyFound":"Nie znaleziono klucza",
       "keyFoundAlert":"Znaleziono klucz, kliknij zapisz aby dodać go do swojego pęku kluczy",
-      "filterLocalKeysPlaceholder":"Wyszukaj po imieniu, adresie email lub odcisku palca klucza"
+      "filterLocalKeysPlaceholder":"Wyszukaj po imieniu, adresie email lub odcisku palca klucza",
+      "addNewSubkey":"Dodaj nowy podklucz",
+      "signOnly":"Tylko podpisywanie",
+      "encryptOnly":"Tylko szyfrowanie"
     }
   }
