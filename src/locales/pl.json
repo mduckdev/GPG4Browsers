@@ -120,6 +120,7 @@
       "searchKeyQueryPlaceholder":"Wpisz adres email, odcisk palca klucza lub ID klucza",
       "search":"Wyszukaj",
       "noKeyFound":"Nie znaleziono klucza",
-      "keyFoundAlert":"Znaleziono klucz, kliknij zapisz aby dodać go do swojego pęku kluczy"
+      "keyFoundAlert":"Znaleziono klucz, kliknij zapisz aby dodać go do swojego pęku kluczy",
+      "filterLocalKeysPlaceholder":"Wyszukaj po imieniu, adresie email lub odcisku palca klucza"
     }
   }

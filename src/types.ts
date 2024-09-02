@@ -127,7 +127,8 @@ export interface KeyDetailsProps extends modalProps,KeyDetailsTabProps{}
 export interface TextInputProps extends PassphraseTextInputProps{
     icon:IconProp,
     placeholder:string,
-    labelText:string
+    labelText:string,
+    className?:string
 }
 export interface CertificationsTableProps{
     certifications:SignaturePacket[],

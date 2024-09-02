@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PassphraseTextInputProps, TextInputProps } from "@src/types";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function TextInput({value,setOnChange,icon,placeholder,labelText}:TextInputProps) {
+export default function TextInput({value,setOnChange,icon,placeholder,labelText,className}:TextInputProps) {
   const { t } = useTranslation();
 
 return(
-    <div className="max-w-sm my-3">
+    <div className={`max-w-sm my-3 ${className}`}>
         <label  className="block text-sm font-medium" >{labelText}</label>
 
         <div className="relative">

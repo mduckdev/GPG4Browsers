@@ -5,6 +5,8 @@ import { Key, PrimaryUser } from "openpgp";
 import React, { useEffect, useState } from "react";
 import KeyDetails from "../modals/KeyDetails";
 import { useTranslation } from "react-i18next";
+import TextInput from "../TextInput";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 export default function KeysManagment({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
 
@@ -12,6 +14,8 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
     const publicKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const [mergedKeysList,setMergedKeysList] = useState<keyInfo[]>([]);
     const [selectedKey,setSelectedKey] = useState<keyInfo>();
+    const [searchQuery,setSearchQuery] = useState<string>("");
+
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
 
@@ -35,6 +39,8 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
                 <KeyDetails isVisible={isModalVisible} setIsVisible={setIsModalVisible} selectedKey={selectedKey} onConfirm={handleConfirm} />
             ):(null)
         }
+        <TextInput className="mx-auto" labelText="" placeholder={t("filterLocalKeysPlaceholder")} icon={faMagnifyingGlass} value={searchQuery} setOnChange={setSearchQuery} />
+
         <table className="table table-zebra">
             {/* head */}
             <thead>
@@ -49,16 +55,25 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
             </thead>
             <tbody>
             {/* row 1 */}
-            {mergedKeysList.map((currentKey: keyInfo ,index:number) => (
-                <tr key={index}>
-                    <td>{currentKey.primaryName}</td>
-                    <td>{currentKey.primaryEmail}</td>
-                    <td>{currentKey.fingerprint}</td>
-                    <td>{currentKey.creationDate.toLocaleDateString()}</td>
-                    <td className={(currentKey.isExpired)?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
-                    <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>{t("details")}</button></td>
-                </tr>
-            ))}
+            {mergedKeysList.map((currentKey: keyInfo ,index:number) => {
+                if(searchQuery==="" || 
+                    currentKey.primaryName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    currentKey.primaryEmail.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    currentKey.fingerprint.toLowerCase().includes(searchQuery.toLowerCase())){
+                    return(
+                        <tr key={index}>
+                            <td>{currentKey.primaryName}</td>
+                            <td>{currentKey.primaryEmail}</td>
+                            <td>{currentKey.fingerprint}</td>
+                            <td>{currentKey.creationDate.toLocaleDateString()}</td>
+                            <td className={(currentKey.isExpired)?("text-error"):("text-success")}>{currentKey.expirationDate}</td>
+                            <td><button className="btn btn-info" onClick={()=>{setSelectedKey(currentKey);setIsModalVisible(true);}}>{t("details")}</button></td>
+                        </tr>
+                    )
+                }else {
+                    return null;
+                }
+            })}
             </tbody>
         </table>
         <div className="flex justify-end m-5">
