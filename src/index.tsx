@@ -6,7 +6,7 @@ import "./css/app.css";
 import App from "./App";
 import { storeBootstrap } from "./redux/store";
 import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
+import { initReactI18next } from "react-i18next";
 import { languages } from "./locales/";
 import detector from "i18next-browser-languagedetector";
 i18n

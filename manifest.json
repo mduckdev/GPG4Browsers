@@ -23,6 +23,13 @@
             "128": "icons/icon128.png"
         }
     },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["js/content.js"],
+            "css":["js/app.css"]
+        }
+    ],
     "icons": {
         "48": "icons/icon48.png",
         "96": "icons/icon96.png"
@@ -35,7 +42,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "**/*"
+                "icons/*",
+                "js/*"
             ],
             "extension_ids": []
         }
