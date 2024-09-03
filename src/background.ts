@@ -1,4 +1,3 @@
-import * as openpgp from "openpgp"
 import browser from "webextension-polyfill"
 browser.contextMenus.create({
     id: "encrypt-selected",
@@ -14,20 +13,6 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 
-async function encryptMessage(message: string, publicKey: string) {
-    const pgpKey = await openpgp.readKey({ armoredKey: publicKey });
-    const pgpMessage = await openpgp.createMessage({ text: message });
-
-    const response = await openpgp.encrypt({
-        message: pgpMessage,
-        encryptionKeys: pgpKey,
-    }).then((encrypted) => {
-        return encrypted;
-    }).catch(e => console.error(e))
-    return response;
-}
-
-
 browser.runtime.onMessage.addListener(async (request, sender) => {
     switch (request.action) {
         case "open-encryption-tab": {
@@ -40,3 +25,4 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
 
     }
 });
+

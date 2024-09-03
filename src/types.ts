@@ -150,3 +150,18 @@ export interface SearchKeyModalProps extends modalProps{
     parentAlerts:alert[],
     setParentAlerts:React.Dispatch<React.SetStateAction<alert[]>>,
 }
+
+export interface ProcessPageResults{
+    newHtmlElements:HTMLElement[],
+    newPgpMessages:string[],
+}
+export interface ContentProps{
+    pgpValue:string
+}
+export enum pgpType{
+    encryptedMessage,
+    signedInlineMessage,
+    signedCleartextMessage,
+    publicKey,
+    privateKey
+}

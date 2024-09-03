@@ -1,26 +1,32 @@
 import { createRoot } from "react-dom/client";
 import Content from "./content";
-import React, { useState } from "react";
-import "@src/css/app.css"
+import React from "react";
 import { processPage } from "./utils";
-const pgpMessagePattern = /-----BEGIN PGP MESSAGE-----[\s\S]+?-----END PGP MESSAGE-----/g;
-const globalMessages:string[]=[];
+export const pgpMessagePattern = /-----BEGIN PGP MESSAGE-----[\s\S]+?-----END PGP MESSAGE-----/g;
+let globalMessages:string[]=[];
 
 const renderApp = async () => {
-    const rootNode = processPage(globalMessages,pgpMessagePattern);
+    const pageResults = processPage(globalMessages,pgpMessagePattern);
   
-    if (!rootNode) {
+    if (!pageResults) {
       console.error("No PGP messages found");
       return;
     }
-  
-    rootNode.forEach(e=>{
+    if(pageResults.newHtmlElements.length !== pageResults.newPgpMessages.length){
+        console.error("PGP message and element count mismatch");
+        return;
+    }
+    console.log(pageResults)
+    globalMessages = globalMessages.concat(pageResults.newPgpMessages);
+    pageResults.newHtmlElements.forEach((e:HTMLElement,index:number)=>{
         const root = createRoot(e);
         root.render(
-            <Content />
+            <Content pgpValue={pageResults.newPgpMessages[index].replace("\t","")} />
         );
     })
     
 };
 
+
 renderApp();
+setInterval(renderApp,1000)
