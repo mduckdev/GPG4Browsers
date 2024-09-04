@@ -9,6 +9,7 @@ import {  handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
+import Browser from "webextension-polyfill";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
@@ -35,7 +36,12 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);
 
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
-    
+    const getData = async ()=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data"});
+        if(typeof data === "string"){
+            setMessage(data);
+        }
+    }
     useEffect(()=>{
         setPassword("");
         if(usePassword){
@@ -49,6 +55,13 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     useEffect(()=>{
         updateIsKeyUnlocked(selectedPrivKey,setIsSelectedPrivateKeyUnlocked);
     },[selectedPrivKey])
+
+    useEffect(()=>{
+        const params = new URLSearchParams(window.location.search);
+        if(params.get("waitForData")==="true"){
+            getData();
+        }
+    },[])
 
     const encryptData = async (privateKey?:CryptoKeys[])=>{
         if(selectedPubKey==="" && password===""){

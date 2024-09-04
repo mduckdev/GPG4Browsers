@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
 import Content from "./content";
 import React from "react";
+import "./css/style.css"
 import { processPage } from "./utils";
 export const pgpMessagePattern = /-----BEGIN PGP MESSAGE-----[\s\S]+?-----END PGP MESSAGE-----/g;
 let globalMessages:string[]=[];
-
 const renderApp = async () => {
     const pageResults = processPage(globalMessages,pgpMessagePattern);
   
@@ -16,7 +16,6 @@ const renderApp = async () => {
         console.error("PGP message and element count mismatch");
         return;
     }
-    console.log(pageResults)
     globalMessages = globalMessages.concat(pageResults.newPgpMessages);
     pageResults.newHtmlElements.forEach((e:HTMLElement,index:number)=>{
         const root = createRoot(e);
@@ -29,4 +28,4 @@ const renderApp = async () => {
 
 
 renderApp();
-setInterval(renderApp,1000)
+// setInterval(renderApp,1000)

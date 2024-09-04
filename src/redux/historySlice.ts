@@ -7,10 +7,13 @@ export const historySlice = createSlice({
         setLastSection:(state,action:PayloadAction<string>)=>{
             state.lastSection = action.payload;
         },
+        setLastTab:(state,action:PayloadAction<string>)=>{
+            state.lastTab = action.payload;
+        },
     },
 })
 
-export const { setLastSection} = historySlice.actions
+export const { setLastSection, setLastTab} = historySlice.actions
 
 
 export default historySlice.reducer

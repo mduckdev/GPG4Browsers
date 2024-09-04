@@ -1,15 +1,14 @@
 import { RootState, useAppSelector } from "@src/redux/store";
 import {  DecryptMessageResult, Key, KeyID, Message, PrivateKey, Subkey, decrypt, readKey, readMessage, readPrivateKey } from "openpgp";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/modals/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
 import { CryptoKeys, MainProps, decryptedFile, file } from "@src/types";
-import { convertUint8ToUrl, formatBytes, getPrivateKeysAndPasswords, getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import {  getPrivateKeysAndPasswords, getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import ShowFilesInTable from "@src/components/ShowFilesInTable";
 import { useTranslation } from "react-i18next";
+import Browser from "webextension-polyfill";
 export default function Decryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
@@ -28,8 +27,28 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
     const [decryptionInProgress,setDecryptionInProgress] = useState<boolean>(false);
 
+    const attempToDecrypt = async (message:string)=>{
+        const messageParsed = await readMessage({armoredMessage:message}).catch(e=>{return null});
+        if(messageParsed){
+            decryptData();
+        }
+    }
+    useEffect(()=>{
+        attempToDecrypt(encryptedMessage);
+    },[encryptedMessage]);
+    useEffect(()=>{
+        const params = new URLSearchParams(window.location.search);
+        if(params.get("waitForData")==="true"){
+            getData();
+        }
+    },[]);
 
-
+    const getData = async ()=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data"});
+        if(typeof data === "string"){
+            setEncryptedMessage(data);
+        }
+    }
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
             const privKey:PrivateKey|null = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
@@ -89,7 +108,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         const pgpMessage:Message<string>|null = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
         if(pgpMessage){
             const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
-            if(messageEncryptionKeys.length===0){
+            if(messageEncryptionKeys.length===0){ //password
                 decryptionKeysNeeded.push({data:encryptedMessage,isPrivateKey:false,isUnlocked:false})
             }else{
                 const messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
@@ -101,7 +120,10 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 if(messageDecryptionKey && 
                     decryptionKeysNeeded.filter(e=>e.data===messageDecryptionKey).length===0
                 ){
-                    decryptionKeysNeeded.push({data:messageDecryptionKey,isPrivateKey:true,isUnlocked:false});
+                    const messageDecryptionKeyParsed = await readPrivateKey({armoredKey:messageDecryptionKey}).catch(e => { console.error(e); return null });
+                    if(messageDecryptionKeyParsed){
+                        decryptionKeysNeeded.push({data:messageDecryptionKey,isPrivateKey:true,isUnlocked:messageDecryptionKeyParsed.isDecrypted()});
+                    }
                 }
             }
             
@@ -117,6 +139,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             if(!areAllPrivateKeysDecrypted){
                     setIsModalVisible(true);
                     return;
+            }else{
+                parsedDecryptionData = decryptionKeysNeeded;
             }
         }else{
             parsedDecryptionData=decryptionData;
@@ -132,6 +156,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     const decryptMessage = async (pgpMessage:Message<string>,decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
+        console.log(decryptionKeys)
         if(encryptedMessage===""){
             return;
         }

@@ -6,7 +6,7 @@ import { User } from "openpgp";
 
 export interface sectionsPropsInterface{
     activeSection:string,
-    setActiveSection:Function
+    setActiveSection:React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface sectionsWithPreviousInterface extends sectionsPropsInterface{
@@ -14,6 +14,9 @@ export interface sectionsWithPreviousInterface extends sectionsPropsInterface{
 }
 export interface MainProps extends sectionsWithPreviousInterface{
     isPopup:boolean;
+    activeTab?:string,
+    setActiveTab?:React.Dispatch<React.SetStateAction<string>>,
+
 }
 export interface DecryptionProps{
     isPopup:boolean;
@@ -156,7 +159,7 @@ export interface ProcessPageResults{
     newPgpMessages:string[],
 }
 export interface ContentProps{
-    pgpValue:string
+    pgpValue:string,
 }
 export enum pgpType{
     encryptedMessage,

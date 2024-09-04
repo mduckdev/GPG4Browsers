@@ -41,7 +41,9 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "icons/*",
+                "icons/icon128.png",
+                "icons/icon96.png",
+                "icons/icon48.png",
                 "js/*"
             ],
             "extension_ids": []

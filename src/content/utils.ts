@@ -54,14 +54,15 @@ export const parsePgpData = async (value:string) =>{
     const message:Message<string>|null = await readMessage({armoredMessage:value}).catch(e=>{console.log("Not a message");return null})
     if(message){
         if(!message.getText()){
-            return {object:message,text:"Decrypt"};
+            return {object:message,text:"decrypt"};
 
         }else{
-            return {object:message,text:"Verify"};
+            return {object:message,text:"verify"};
         }
     }
     const signature:Signature|null = await readSignature({armoredSignature:value}).catch(e=>{console.log("Not an inline signature");return null})
     if(signature){
-        return {object:signature,text:"Verify"};
+        return {object:signature,text:"verify"};
     }
 }
+
