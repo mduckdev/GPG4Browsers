@@ -3,11 +3,10 @@ import Content from "./content";
 import React from "react";
 import "./css/style.css"
 import { processPage } from "./utils";
-export const pgpMessagePattern = /-----BEGIN PGP MESSAGE-----[\s\S]+?-----END PGP MESSAGE-----/g;
+
 let globalMessages:string[]=[];
 const renderApp = async () => {
-    const pageResults = processPage(globalMessages,pgpMessagePattern);
-  
+    const pageResults = processPage(globalMessages);
     if (!pageResults) {
       console.error("No PGP messages found");
       return;

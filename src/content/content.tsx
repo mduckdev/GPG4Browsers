@@ -27,6 +27,14 @@ export default function Content({pgpValue}:ContentProps) {
         Browser.runtime.sendMessage({action:"set-encrypted-data",data:pgpValue});
         return;
       }
+      case "verify":{
+        Browser.runtime.sendMessage({action:"set-signed-data",data:pgpValue});
+        return;
+      }
+      case "addKey":{
+        Browser.runtime.sendMessage({action:"set-key-data",data:pgpValue});
+        return;
+      }
     }
   }
  
@@ -38,14 +46,12 @@ export default function Content({pgpValue}:ContentProps) {
   return(
     <div>
     {
-      imgBlob?(
       <img 
         src={imgBlob?URL.createObjectURL(imgBlob):("")} 
         title={buttonText}  style={{cursor:'pointer'}} 
         onClick={handleClick}
       >
       </img>
-      ):(null)
     }
      
     </div>

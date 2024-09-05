@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
@@ -13,6 +13,7 @@ import { handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
 import KeyGeneration from "../modals/KeyGenerationModal";
 import SearchKeysModal from "../modals/SearchKeyModal";
 import KeyGenerationModal from "../modals/KeyGenerationModal";
+import Browser from "webextension-polyfill";
 
 
 export default function AddKey({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -33,8 +34,22 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     const [isSearchModalVisible,setIsSearchModalVisible] = useState<boolean>(false);
 
 
+    const getData = async ()=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data"});
+        if(typeof data === "string"){
+            setKeyValue(data);
+        }
+    }
+    useEffect(()=>{
+        const params = new URLSearchParams(window.location.search);
+        if(params.get("waitForData")==="true"){
+            getData();
+        }
+    },[]);
+    const goBack = ()=>{
+        setActiveSection(previousTab === activeSection ? "EncryptionAndDecryption": previousTab);
 
-
+    }
     const saveToKeyring = async (confirmedKeysList?:Key[])=>{
         let keys:Key[]|null  = null;
         let unconfirmedKeysList:keyUpdates[]=[];
@@ -125,14 +140,15 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
         }
         
         
-        setActiveSection(previousTab);
+        // setActiveSection(previousTab);
+        goBack()
     }
 
     return (
     <div className="p-4 flex flex-col items-center">
     <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
-    <SearchKeysModal isVisible={isSearchModalVisible} setKeyValue={setKeyValue} setParentAlerts={setAlerts} parentAlerts={alerts} setIsVisible={setIsSearchModalVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
-    <KeyGenerationModal isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => setActiveSection(previousTab)} onClose={()=>{}}/>
+    <SearchKeysModal isVisible={isSearchModalVisible} setKeyValue={setKeyValue} setParentAlerts={setAlerts} parentAlerts={alerts} setIsVisible={setIsSearchModalVisible} onConfirm={() => goBack()} onClose={()=>{}}/>
+    <KeyGenerationModal isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => goBack()} onClose={()=>{}}/>
         <h2 className="text-2xl font-bold mb-4 text-center">{t("addToKeyring")}</h2>
         <label htmlFor="keyValue" className="text-lg mb-2">{t("pasteArmoredKey")}:</label>
         <textarea required value={keyValue} onChange={(e)=>{setKeyValue(e.target.value)}} id="keyValue" className="w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 rounded-md py-2 px-4 mb-4 "></textarea>
@@ -160,7 +176,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
             <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
             <button className="w-full btn btn-info mb-4" onClick={()=>{setIsSearchModalVisible(true)}}><FontAwesomeIcon icon={faMagnifyingGlass} /> {t("searchOnKeyServer")}</button>
             <button className="w-full btn btn-success mb-4" onClick={()=>{setIsKeyGenerationVisible(true)}}>{t("generateNewKey")}</button>
-            <button id="backButton" className="w-full btn mb-4" onClick={() => setActiveSection(previousTab)}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
+            <button id="backButton" className="w-full btn mb-4" onClick={() => goBack()}><FontAwesomeIcon icon={faArrowLeft} /> {t("back")}</button>
         </div>
                 <Alert alerts={alerts} setAlerts={setAlerts}/>
     </div>

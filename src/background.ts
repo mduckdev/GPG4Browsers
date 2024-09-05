@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill"
 import { storeBootstrap } from "./redux/store";
-import { setLastTab } from "./redux/historySlice";
+import { setLastSection, setLastTab } from "./redux/historySlice";
 let globalBlob:Blob|undefined;
 let globalData:string|undefined;
 browser.contextMenus.create({
@@ -9,7 +9,6 @@ browser.contextMenus.create({
     contexts: ["selection"],
 });
 const openWindowAndWaitForData = ()=>{
-
     browser.windows.create({ url: "popup.html?popup=false&waitForData=true"})
 }
 setInterval(()=>{
@@ -49,12 +48,28 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             return globalBlob;
         }
         case "get-data":{
-            return globalData;
+            let temp = globalData;
+            globalData=undefined;
+            return temp;
         }
         case "set-encrypted-data":{
             globalData=request.data;
             const store = await storeBootstrap();
             store.dispatch(setLastTab("decryption"))
+            openWindowAndWaitForData();
+            return Promise.resolve(true);
+        }
+        case "set-signed-data":{
+            globalData=request.data;
+            const store = await storeBootstrap();
+            store.dispatch(setLastTab("validatingSignatures"))
+            openWindowAndWaitForData();
+            return Promise.resolve(true);
+        }
+        case "set-key-data":{
+            globalData=request.data;
+            const store = await storeBootstrap();
+            store.dispatch(setLastSection("AddKey"))
             openWindowAndWaitForData();
             return Promise.resolve(true);
         }

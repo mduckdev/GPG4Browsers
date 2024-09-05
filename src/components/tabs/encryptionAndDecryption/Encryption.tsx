@@ -47,7 +47,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
         if(usePassword){
             setSelectedPubKey("");
         }else{
-            setSelectedPubKey(privKeysList[0]?.keyValue || "");
+            setSelectedPubKey(pubKeysList[0]?.keyValue || "");
         }
     },[usePassword])
 

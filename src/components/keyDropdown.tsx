@@ -8,7 +8,7 @@ export default function KeyDropdown({label,style,keysList,isActive,setSelectedKe
 
     const [isOpen,setIsOpen]=useState<boolean>(false);
     const [searchQuery,setSearchQuery]=useState<string>("");
-    const [dropdownText,setDropdownText]=useState<string>(keysList[0]?.userID || t("selectKey"));
+    const [dropdownText,setDropdownText]=useState<string>(keysList[0]?(keysList[0].userID || keysList[0].fingerprint.toUpperCase()):t("selectKey"));
     const ref = useRef<HTMLDivElement | null>(null);
 
 
@@ -52,9 +52,9 @@ export default function KeyDropdown({label,style,keysList,isActive,setSelectedKe
                                 {
                                     keysList.map( (element:IPublicKey,index:number)=>{
                                         if(searchQuery === ""){
-                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
+                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID || element.fingerprint.toUpperCase()}</option>
                                         }else if(element.userID.toLowerCase().includes(searchQuery.toLowerCase()) || element.fingerprint.toLowerCase().includes(searchQuery.toLowerCase())){
-                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID}</option>
+                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID || element.fingerprint.toUpperCase()}</option>
                                         }else{
                                             return null;
                                         }
