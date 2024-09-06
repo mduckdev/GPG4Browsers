@@ -19,7 +19,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
 
     const setupKeys = async()=>{
-        const keys = await mergeKeysLists(privateKeysList,publicKeysList);
+        const keys = await mergeKeysLists(publicKeysList,privateKeysList);
         const keysInfo = await parseToKeyinfoObject(keys,t);
         setMergedKeysList(keysInfo);
     }

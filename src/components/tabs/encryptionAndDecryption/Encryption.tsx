@@ -56,6 +56,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     
     useEffect(()=>{
         updateIsKeyUnlocked(selectedPrivKey,setIsSelectedPrivateKeyUnlocked);
+        
     },[selectedPrivKey])
 
     useEffect(()=>{

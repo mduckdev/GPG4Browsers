@@ -318,8 +318,18 @@ export const verifyCertification = async(user:User,publicKeys:PublicKey[],signat
 export const getPrivateKey = (privateKeysList:IPrivateKey[],preferences:preferences):string =>{
   return privateKeysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint)?.keyValue || privateKeysList[0]?.keyValue || "";
 }
-export const getDropdownText = (keysList:IPrivateKey[]|IPublicKey[])=>{
-  if(typeof keysList){
-
+export const getDropdownText = (keysList:IPrivateKey[]|IPublicKey[],preferences:preferences,selectKeyText:string):string=>{
+  if(keysList[0]){
+    if("isUnlocked" in keysList[0]){
+      let keyFound = keysList.find(e=>e.fingerprint === preferences.defaultSigningKeyFingerprint);
+      if(!keyFound){
+        keyFound=keysList[0];
+      }
+      return keyFound.userID || keyFound.fingerprint.toUpperCase();
+    }
+    return keysList[0].userID || keysList[0].fingerprint.toUpperCase();
   }
+  return selectKeyText;
+  
+
 }

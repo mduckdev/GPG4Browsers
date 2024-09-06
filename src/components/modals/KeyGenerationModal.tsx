@@ -37,7 +37,7 @@ export default function KeyGenerationModal({title,text, isVisible, setIsVisible 
         const email:string = userID?.user.userID?.email || "";
         const userIDString:string = userID?.user.userID?.userID || "";
 
-        dispatch(addPrivateKey({keyValue:newKey.privateKey.armor(),userID:userIDString,name:name,email:email, fingerprint:newKey.privateKey.getFingerprint()}));
+        dispatch(addPrivateKey({keyValue:newKey.privateKey.armor(),userID:userIDString,name:name,email:email, fingerprint:newKey.privateKey.getFingerprint(),isUnlocked:newKey.privateKey.isDecrypted()}));
         dispatch(addPublicKey({keyValue:newKey.publicKey.armor(),userID:userIDString,name:name,email:email, fingerprint:newKey.publicKey.getFingerprint()}));
     
         if(onConfirm){

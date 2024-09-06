@@ -1,14 +1,17 @@
 import { IPublicKey } from "@src/redux/publicKeySlice";
+import { RootState, useAppSelector } from "@src/redux/store";
 import { KeyDropdownProps } from "@src/types";
+import { getDropdownText } from "@src/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function KeyDropdown({label,style,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {
     const { t } = useTranslation();
+    const preferences = useAppSelector((state:RootState)=>state.preferences);
 
     const [isOpen,setIsOpen]=useState<boolean>(false);
     const [searchQuery,setSearchQuery]=useState<string>("");
-    const [dropdownText,setDropdownText]=useState<string>(keysList[0]?(keysList[0].userID || keysList[0].fingerprint.toUpperCase()):t("selectKey"));
+    const [dropdownText,setDropdownText]=useState<string>(getDropdownText(keysList,preferences,t("selectKey")));
     const ref = useRef<HTMLDivElement | null>(null);
 
 

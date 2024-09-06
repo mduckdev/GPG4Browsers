@@ -5,7 +5,8 @@ export interface IPrivateKey {
     userID:string,
     name:string,
     email:string,
-    fingerprint:string
+    fingerprint:string,
+    isUnlocked:boolean
 }
 
 interface updatePayload{
@@ -27,6 +28,7 @@ export const privateKeySlice = createSlice({
                     name:action.payload.name,
                     email:action.payload.email,
                     fingerprint:action.payload.fingerprint,
+                    isUnlocked:action.payload.isUnlocked
                     })
             }else{
                 state = state.map((e)=>{

@@ -133,7 +133,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
             if(key.isPrivate()){
                 const pubKeyFromPrivKey = key.toPublic();
     
-                dispatch(addPrivateKey({keyValue:key.armor(),userID:userIDString,name:name,email:email, fingerprint:keyFingerprint}));
+                dispatch(addPrivateKey({keyValue:key.armor(),userID:userIDString,name:name,email:email, fingerprint:keyFingerprint,isUnlocked:key.isDecrypted()}));
                 dispatch(addPublicKey({keyValue:pubKeyFromPrivKey.armor(),userID:userIDString,name:name,email:email, fingerprint:pubKeyFromPrivKey.getFingerprint()}));
                 
             }else{

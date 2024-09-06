@@ -48,7 +48,7 @@ export default function SubkeyGenerationModal({title,text,selectedKey, isVisible
     const name:string = userID?.user.userID?.name || "";
     const email:string = userID?.user.userID?.email || "";
     const userIDString:string = userID?.user.userID?.userID || "";
-    dispatch(addPrivateKey({keyValue:keyToSave.armor(),fingerprint:keyToSave.getFingerprint(),userID:userIDString,name:name,email:email}));
+    dispatch(addPrivateKey({keyValue:keyToSave.armor(),fingerprint:keyToSave.getFingerprint(),userID:userIDString,name:name,email:email, isUnlocked:keyToSave.isDecrypted()}));
     dispatch(addPublicKey({keyValue:keyToSave.toPublic().armor(),fingerprint:keyToSave.getFingerprint(),userID:userIDString,name:name,email:email}))
     dispatch(setLastSection("KeysManagment"));
     window.location.reload();
