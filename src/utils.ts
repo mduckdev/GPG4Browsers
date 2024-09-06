@@ -1,6 +1,6 @@
 import {  DecryptMessageResult, Key, PrimaryUser, PrivateKey, PublicKey, SignaturePacket, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
-import { useEffect, useRef } from "react";
-import { CryptoKeys, file, keyInfo, preferences } from "./types";
+import { ReactNode, useEffect, useRef } from "react";
+import { CryptoKeys, alert, file, keyInfo, preferences } from "./types";
 import { IPublicKey } from "./redux/publicKeySlice";
 import { IPrivateKey } from "./redux/privateKeySlice";
 import { User } from "openpgp";
@@ -317,4 +317,9 @@ export const verifyCertification = async(user:User,publicKeys:PublicKey[],signat
 
 export const getPrivateKey = (privateKeysList:IPrivateKey[],preferences:preferences):string =>{
   return privateKeysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint)?.keyValue || privateKeysList[0]?.keyValue || "";
+}
+export const getDropdownText = (keysList:IPrivateKey[]|IPublicKey[])=>{
+  if(typeof keysList){
+
+  }
 }

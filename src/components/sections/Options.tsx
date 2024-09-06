@@ -10,7 +10,6 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
-
     const preferences = useAppSelector((state:RootState)=>state.preferences);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 

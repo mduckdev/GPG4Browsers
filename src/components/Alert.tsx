@@ -1,32 +1,41 @@
+import { faCircleCheck, faCircleExclamation, faCircleInfo, faCircleXmark, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { alert, alertProps } from "@src/types";
-import React from "react";
+import React, { ReactNode } from "react";
 export default function Alert({alerts,setAlerts}:alertProps) {
 
     const handleDismiss = (index: number) => {
         const updatedAlerts = [...alerts];
         updatedAlerts.splice(index, 1);
         setAlerts(updatedAlerts);
-      };
+    };
+    const getIcon = (alert:alert):ReactNode=>{
+        if(alert.style === "error"){
+            return <FontAwesomeIcon icon={faCircleXmark} />
+        }
+        if(alert.style === "success"){
+            return <FontAwesomeIcon icon={faCircleCheck} />
+        }
+        if(alert.style === "info"){
+            return <FontAwesomeIcon icon={faCircleInfo} />
+
+        }
+        if(alert.style === "warning"){
+            return <FontAwesomeIcon icon={faCircleExclamation} />
+        }
+        return null;
+    }
 
     return (
-        <div className="toast toast-center z-50">
+        <div className="fixed bottom-2 flex flex-col gap-2 z-50">
             {
                 alerts.map((e:alert,index:number)=>(
-            <div className={`alert ${e.style}`} key={index}>
-                <span>{e.text}</span>
-                <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current hover:cursor-pointer"
-                fill="none"
-                viewBox="0 0 24 24"
-                onClick={() => handleDismiss(index)}
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div role="alert" className={`alert alert-${e.style} flex relative`} key={index}>
+                <FontAwesomeIcon className="absolute top-2 right-2 cursor-pointer hover:opacity-50" icon={faXmark} onClick={e=>handleDismiss(index)} />
+                {
+                    getIcon(e)
+                }
+                <span className="mr-5">{e.text}</span>
             </div>
                 ))
             }

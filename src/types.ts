@@ -72,7 +72,7 @@ export interface decryptedFile extends file{
 }
 export interface alert{
     text:string,
-    style:"alert-error"|"alert-warning"|"alert-success"|"alert-info"|""
+    style:"error"|"warning"|"success"|"info"|""
 }
 export interface alertProps{
     alerts:alert[],

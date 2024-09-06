@@ -89,7 +89,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         ...alerts,
         {
           text:e,
-          style:"alert-error"
+          style:"error"
         }
       ]);
       return undefined;
