@@ -5,7 +5,7 @@ import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import { IPrivateKey, addPrivateKey } from "@src/redux/privateKeySlice";
 import {  Key,PrimaryUser, readKeys} from "openpgp"
 import { IPublicKey, addPublicKey } from "@src/redux/publicKeySlice";
-import { MainProps, alert, file, keyUpdates, sectionsWithPreviousInterface } from "@src/types";
+import { MainProps, alert, file, keyUpdates, preferences, sectionsWithPreviousInterface } from "@src/types";
 import Alert from "../Alert";
 import KeyUpdateModal from "../modals/KeyUpdateModal";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,8 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     const dispatch = useAppDispatch();
     const privateKeysList:IPrivateKey[] = useAppSelector((state:RootState)=>state.privateKeys);
     const publicKeysList:IPublicKey[] = useAppSelector((state:RootState)=>state.publicKeys);
+    const preferences:preferences = useAppSelector((state:RootState)=>state.preferences);
+
     
     const [selectedFiles, setSelectedFiles] = useState<file[]>([])
 
@@ -113,7 +115,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
             return false;
         }
         
-        if(!allKeysUnique && !confirmedKeysList){
+        if(!allKeysUnique && !confirmedKeysList && preferences.askAboutUpdatingKey){
             setKeysToConfirm(unconfirmedKeysList);
             setIsConfirmModalVisible(true);
             return;

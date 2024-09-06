@@ -81,7 +81,7 @@
       "back":"Wstecz",
       "confirmUpdatingTheKey":"Potwierdź aktualizację klucza",
       "myKeys":"Moje klucze",
-      "validatingSignatures":"Weryfikacja sygnatur",
+      "validatingSignatures":"Weryfikacja podpisów",
       "type":"Typ",
       "algorithm":"Algorytm",
       "signatures":"Sygnatury",
@@ -124,6 +124,12 @@
       "filterLocalKeysPlaceholder":"Wyszukaj po imieniu, adresie email lub odcisku palca klucza",
       "addNewSubkey":"Dodaj nowy podklucz",
       "signOnly":"Tylko podpisywanie",
-      "encryptOnly":"Tylko szyfrowanie"
+      "encryptOnly":"Tylko szyfrowanie",
+      "signing":"Podpisywanie",
+      "defaultSigningKey":"Domyślny klucz do podpisywania",
+      "saveChanges":"Zapisz zmiany",
+      "askBeforeUpdatingKey":"Pytaj przed aktualizacją klucza",
+      "keyServers":"Serwery kluczy (po jednym na wiersz)",
+      "detectMessages":"Wykrywaj wiadomości PGP oraz klucze na stronach"
     }
   }

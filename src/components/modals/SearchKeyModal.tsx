@@ -5,8 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {  faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import TextInput from "../TextInput";
 import Alert from "../Alert";
+import { RootState, useAppSelector } from "@src/redux/store";
 export default function SearchKeysModal({ isVisible, setIsVisible, setKeyValue, parentAlerts, setParentAlerts ,onClose, onConfirm}:SearchKeyModalProps) {
     const { t } = useTranslation();
+    const preferences = useAppSelector((state:RootState)=>state.preferences);
+
     const [searchQuery,setSearchQuery] = useState<string>("")
     const modalRef = useRef<HTMLDialogElement|null>(null);
     const [alerts,setAlerts] = useState<alert[]>([]);
@@ -16,37 +19,41 @@ export default function SearchKeysModal({ isVisible, setIsVisible, setKeyValue, 
         setIsVisible(false)
     }
     const handleQuery = async()=>{
-        const URL:string = "https://keys.openpgp.org//pks/lookup?op=get&options=mr&search=";
+        const query:string = "/pks/lookup?op=get&options=mr&search=";
         if(searchQuery===""){
             return;
         }
         const urlEscapedQuery:string = encodeURI(searchQuery);
-        const response = await fetch(`${URL}${urlEscapedQuery}`).then((e:Response)=>{
-            if(e.headers.get("content-type")==="application/pgp-keys"){
-                return e.text()
+
+        for(const URL of preferences.keyServers){
+            const response = await fetch(`${URL}${query}${urlEscapedQuery}`).then((e:Response)=>{
+                if(e.headers.get("content-type")==="application/pgp-keys"){
+                    return e.text()
+                }else{
+                    return null
+                }
+            }).catch(e=>{console.error(e);return null});
+            if(!response){
+                setAlerts([
+                    ...alerts,
+                    {
+                        text:t("noKeyFound"),
+                        style:"alert-error"
+                    }
+                ])
             }else{
-                return null
+                setKeyValue(response);
+                setParentAlerts([
+                    ...parentAlerts,
+                    {
+                        text:t("keyFoundAlert"),
+                        style:"alert-success"
+                    }
+                ])
+                setIsVisible(false);
             }
-        }).catch(e=>{console.error(e);return null});
-        if(!response){
-            setAlerts([
-                ...alerts,
-                {
-                    text:t("noKeyFound"),
-                    style:"alert-error"
-                }
-            ])
-        }else{
-            setKeyValue(response);
-            setParentAlerts([
-                ...parentAlerts,
-                {
-                    text:t("keyFoundAlert"),
-                    style:"alert-success"
-                }
-            ])
-            setIsVisible(false);
         }
+        
     }
 
   useEffect(() => {

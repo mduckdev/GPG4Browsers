@@ -5,7 +5,7 @@ import PassphraseModal from "../../modals/PassphraseModal";
 import OutputTextarea from "../../OutputTextarea";
 import KeyDropdown from "../../keyDropdown";
 import { CryptoKeys, MainProps, file, sectionsPropsInterface } from "@src/types";
-import { getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
+import { getPrivateKey, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const { t } = useTranslation();
 
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
+    const preferences = useAppSelector((state:RootState)=>state.preferences);
 
     const [message,setMessage] = useState<string>("");
     const [signedMessage,setSignedMessage] = useState<string>("");
@@ -21,7 +22,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const [files,setFiles] = useState<file[]>([])
     const [fileSignatures, setFileSignatures] = useState<file[]>([])
 
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
+    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(getPrivateKey(privKeysList,preferences));
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);

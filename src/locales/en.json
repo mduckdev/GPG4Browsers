@@ -124,6 +124,12 @@
         "filterLocalKeysPlaceholder":"Search by name, email address or key fingerprint",
         "addNewSubkey":"Add new subkey",
         "signOnly":"Signing only",
-        "encryptOnly":"Encryption only"
+        "encryptOnly":"Encryption only",
+        "signing":"Signing",
+        "defaultSigningKey":"Default signing key",
+        "saveChanges":"Save changes",
+        "askBeforeUpdatingKey":"Ask before updating the key",
+        "keyServers":"Key servers (one per line)",
+        "detectMessages":"Detect PGP messages and keys on websites"
     }
 }

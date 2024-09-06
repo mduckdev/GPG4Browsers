@@ -5,6 +5,7 @@ import { useDispatch,TypedUseSelectorHook, useSelector } from 'react-redux';
 import privateKeyReducer from './privateKeySlice';
 import themeReducer from './themeSlice';
 import historyReducer from './historySlice';
+import preferencesReducer from './preferencesSlice';
 
 const saveToBrowserStorage = (state:RootState) => {
   try {
@@ -30,7 +31,8 @@ const rootReducer = combineReducers({
   publicKeys: publicKeyReducer,
   privateKeys:privateKeyReducer,
   theme:themeReducer,
-  history:historyReducer
+  history:historyReducer,
+  preferences:preferencesReducer
 });
 
 const tempStore = configureStore({

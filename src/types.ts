@@ -168,3 +168,9 @@ export enum pgpType{
     publicKey,
     privateKey
 }
+export interface preferences{
+    defaultSigningKeyFingerprint:string,
+    askAboutUpdatingKey:boolean,
+    keyServers:string[],
+    detectMessages:boolean
+}

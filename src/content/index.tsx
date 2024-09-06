@@ -3,6 +3,8 @@ import Content from "./content";
 import React from "react";
 import "./css/style.css"
 import { processPage } from "./utils";
+import { storeBootstrap, useAppSelector } from "@src/redux/store";
+import { getDetectMessages } from "@src/redux/preferencesSlice";
 
 let globalMessages:string[]=[];
 const renderApp = async () => {
@@ -25,6 +27,10 @@ const renderApp = async () => {
     
 };
 
-
-renderApp();
-// setInterval(renderApp,1000)
+(async  () => {
+    const store = await storeBootstrap();
+    if(getDetectMessages(store.getState())){
+        renderApp();
+        setInterval(renderApp,1000)
+    }
+})();

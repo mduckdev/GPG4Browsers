@@ -5,7 +5,7 @@ import PassphraseModal from "@src/components/modals/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
 import { CryptoKeys, MainProps, file } from "@src/types";
-import {  handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
+import {  getPrivateKey, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
@@ -16,9 +16,11 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
+    const preferences = useAppSelector((state:RootState)=>state.preferences);
+
 
     const [selectedPubKey,setSelectedPubKey] =  useState<string>(pubKeysList[0]?.keyValue || "");
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(privKeysList[0]?.keyValue || "");
+    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(getPrivateKey(privKeysList,preferences));
 
     const [message,setMessage] =  useState<string>("");
     const [password,setPassword] =  useState<string>("");

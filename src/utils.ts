@@ -1,6 +1,6 @@
 import {  DecryptMessageResult, Key, PrimaryUser, PrivateKey, PublicKey, SignaturePacket, VerificationResult, VerifyMessageResult, decrypt, decryptKey, readKey, readMessage, readPrivateKey } from "openpgp";
 import { useEffect, useRef } from "react";
-import { CryptoKeys, file, keyInfo } from "./types";
+import { CryptoKeys, file, keyInfo, preferences } from "./types";
 import { IPublicKey } from "./redux/publicKeySlice";
 import { IPrivateKey } from "./redux/privateKeySlice";
 import { User } from "openpgp";
@@ -313,4 +313,8 @@ export const verifyCertification = async(user:User,publicKeys:PublicKey[],signat
   //@ts-ignore this function is not available in typescript :(
   const result = await user.verifyCertificate(signature,publicKeys).catch(e=>{return null})
   return result;
+}
+
+export const getPrivateKey = (privateKeysList:IPrivateKey[],preferences:preferences):string =>{
+  return privateKeysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint)?.keyValue || privateKeysList[0]?.keyValue || "";
 }
