@@ -1,11 +1,12 @@
 import { RootState, useAppDispatch, useAppSelector } from "@src/redux/store";
 import React, { useState } from "react";
 import KeyDropdown from "../keyDropdown";
-import { MainProps, preferences } from "@src/types";
+import { MainProps, alert, preferences } from "@src/types";
 import { useTranslation } from "react-i18next";
 import { getPrivateKey } from "@src/utils";
 import { setPreferences } from "@src/redux/preferencesSlice";
 import { PrivateKey, readPrivateKey } from "openpgp";
+import Alert from "../Alert";
 export default function Options({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
     const [askAboutUpdatingKey,setAskAboutUpdatingKey] =  useState<boolean>(preferences.askAboutUpdatingKey);
     const [detectMessages,setDetectMessages] =  useState<boolean>(preferences.detectMessages);
     const [keyServers,setKeyServers] =  useState<string[]>(preferences.keyServers);
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
     const saveChanges = async ()=>{
         const key:PrivateKey|null = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
@@ -27,7 +29,13 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
             keyServers:keyServers
         }
         dispatch(setPreferences(newPreferences));
-       
+       setAlerts([
+        ...alerts,
+        {
+            text:t("successfullySaved"),
+            style:"success"
+        }
+       ])
     }
 
     return (
@@ -50,6 +58,8 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
 
 
         <button className="btn btn-info mt-2" onClick={saveChanges}>{t("saveChanges")}</button>
+        <Alert alerts={alerts} setAlerts={setAlerts} />
+
     </div>
     )
 }

@@ -130,6 +130,7 @@
         "saveChanges":"Save changes",
         "askBeforeUpdatingKey":"Ask before updating the key",
         "keyServers":"Key servers (one per line)",
-        "detectMessages":"Detect PGP messages and keys on websites"
+        "detectMessages":"Detect PGP messages and keys on websites",
+        "successfullySaved":"Successfully saved changes"
     }
 }

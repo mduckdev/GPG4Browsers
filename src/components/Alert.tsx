@@ -27,10 +27,10 @@ export default function Alert({alerts,setAlerts}:alertProps) {
     }
 
     return (
-        <div className="fixed bottom-2 flex flex-col gap-2 z-50">
+        <div className="fixed bottom-2 flex flex-col gap-2 z-50 left-1/2 transform -translate-x-1/2">
             {
                 alerts.map((e:alert,index:number)=>(
-            <div role="alert" className={`alert alert-${e.style} flex relative`} key={index}>
+            <div role="alert" className={`alert ${"alert-"+e.style} flex relative`} key={index}>
                 <FontAwesomeIcon className="absolute top-2 right-2 cursor-pointer hover:opacity-50" icon={faXmark} onClick={e=>handleDismiss(index)} />
                 {
                     getIcon(e)

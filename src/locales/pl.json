@@ -130,6 +130,7 @@
       "saveChanges":"Zapisz zmiany",
       "askBeforeUpdatingKey":"Pytaj przed aktualizacją klucza",
       "keyServers":"Serwery kluczy (po jednym na wiersz)",
-      "detectMessages":"Wykrywaj wiadomości PGP oraz klucze na stronach"
+      "detectMessages":"Wykrywaj wiadomości PGP oraz klucze na stronach",
+      "successfullySaved":"Pomyślnie zapisano zmiany"
     }
   }
