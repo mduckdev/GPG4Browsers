@@ -116,7 +116,7 @@
       "privateKey":"Klucz prywatny",
       "privateKeyWarning":"UWAGA! To jest twój klucz prywatny. Nie udostępniaj go nikomu.",
       "searchOnKeyServer":"Wyszukaj na serwerze kluczy",
-      "searchKeyQueryLabel":"Wyszukaj na serwerze kluczy keys.openpgp.org",
+      "searchKeyQueryLabel":"Wyszukaj na serwerach kluczy",
       "searchKeyQueryPlaceholder":"Wpisz adres email, odcisk palca klucza lub ID klucza",
       "search":"Wyszukaj",
       "noKeyFound":"Nie znaleziono klucza",

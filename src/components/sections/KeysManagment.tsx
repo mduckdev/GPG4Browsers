@@ -24,7 +24,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
         setMergedKeysList(keysInfo);
     }
     useEffect(()=>{
-        setupKeys()
+        setupKeys();
     },[])
     
     const handleConfirm = async ()=>{
@@ -38,7 +38,7 @@ export default function KeysManagment({activeSection,isPopup,previousTab,setActi
                 <KeyDetailsModal isVisible={isModalVisible} setIsVisible={setIsModalVisible} selectedKey={selectedKey} onConfirm={handleConfirm} />
             ):(null)
         }
-        <TextInput className="mx-auto" labelText="" placeholder={t("filterLocalKeysPlaceholder")} icon={faMagnifyingGlass} value={searchQuery} setOnChange={setSearchQuery} />
+        <TextInput  className="mx-auto max-w-xl" labelText="" placeholder={t("filterLocalKeysPlaceholder")} icon={faMagnifyingGlass} value={searchQuery} setOnChange={setSearchQuery} />
 
         <table className="table table-zebra">
             {/* head */}

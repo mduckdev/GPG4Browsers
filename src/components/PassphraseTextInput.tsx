@@ -9,7 +9,7 @@ export default function PassphraseTextInput({value,setOnChange}:PassphraseTextIn
     const [showPassword,setShowPassword] = useState<boolean>(false);
 
     return (
-      <div className="max-w-sm">
+      <div className="">
         <label  className="block text-sm font-medium mt-3" >{t("passphrase")}</label>
 
         <div className="relative">

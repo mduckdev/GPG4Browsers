@@ -219,7 +219,7 @@ export const mergeKeysLists = async (publicKeys:IPublicKey[],privateKeys:IPrivat
     if(index === -1){
       result.push(key);
     }else{
-      result[index] === key;
+      result[index] = key;
     }
   }
   return result;

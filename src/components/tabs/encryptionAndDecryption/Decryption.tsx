@@ -175,7 +175,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
 
 
-        const results = await getSignatureInfo(decryptedMessage.signatures).catch(e=>{console.error(e);return null});
+        const results = await getSignatureInfo(decryptedMessage.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
         if(!results){
             setSignatureMessages("Message authenticity could not be verified.");
@@ -213,7 +213,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 continue;
             }
 
-            let results = await getSignatureInfo(decryptedMessage.signatures).catch(e=>{console.error(e);return null});
+            let results = await getSignatureInfo(decryptedMessage.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
             let verified:boolean;
             
             if(!results){

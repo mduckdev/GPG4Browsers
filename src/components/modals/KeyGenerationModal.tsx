@@ -67,31 +67,33 @@ export default function KeyGenerationModal({title,text, isVisible, setIsVisible 
   }, [isVisible]);
     return (
       <dialog ref={modalRef} id="my_confirm_modal" className="modal" onCancel={handleESC}>
-      <div className="modal-box w-11/12 max-w-5xl">
-        <TextInput labelText={t("name")} placeholder={t("enterName")} icon={faUser} value={name} setOnChange={setName} />
-        <TextInput labelText={t("email")} placeholder={t("enterEmail")} icon={faAt} value={email} setOnChange={setEmail} />
-        <label className="mt-4">
-          {t("setExpirationDate")}
-          <select className="select select-info focus:outline-none w-full max-w-xs" onChange={(e)=>{setExpirationDate(Number(e.target.value))}} defaultValue={31536000}>
-            <option disabled>{t("setExpirationDate")}</option>
-            <option value={31536000}>{t("1year")}</option>
-            <option value={63072000}>{t("2years")}</option>
-            <option value={94608000}>{t("3years")}</option>
-            <option value={157680000}>{t("5years")}</option>
-            <option value={0}>{t("never")}</option>
-          </select>
-        </label>
-        
-        <PassphraseTextInput value={passphrase} setOnChange={setPassphrase} />
-
-          <div className="w-full flex flex-col mt-2">
-              <div className="flex gap-2 mx-0">
-                <button className="btn btn-info" onClick={handleConfirm}>{t("confirm")}</button>
-                <button className="btn" onClick={()=>setIsVisible(false)}>{t("cancel")}</button>
-              </div>
+        <div className="modal-box max-w-xl flex flex-col">
+          <div className="max-w-md">
+            <TextInput labelText={t("name")} placeholder={t("enterName")} icon={faUser} value={name} setOnChange={setName} />
+            <TextInput labelText={t("email")} placeholder={t("enterEmail")} icon={faAt} value={email} setOnChange={setEmail} />
+            <div className="my-2 flex flex-col w-full">
+              <label>{t("setExpirationDate")}</label>
+              <select className="select select-info focus:outline-none w-full" onChange={(e)=>{setExpirationDate(Number(e.target.value))}} defaultValue={31536000}>
+                <option disabled>{t("setExpirationDate")}</option>
+                <option value={31536000}>{t("1year")}</option>
+                <option value={63072000}>{t("2years")}</option>
+                <option value={94608000}>{t("3years")}</option>
+                <option value={157680000}>{t("5years")}</option>
+                <option value={0}>{t("never")}</option>
+              </select>
+            </div>
+            
+            <PassphraseTextInput value={passphrase} setOnChange={setPassphrase} />
           </div>
-      </div>
-     
+          
+
+            <div className="w-full flex flex-col mt-2">
+                <div className="flex gap-2 mx-0">
+                  <button className="btn btn-info" onClick={handleConfirm}>{t("confirm")}</button>
+                  <button className="btn" onClick={()=>setIsVisible(false)}>{t("cancel")}</button>
+                </div>
+            </div>
+        </div>
       </dialog>
     )
 }

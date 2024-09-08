@@ -133,7 +133,7 @@ export interface TextInputProps extends PassphraseTextInputProps{
     icon:IconProp,
     placeholder:string,
     labelText:string,
-    className?:string
+    className?:string,
 }
 export interface CertificationsTableProps{
     certifications:SignaturePacket[],

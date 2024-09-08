@@ -116,7 +116,7 @@
         "privateKey":"Private key",
         "privateKeyWarning":"WARNING! This is your private key. Never share it with anyone.",
         "searchOnKeyServer":"Search on key server",
-        "searchKeyQueryLabel":"Search on keys.openpgp.org key server",
+        "searchKeyQueryLabel":"Search on key servers",
         "searchKeyQueryPlaceholder":"Enter email address, key fingerprint or key ID",
         "search":"Search",
         "noKeyFound":"No key found",

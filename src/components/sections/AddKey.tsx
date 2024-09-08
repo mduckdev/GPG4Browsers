@@ -174,7 +174,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
                         </div>
         )
         }
-        <div className={`buttons ${isPopup?('w-3/5'):('w-1/5')}`}>
+        <div className={`buttons ${isPopup?('w-4/5'):('w-1/5')}`}>
             <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
             <button className="w-full btn btn-info mb-4" onClick={()=>{setIsSearchModalVisible(true)}}><FontAwesomeIcon icon={faMagnifyingGlass} /> {t("searchOnKeyServer")}</button>
             <button className="w-full btn btn-success mb-4" onClick={()=>{setIsKeyGenerationVisible(true)}}>{t("generateNewKey")}</button>
