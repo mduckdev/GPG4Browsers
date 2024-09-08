@@ -27,6 +27,8 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);
     const [signingInProgress,setSigningInProgress] = useState<boolean>(false);
+    const [isCleartext,setIsCleartex] = useState<boolean>(true);
+
 
     
     useEffect(()=>{
@@ -52,13 +54,18 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
             return;
             //show alert with info
         }
-        
-        const messageParsed:CleartextMessage|null = await createCleartextMessage({text:message}).catch(e => { console.error(e); return null });
-        if(!messageParsed){
-            console.log("Failed to generate parse message");
-            return;
+        let signature:string|null;
+        if(isCleartext){
+            const messageParsed = await createCleartextMessage({text:message}).catch(e => { console.error(e); return null });
+            if(!messageParsed) return //alert maybe in future
+             signature = await sign({message:messageParsed,signingKeys:privateKeys}).catch(e => { console.error(e); return null });
+
+        }else{
+            const messageParsed = await createMessage({text:message}).catch(e => { console.error(e); return null });
+            if(!messageParsed) return
+             signature = await sign({message:messageParsed,signingKeys:privateKeys}).catch(e => { console.error(e); return null });
         }
-        const signature:string|null = await sign({message:messageParsed,signingKeys:privateKeys}).catch(e => { console.error(e); return null });
+        
         if(!signature){
             console.log("Failed to generate signature");
             return;
@@ -119,8 +126,14 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
                     )
                 }
                 <KeyDropdown isActive={true} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                <div className="form-control">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">{t("cleartextSignature")}</span>
+                            <input type="checkbox" className="checkbox" checked={isCleartext} onChange={(e)=>{setIsCleartex(e.target.checked);}}/>
+                        </label>
+                    </div>
             <button 
-                className="mt-4 btn btn-info" onClick={()=>signData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])}>{t("signMessage")}</button>
+                className="mt-2 btn btn-info" onClick={()=>signData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])}>{t("signMessage")}</button>
         </div>
     {       
         (signedMessage === "") ? (

@@ -1,8 +1,9 @@
+import OutputTextarea from "@src/components/OutputTextarea";
 import ShowFilesInTable from "@src/components/ShowFilesInTable";
 import { RootState, useAppSelector } from "@src/redux/store";
 import { MainProps, decryptedFile, file, sectionsPropsInterface } from "@src/types";
 import { getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop, removeFileExtension, testFileExtension } from "@src/utils";
-import { CleartextMessage, Key, Message, Signature, VerifyMessageResult, createMessage, readCleartextMessage, readKey, readSignature, verify } from "openpgp";
+import { CleartextMessage, Key, Message, Signature, VerifyMessageResult, createMessage, readCleartextMessage, readKey, readMessage, readSignature, verify } from "openpgp";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 export default function ValidatingSignatures({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
@@ -11,6 +12,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     const pubKeysList = useAppSelector((state:RootState)=>state.publicKeys);
 
     const [signedMessage,setSignedMessage] = useState<string>("");
+    const [signedValue,setSignedValue] = useState<string>("");
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
     const [signatureMessages,setSignatureMessages] = useState<string>("");
 
@@ -33,14 +35,20 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         if(signedMessage===""){
             return;
         }
-        const signatureParsed:CleartextMessage|null = await readCleartextMessage({cleartextMessage:signedMessage}).catch(e => { console.error(e); return null });
-        if(!signatureParsed){
-            setSignatureMessages(t("failedToParseTheMessage"));
-            setIsMessageVerified(false);
-            return;
+        let signatureInfo:VerifyMessageResult<string> | null
+        let signatureParsed:CleartextMessage|Message<string>|null = await readCleartextMessage({cleartextMessage:signedMessage}).catch(e => { console.error(e); return null });
+        if(!signatureParsed){ // is not cleartext message
+            signatureParsed = await readMessage({armoredMessage:signedMessage}).catch(e => { console.error(e); return null });
+            if(!signatureParsed){ //is not cleartext or inline 
+                setSignatureMessages(t("failedToParseTheMessage"));
+                setIsMessageVerified(false);
+                return;
+            }else{ //is inline
+                 signatureInfo = await verify({message:signatureParsed,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
+            }
+        }else{ //is cleartext
+            signatureInfo = await verify({message:signatureParsed,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
         }
-
-        const signatureInfo:VerifyMessageResult<string> | null = await verify({message:signatureParsed,verificationKeys:publicKeys}).catch(e => { console.error(e); return null });
 
         if(!signatureInfo){
             setSignatureMessages(t("failedToCheckSignatures"));
@@ -48,7 +56,8 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             return;
         }
 
-        const results = await getSignatureInfo(signatureInfo.signatures).catch(e=>{console.error(e);return null});
+
+        const results = await getSignatureInfo(signatureInfo.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
         if(!results){
             setSignatureMessages(t("messageUnathenticated"));
@@ -56,7 +65,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             return;
         }
         
-
+        setSignedValue(signatureInfo.data);
         setIsMessageVerified(true)
         setSignatureMessages(results.join("\n"));
     }
@@ -105,7 +114,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }
-            let results = await getSignatureInfo(signatureInfo.signatures).catch(e=>{console.error(e);return null});
+            let results = await getSignatureInfo(signatureInfo.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
     
             let verified:boolean;
                 
@@ -158,6 +167,18 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
                 className="mt-4 btn btn-info" onClick={verifyData}>{t("verify")}</button>
         </div>
         <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
+        {       
+        (signedValue === "") ? (
+            null
+        ) : (
+            <label>
+                {t("message")}:
+                <OutputTextarea textValue={signedValue}/>
+            </label>
+        )
+        
+    }
+
         {
         validatingInProgress?(
             <button className="btn btn-square">

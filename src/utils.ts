@@ -11,7 +11,7 @@ export const usePrevious = (value:string):string =>{
     useEffect(() => {
       ref.current = value;
     });
-    return ref.current || "encryption";
+    return ref.current || "";
   }
 export const removeFileExtension = (input:string):string=>{
   return input.replace(extensionsRegex, '')
@@ -19,14 +19,32 @@ export const removeFileExtension = (input:string):string=>{
 export const testFileExtension = (input:string):boolean=>{
   return extensionsRegex.test(input);
 }
-export const getSignatureInfo = async (signatures:VerificationResult[]):Promise<string[]>=>{
+
+
+export const getSignatureInfo = async (signatures:VerificationResult[],publicKeys:Key[],t:TFunction<"translation", undefined>):Promise<string[]>=>{
   let verified = false;
   let info = [];
   for (const signature of signatures){
       let isVerified:boolean = await signature.verified.catch(e=>{return false});
       if(isVerified){
-          info.push(`Valid signature with keyID: ${signature.keyID.toHex()}`)
-          verified=true;
+        const packets = (await signature.signature).packets;
+        if(packets.length === 1){
+          let foundKeys=[]
+          for await(const publicKey of publicKeys){
+            const key = await publicKey.getSigningKey(signature.keyID).catch(e=>{return null});
+            if(key?.getFingerprint()===uint8ArrayToHex((packets[0].issuerFingerprint || new Uint8Array))){
+              foundKeys.push(publicKey);
+            }
+          }
+          if(foundKeys.length===1){
+            info.push(`${t("validSignatureFrom")} ${(await foundKeys[0].getPrimaryUser().catch(e=>{return null}))?.user.userID?.userID}, ${t("primaryKeyFingerprint")}: ${foundKeys[0].getFingerprint()}, ${t("keyID")}: ${signature.keyID.toHex()}`);
+          }else{
+            info.push(`${t("validSignatureWithKeyID")}: ${signature.keyID.toHex()}`)
+          }
+        }else{
+          info.push(`${t("validSignatureWithKeyID")}: ${signature.keyID.toHex()}`)
+        }
+        verified=true;
       }
   }
   if(!verified){

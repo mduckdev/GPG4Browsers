@@ -131,6 +131,9 @@
         "askBeforeUpdatingKey":"Ask before updating the key",
         "keyServers":"Key servers (one per line)",
         "detectMessages":"Detect PGP messages and keys on websites",
-        "successfullySaved":"Successfully saved changes"
+        "successfullySaved":"Successfully saved changes",
+        "cleartextSignature":"Cleartext signature",
+        "validSignatureFrom":"Valid signature from",
+        "primaryKeyFingerprint":"Primary key fingerprint"
     }
 }

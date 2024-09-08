@@ -131,6 +131,9 @@
       "askBeforeUpdatingKey":"Pytaj przed aktualizacją klucza",
       "keyServers":"Serwery kluczy (po jednym na wiersz)",
       "detectMessages":"Wykrywaj wiadomości PGP oraz klucze na stronach",
-      "successfullySaved":"Pomyślnie zapisano zmiany"
+      "successfullySaved":"Pomyślnie zapisano zmiany",
+      "cleartextSignature":"Podpis czystym tekstem",
+      "validSignatureFrom":"Prawidłowy podpis od",
+      "primaryKeyFingerprint":"Odcisk palca klucza głównego"
     }
   }

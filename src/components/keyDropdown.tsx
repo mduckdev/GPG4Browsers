@@ -23,8 +23,9 @@ export default function KeyDropdown({label,style,keysList,isActive,setSelectedKe
       };
 
     useEffect(()=>{
-        if(keysList[0]){
-            setSelectedKey(keysList[0].keyValue);
+        let isDefaultKeyAvailable=keysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint);
+        if(isDefaultKeyAvailable){
+            setSelectedKey(isDefaultKeyAvailable.keyValue);
         }
         document.addEventListener("click", handleClickOutside);
         return () => {
