@@ -5,11 +5,13 @@ import PassphraseModal from "@src/components/modals/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
 import { CryptoKeys, MainProps, file } from "@src/types";
-import {  getPrivateKey, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
+import {  getPrivateKey, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
 import Browser from "webextension-polyfill";
+import { IPublicKey } from "@src/redux/publicKeySlice";
+import { IPrivateKey } from "@src/redux/privateKeySlice";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
@@ -19,8 +21,9 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const preferences = useAppSelector((state:RootState)=>state.preferences);
 
 
-    const [selectedPubKey,setSelectedPubKey] =  useState<string>(pubKeysList[0]?.keyValue || "");
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(getPrivateKey(privKeysList,preferences));
+    const [selectedPubKeys,setSelectedPubKeys] =  useState<IPublicKey[]>([pubKeysList[0]] || []);
+    const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKey(privKeysList,preferences) || []);
+    const [dataToUnlock,setDataToUnlock] = useState<CryptoKeys[]>(privateKeysToCryptoKeys(getPrivateKey(privKeysList,preferences)));
 
     const [message,setMessage] =  useState<string>("");
     const [password,setPassword] =  useState<string>("");
@@ -35,7 +38,6 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [usePassword,setUsePassword] = useState<boolean>(false);
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
-    const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);
 
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
     const getData = async ()=>{
@@ -44,20 +46,20 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
             setMessage(data);
         }
     }
+
     useEffect(()=>{
         setPassword("");
         if(usePassword){
-            setSelectedPubKey("");
+            setSelectedPubKeys([]);
         }else{
-            setSelectedPubKey(pubKeysList[0]?.keyValue || "");
+            setSelectedPubKeys([pubKeysList[0]] || []);
         }
     },[usePassword])
 
     
     useEffect(()=>{
-        updateIsKeyUnlocked(selectedPrivKey,setIsSelectedPrivateKeyUnlocked);
-        
-    },[selectedPrivKey])
+        setDataToUnlock(privateKeysToCryptoKeys(selectedPrivKeys))
+    },[selectedPrivKeys])
 
     useEffect(()=>{
         const params = new URLSearchParams(window.location.search);
@@ -66,24 +68,42 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
         }
     },[])
 
-    const encryptData = async (privateKey?:CryptoKeys[])=>{
-        if(selectedPubKey==="" && password===""){
+    const encryptData = async (privateKey:CryptoKeys[])=>{
+        console.log(privateKey)
+        if(selectedPubKeys?.length===0 && password===""){
             return;
         }
-        const pgpKey:Key|null = await readKey({armoredKey:selectedPubKey}).catch(e => { console.error(e); return null });
-        if(!pgpKey && password === ""){
+        const pgpKeys:Key[] = [];
+        if(selectedPubKeys){
+            for await(const pubkey of selectedPubKeys){
+                let key = await readKey({armoredKey:pubkey.keyValue}).catch(e => { console.error(e); return null })
+                if(key){
+                    pgpKeys.push(key);
+                }
+            }
+        }
+        
+        
+        if(pgpKeys.length === 0 && password === ""){
             return;
         }
-        let pgpSignKey:PrivateKey|null=null;
-        if(privateKey && privateKey[0].isPrivateKey && typeof privateKey[0].data === "string"){
-            pgpSignKey = await readPrivateKey({armoredKey:privateKey[0].data}).catch(e=>{console.error(e);return null});
+        let pgpSignKey:PrivateKey[]=[];
+        for await(const privKey of privateKey){
+            if(privKey && privKey.isPrivateKey && typeof privKey.data === "string"){
+                let key = await readPrivateKey({armoredKey:privKey.data}).catch(e=>{console.error(e);return null});
+                if(key){
+                    pgpSignKey.push(key)
+                }
+            }
         }
-        if(pgpSignKey && !pgpSignKey.isDecrypted() && signMessage){
+        const areAllDecrypted = pgpSignKey.every(e=>e.isDecrypted())
+        
+        if(pgpSignKey.length>0 && !areAllDecrypted && signMessage){
             setIsModalVisible(true);
             return;
         }
-        encryptMessage(pgpKey?[pgpKey]:password,pgpSignKey?[pgpSignKey]:null);
-        encryptFiles(pgpKey?[pgpKey]:password,pgpSignKey?[pgpSignKey]:null);
+        encryptMessage(pgpKeys.length!==0?pgpKeys:password,pgpSignKey.length>0?pgpSignKey:null);
+        encryptFiles(pgpKeys.length!==0?pgpKeys:password,pgpSignKey.length>0?pgpSignKey:null);
 
     }
 
@@ -156,7 +176,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     return (
         <div className="p-6">
-            <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={encryptData} onClose={()=>{}} />
+            <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={dataToUnlock} onConfirm={encryptData} onClose={()=>{}} />
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
                 <label htmlFor="message" className="block text-sm font-medium ">{t("message")}</label>
                 <textarea id="message"
@@ -186,11 +206,11 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                         usePassword?(
                             <PassphraseTextInput value={password} setOnChange={setPassword} />
                         ):(
-                            <KeyDropdown isActive={true} label={t("recipientPubKey")} keysList={pubKeysList} setSelectedKey={setSelectedPubKey} setActiveSection={setActiveSection} />
+                            <KeyDropdown selectedKeys={selectedPubKeys} isActive={true} label={t("recipientPubKey")} keysList={pubKeysList} setSelectedKeys={setSelectedPubKeys} setActiveSection={setActiveSection} />
                         )
                     }
                     
-                    <KeyDropdown isActive={signMessage} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                    <KeyDropdown selectedKeys={selectedPrivKeys} isActive={signMessage} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
                     
                     <div className="form-control">
                         <label className="label cursor-pointer">
@@ -207,7 +227,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                 </div>
                 <button id="encryptBtn"
                     className="btn btn-info mt-1" onClick={async ()=>{
-                        encryptData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])
+                        encryptData(dataToUnlock)
                     }}>{t("encrypt")}</button>
             </div>
 

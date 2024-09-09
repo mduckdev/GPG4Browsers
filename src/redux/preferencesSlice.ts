@@ -3,7 +3,7 @@ import { preferences } from '@src/types';
 import { RootState } from './store';
 
 const defaultState:preferences = {
-    defaultSigningKeyFingerprint:"",
+    defaultSigningKeyFingerprints:[],
     askAboutUpdatingKey:true,
     keyServers:["https://keys.openpgp.org","https://keys.mailvelope.com"],
     detectMessages:true
@@ -13,8 +13,8 @@ export const preferencesSlice = createSlice({
     name: 'preferences',
     initialState:defaultState,
     reducers: {
-        setDefaultSigningKey:(state,action:PayloadAction<string>)=>{
-            state.defaultSigningKeyFingerprint = action.payload;
+        setDefaultSigningKey:(state,action:PayloadAction<string[]>)=>{
+            state.defaultSigningKeyFingerprints = action.payload;
         },
         setAskAboutUpdatingKey:(state,action:PayloadAction<boolean>)=>{
             state.askAboutUpdatingKey = action.payload;

@@ -38,7 +38,7 @@ export default function SearchKeysModal({ isVisible, setIsVisible, setKeyValue, 
                     ...alerts,
                     {
                         text:t("noKeyFound"),
-                        style:"error"
+                        style:"alert-error"
                     }
                 ])
             }else{
@@ -47,7 +47,7 @@ export default function SearchKeysModal({ isVisible, setIsVisible, setKeyValue, 
                     ...parentAlerts,
                     {
                         text:t("keyFoundAlert"),
-                        style:"success"
+                        style:"alert-success"
                     }
                 ])
                 setIsVisible(false);

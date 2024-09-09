@@ -25,13 +25,14 @@ export interface outputTextareaPropsInterface{
     textValue:string
 }
 
-export interface KeyDropdownProps{
+export interface KeyDropdownProps<T extends IPublicKey|IPrivateKey>{
     style?:string,
     label:string,
     isActive:boolean,
-    keysList:IPublicKey[]|IPrivateKey[],
-    setSelectedKey:Function,
-    setActiveSection:Function
+    keysList:T[],
+    selectedKeys:T[],
+    setSelectedKeys:React.Dispatch<React.SetStateAction<T[]>>,
+    setActiveSection:React.Dispatch<React.SetStateAction<string>>
 }
 export interface modalProps{
     title?:string;
@@ -72,7 +73,7 @@ export interface decryptedFile extends file{
 }
 export interface alert{
     text:string,
-    style:"error"|"warning"|"success"|"info"|""
+    style:"alert-error"|"alert-warning"|"alert-success"|"alert-info"|""
 }
 export interface alertProps{
     alerts:alert[],
@@ -169,8 +170,15 @@ export enum pgpType{
     privateKey
 }
 export interface preferences{
-    defaultSigningKeyFingerprint:string,
+    defaultSigningKeyFingerprints:string[],
     askAboutUpdatingKey:boolean,
     keyServers:string[],
     detectMessages:boolean
+}
+export interface DropdownItemProps<T extends IPublicKey | IPrivateKey>{
+    keyData:IPublicKey|IPrivateKey,
+    selectedKeys:T[],
+    setSelectedKeys:React.Dispatch<React.SetStateAction<T[]>>,
+    isCheckedDefault:boolean,
+    setDropdownText:React.Dispatch<React.SetStateAction<string>>
 }

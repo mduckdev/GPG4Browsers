@@ -5,15 +5,17 @@ import PassphraseModal from "../../modals/PassphraseModal";
 import OutputTextarea from "../../OutputTextarea";
 import KeyDropdown from "../../keyDropdown";
 import { CryptoKeys, MainProps, file, sectionsPropsInterface } from "@src/types";
-import { getPrivateKey, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, updateIsKeyUnlocked } from "@src/utils";
+import { getPrivateKey, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
+import { IPrivateKey } from "@src/redux/privateKeySlice";
 
 export default function Signing({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
 
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
     const preferences = useAppSelector((state:RootState)=>state.preferences);
+    const [dataToUnlock,setDataToUnlock] = useState<CryptoKeys[]>(privateKeysToCryptoKeys(getPrivateKey(privKeysList,preferences)));
 
     const [message,setMessage] = useState<string>("");
     const [signedMessage,setSignedMessage] = useState<string>("");
@@ -22,18 +24,18 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const [files,setFiles] = useState<file[]>([])
     const [fileSignatures, setFileSignatures] = useState<file[]>([])
 
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(getPrivateKey(privKeysList,preferences));
+    const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKey(privKeysList,preferences) || []);
+
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
-    const [isSelectedPrivateKeyUnlocked,setIsSelectedPrivateKeyUnlocked] = useState<boolean>(false);
     const [signingInProgress,setSigningInProgress] = useState<boolean>(false);
     const [isCleartext,setIsCleartex] = useState<boolean>(true);
 
 
     
     useEffect(()=>{
-        updateIsKeyUnlocked(selectedPrivKey,setIsSelectedPrivateKeyUnlocked);
-    },[selectedPrivKey])
+        setDataToUnlock(privateKeysToCryptoKeys(selectedPrivKeys))
+    },[selectedPrivKeys])
 
     const signData = async (signingKeys:CryptoKeys[])=>{
         if(signingKeys.length===0){
@@ -100,7 +102,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     }
     return (
     <div className="p-6">
-        <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} dataToUnlock={[{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} setIsVisible={setIsModalVisible} onConfirm={signData} onClose={()=>{}} />
+        <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} dataToUnlock={dataToUnlock} setIsVisible={setIsModalVisible} onConfirm={signData} onClose={()=>{}} />
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">{t("message")}</label>
             <textarea id="message"
@@ -125,7 +127,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
                         </div>
                     )
                 }
-                <KeyDropdown isActive={true} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+                <KeyDropdown isActive={true} label={t("signWithPrivKey")} selectedKeys={selectedPrivKeys} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
                 <div className="form-control">
                         <label className="label cursor-pointer">
                             <span className="label-text">{t("cleartextSignature")}</span>
@@ -133,7 +135,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
                         </label>
                     </div>
             <button 
-                className="mt-2 btn btn-info" onClick={()=>signData([{data:selectedPrivKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}])}>{t("signMessage")}</button>
+                className="mt-2 btn btn-info" onClick={()=>signData(dataToUnlock)}>{t("signMessage")}</button>
         </div>
     {       
         (signedMessage === "") ? (

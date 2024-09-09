@@ -10,17 +10,17 @@ export default function Alert({alerts,setAlerts}:alertProps) {
         setAlerts(updatedAlerts);
     };
     const getIcon = (alert:alert):ReactNode=>{
-        if(alert.style === "error"){
+        if(alert.style === "alert-error"){
             return <FontAwesomeIcon icon={faCircleXmark} />
         }
-        if(alert.style === "success"){
+        if(alert.style === "alert-success"){
             return <FontAwesomeIcon icon={faCircleCheck} />
         }
-        if(alert.style === "info"){
+        if(alert.style === "alert-info"){
             return <FontAwesomeIcon icon={faCircleInfo} />
 
         }
-        if(alert.style === "warning"){
+        if(alert.style === "alert-warning"){
             return <FontAwesomeIcon icon={faCircleExclamation} />
         }
         return null;
@@ -30,7 +30,7 @@ export default function Alert({alerts,setAlerts}:alertProps) {
         <div className="fixed bottom-2 flex flex-col gap-2 z-50 left-1/2 transform -translate-x-1/2">
             {
                 alerts.map((e:alert,index:number)=>(
-            <div role="alert" className={`alert ${"alert-"+e.style} flex relative`} key={index}>
+            <div role="alert" className={`alert ${e.style} flex relative`} key={index}>
                 <FontAwesomeIcon className="absolute top-2 right-2 cursor-pointer hover:opacity-50" icon={faXmark} onClick={e=>handleDismiss(index)} />
                 {
                     getIcon(e)

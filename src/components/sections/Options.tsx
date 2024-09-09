@@ -7,6 +7,7 @@ import { getPrivateKey } from "@src/utils";
 import { setPreferences } from "@src/redux/preferencesSlice";
 import { PrivateKey, readPrivateKey } from "openpgp";
 import Alert from "../Alert";
+import { IPrivateKey } from "@src/redux/privateKeySlice";
 export default function Options({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
@@ -14,16 +15,15 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
     const preferences = useAppSelector((state:RootState)=>state.preferences);
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
 
-    const [selectedPrivKey,setSelectedPrivKey] =  useState<string>(getPrivateKey(privKeysList,preferences));
+    const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKey(privKeysList,preferences) || []);
     const [askAboutUpdatingKey,setAskAboutUpdatingKey] =  useState<boolean>(preferences.askAboutUpdatingKey);
     const [detectMessages,setDetectMessages] =  useState<boolean>(preferences.detectMessages);
     const [keyServers,setKeyServers] =  useState<string[]>(preferences.keyServers);
     const [alerts,setAlerts] = useState<alert[]>([]);
 
     const saveChanges = async ()=>{
-        const key:PrivateKey|null = await readPrivateKey({armoredKey:selectedPrivKey}).catch(e=>{console.error(e);return null});
         const newPreferences:preferences = {
-            defaultSigningKeyFingerprint:key?.getFingerprint() || "",
+            defaultSigningKeyFingerprints:selectedPrivKeys?.map(e=>e.fingerprint) || [],
             askAboutUpdatingKey:askAboutUpdatingKey,
             detectMessages:detectMessages,
             keyServers:keyServers
@@ -33,16 +33,17 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
         ...alerts,
         {
             text:t("successfullySaved"),
-            style:"success"
+            style:"alert-success"
         }
        ])
     }
+
 
     return (
     <div className="p-6 mt-2 flex flex-col">
         <h1 className="font-bold">Options</h1>
         <div className="w-full">
-            <KeyDropdown isActive={true} label={t("defaultSigningKey")} keysList={privKeysList} setSelectedKey={setSelectedPrivKey} setActiveSection={setActiveSection} />
+            <KeyDropdown isActive={true} label={t("defaultSigningKey")} selectedKeys={selectedPrivKeys} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
         </div>
         <label  className="block text-sm font-medium ">{t("keyServers")}</label>
         <textarea className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" 

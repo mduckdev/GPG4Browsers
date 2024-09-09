@@ -4,8 +4,10 @@ import { KeyDropdownProps } from "@src/types";
 import { getDropdownText } from "@src/utils";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import DropdownItem from "./DropdownItem";
+import { IPrivateKey } from "@src/redux/privateKeySlice";
 
-export default function KeyDropdown({label,style,keysList,isActive,setSelectedKey,setActiveSection}:KeyDropdownProps) {
+export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,style,keysList,isActive,selectedKeys,setSelectedKeys,setActiveSection}:KeyDropdownProps<T>) {
     const { t } = useTranslation();
     const preferences = useAppSelector((state:RootState)=>state.preferences);
 
@@ -23,9 +25,9 @@ export default function KeyDropdown({label,style,keysList,isActive,setSelectedKe
       };
 
     useEffect(()=>{
-        let isDefaultKeyAvailable=keysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint);
-        if(isDefaultKeyAvailable){
-            setSelectedKey(isDefaultKeyAvailable.keyValue);
+        let areDefaultKeysAvailable:T[]|undefined=keysList.filter(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint));
+        if(areDefaultKeysAvailable){
+            setSelectedKeys(areDefaultKeysAvailable);
         }
         document.addEventListener("click", handleClickOutside);
         return () => {
@@ -55,10 +57,10 @@ export default function KeyDropdown({label,style,keysList,isActive,setSelectedKe
                                 <input id="search-input" className="block w-full px-4 py-2 border rounded-md  focus:outline-none" type="text" placeholder="Search items" autoComplete="off" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
                                 {
                                     keysList.map( (element:IPublicKey,index:number)=>{
-                                        if(searchQuery === ""){
-                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID || element.fingerprint.toUpperCase()}</option>
-                                        }else if(element.userID.toLowerCase().includes(searchQuery.toLowerCase()) || element.fingerprint.toLowerCase().includes(searchQuery.toLowerCase())){
-                                            return <option value={element.keyValue} key={index} title={element.userID} onClick={(e)=>{setSelectedKey(e.currentTarget.value);setDropdownText(e.currentTarget.innerText);setIsOpen(false);}} className="block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800">{element.userID || element.fingerprint.toUpperCase()}</option>
+                                        if(element.userID.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                            element.fingerprint.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                            searchQuery === ""){
+                                                return <DropdownItem key={index} keyData={element} selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} isCheckedDefault={selectedKeys.find(e=>e.fingerprint===element.fingerprint)?true:false} setDropdownText={setDropdownText} />
                                         }else{
                                             return null;
                                         }

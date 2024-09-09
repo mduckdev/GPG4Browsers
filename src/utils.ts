@@ -333,21 +333,32 @@ export const verifyCertification = async(user:User,publicKeys:PublicKey[],signat
   return result;
 }
 
-export const getPrivateKey = (privateKeysList:IPrivateKey[],preferences:preferences):string =>{
-  return privateKeysList.find(e=>e.fingerprint===preferences.defaultSigningKeyFingerprint)?.keyValue || privateKeysList[0]?.keyValue || "";
+export const getPrivateKey = (privateKeysList:IPrivateKey[],preferences:preferences):IPrivateKey[]|null =>{
+  return [privateKeysList.find(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint)) || privateKeysList[0]] || null;
 }
 export const getDropdownText = (keysList:IPrivateKey[]|IPublicKey[],preferences:preferences,selectKeyText:string):string=>{
-  if(keysList[0]){
-    if("isUnlocked" in keysList[0]){
-      let keyFound = keysList.find(e=>e.fingerprint === preferences.defaultSigningKeyFingerprint);
+  if(keysList.length>0){
+      let keyFound = keysList.find(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint));
       if(!keyFound){
-        keyFound=keysList[0];
+        return selectKeyText;
       }
       return keyFound.userID || keyFound.fingerprint.toUpperCase();
-    }
-    return keysList[0].userID || keysList[0].fingerprint.toUpperCase();
   }
   return selectKeyText;
-  
+}
 
+export const privateKeysToCryptoKeys = (privateKeys:IPrivateKey[]|null)=>{
+  const results:CryptoKeys[]=[]
+  if(privateKeys && privateKeys.length>0){
+    for (const privateKey of privateKeys){
+      if(privateKey){
+        results.push({
+          data:privateKey.keyValue,
+          isPrivateKey:true,
+          isUnlocked:privateKey.isUnlocked
+        })
+      }
+    }
+  }
+  return results;
 }

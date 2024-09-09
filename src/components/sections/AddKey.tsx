@@ -109,7 +109,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
                 ...alerts,
                 {
                     text:t("errorFailedToReadKeys"),
-                    style:"error"
+                    style:"alert-error"
                 }
             ])
             return false;
