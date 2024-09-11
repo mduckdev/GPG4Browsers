@@ -13,7 +13,7 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
 
     const [isOpen,setIsOpen]=useState<boolean>(false);
     const [searchQuery,setSearchQuery]=useState<string>("");
-    const [dropdownText,setDropdownText]=useState<string>(getDropdownText(keysList,preferences,t("selectKey")));
+    const [dropdownText,setDropdownText]=useState<string>(getDropdownText(keysList,preferences, t("selectKey")));
     const ref = useRef<HTMLDivElement | null>(null);
 
 
@@ -25,10 +25,10 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
       };
 
     useEffect(()=>{
-        let areDefaultKeysAvailable:T[]|undefined=keysList.filter(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint));
-        if(areDefaultKeysAvailable){
-            setSelectedKeys(areDefaultKeysAvailable);
-        }
+        // let areDefaultKeysAvailable:T[]|undefined=keysList.filter(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint));
+        // if(areDefaultKeysAvailable){
+        //     setSelectedKeys(areDefaultKeysAvailable);
+        // }
         document.addEventListener("click", handleClickOutside);
         return () => {
           document.removeEventListener("click", handleClickOutside);

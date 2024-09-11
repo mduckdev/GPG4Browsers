@@ -5,7 +5,7 @@ import PassphraseModal from "@src/components/modals/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
 import { CryptoKeys, MainProps, file } from "@src/types";
-import {  getPrivateKey, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
+import {  getPrivateKeys, getPublicKeys, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
@@ -21,9 +21,9 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const preferences = useAppSelector((state:RootState)=>state.preferences);
 
 
-    const [selectedPubKeys,setSelectedPubKeys] =  useState<IPublicKey[]>([pubKeysList[0]] || []);
-    const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKey(privKeysList,preferences) || []);
-    const [dataToUnlock,setDataToUnlock] = useState<CryptoKeys[]>(privateKeysToCryptoKeys(getPrivateKey(privKeysList,preferences)));
+    const [selectedPubKeys,setSelectedPubKeys] =  useState<IPublicKey[]>(getPublicKeys(pubKeysList,preferences) || []);
+    const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKeys(privKeysList,preferences) || []);
+    const [dataToUnlock,setDataToUnlock] = useState<CryptoKeys[]>(privateKeysToCryptoKeys(getPrivateKeys(privKeysList,preferences)));
 
     const [message,setMessage] =  useState<string>("");
     const [password,setPassword] =  useState<string>("");
@@ -48,11 +48,12 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     useEffect(()=>{
+        console.log(selectedPrivKeys)
         setPassword("");
         if(usePassword){
             setSelectedPubKeys([]);
         }else{
-            setSelectedPubKeys([pubKeysList[0]] || []);
+            setSelectedPubKeys(getPublicKeys(pubKeysList,preferences) || []);
         }
     },[usePassword])
 

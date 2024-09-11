@@ -126,7 +126,7 @@
       "signOnly":"Tylko podpisywanie",
       "encryptOnly":"Tylko szyfrowanie",
       "signing":"Podpisywanie",
-      "defaultSigningKey":"Domyślny klucz do podpisywania",
+      "defaultSigningKeys":"Domyślne klucze do podpisywania",
       "saveChanges":"Zapisz zmiany",
       "askBeforeUpdatingKey":"Pytaj przed aktualizacją klucza",
       "keyServers":"Serwery kluczy (po jednym na wiersz)",
@@ -134,6 +134,7 @@
       "successfullySaved":"Pomyślnie zapisano zmiany",
       "cleartextSignature":"Podpis czystym tekstem",
       "validSignatureFrom":"Prawidłowy podpis od",
-      "primaryKeyFingerprint":"Odcisk palca klucza głównego"
+      "primaryKeyFingerprint":"Odcisk palca klucza głównego",
+      "defaultEncryptionKeys":"Domyślne klucze do szyfrowania"
     }
   }

@@ -4,6 +4,7 @@ import { RootState } from './store';
 
 const defaultState:preferences = {
     defaultSigningKeyFingerprints:[],
+    defaultEncryptionKeyFingerprints:[],
     askAboutUpdatingKey:true,
     keyServers:["https://keys.openpgp.org","https://keys.mailvelope.com"],
     detectMessages:true

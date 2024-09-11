@@ -173,7 +173,8 @@ export interface preferences{
     defaultSigningKeyFingerprints:string[],
     askAboutUpdatingKey:boolean,
     keyServers:string[],
-    detectMessages:boolean
+    detectMessages:boolean,
+    defaultEncryptionKeyFingerprints:string[],
 }
 export interface DropdownItemProps<T extends IPublicKey | IPrivateKey>{
     keyData:IPublicKey|IPrivateKey,

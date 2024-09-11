@@ -126,7 +126,7 @@
         "signOnly":"Signing only",
         "encryptOnly":"Encryption only",
         "signing":"Signing",
-        "defaultSigningKey":"Default signing key",
+        "defaultSigningKeys":"Default signing keys",
         "saveChanges":"Save changes",
         "askBeforeUpdatingKey":"Ask before updating the key",
         "keyServers":"Key servers (one per line)",
@@ -134,6 +134,7 @@
         "successfullySaved":"Successfully saved changes",
         "cleartextSignature":"Cleartext signature",
         "validSignatureFrom":"Valid signature from",
-        "primaryKeyFingerprint":"Primary key fingerprint"
+        "primaryKeyFingerprint":"Primary key fingerprint",
+        "defaultEncryptionKeys":"Default encryption keys"
     }
 }
