@@ -11,9 +11,10 @@
         "contextMenus"
     ],
     "background": {
-        "scripts": [
+        "scripts": [ 
             "js/background.js"
-        ]
+        ],
+        "service_worker":"js/background.js"
     },
     "action": {
         "default_popup": "popup.html",

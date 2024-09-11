@@ -7,7 +7,7 @@
         "target": "es2015",
         "module": "commonjs",
         "moduleResolution": "node",
-        "rootDir": "./src",
+        "rootDir": "./",
         "outDir": "dist/js",
         "strict": true,
         "sourceMap": true,
