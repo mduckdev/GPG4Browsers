@@ -2,10 +2,9 @@ import { KeyDetailsProps} from "@src/types";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {  faXmark } from "@fortawesome/free-solid-svg-icons";
 import OutputTextarea from "../OutputTextarea";
 import { Key, readKey } from "openpgp";
-import { convertUint8ToUrl } from "@src/utils";
 import ShowGPGFiles from "../ShowGPGFiles";
 export default function ExportKeysModal({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();

@@ -48,7 +48,6 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     useEffect(()=>{
-        console.log(selectedPrivKeys)
         setPassword("");
         if(usePassword){
             setSelectedPubKeys([]);
@@ -70,7 +69,6 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     },[])
 
     const encryptData = async (privateKey:CryptoKeys[])=>{
-        console.log(privateKey)
         if(selectedPubKeys?.length===0 && password===""){
             return;
         }

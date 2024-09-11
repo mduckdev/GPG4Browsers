@@ -91,6 +91,8 @@ export interface keyUpdateModal extends modalProps{
     keys:keyUpdates[]
 }
 export interface PassphraseTextInputProps{
+    label?:string,
+    placeholder?:string,
     value:string,
     setOnChange:React.Dispatch<React.SetStateAction<string>>;
 }
@@ -105,6 +107,7 @@ export interface ShowFilesInTableProps{
 }
 export interface keyInfo{
     isPrivate:boolean,
+    isDecrypted?:boolean,
     primaryName:string,
     primaryEmail:string,
     fingerprint:string,

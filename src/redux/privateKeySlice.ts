@@ -37,6 +37,7 @@ export const privateKeySlice = createSlice({
                         e.userID=action.payload.userID;
                         e.name=action.payload.name;
                         e.email=action.payload.email;
+                        e.isUnlocked=action.payload.isUnlocked;
                     }
                     return e;
                 })

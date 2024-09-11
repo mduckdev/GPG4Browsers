@@ -135,6 +135,18 @@
       "cleartextSignature":"Podpis czystym tekstem",
       "validSignatureFrom":"Prawidłowy podpis od",
       "primaryKeyFingerprint":"Odcisk palca klucza głównego",
-      "defaultEncryptionKeys":"Domyślne klucze do szyfrowania"
+      "defaultEncryptionKeys":"Domyślne klucze do szyfrowania",
+      "setPassphraseForThisKey":"Ustaw hasło dla tego klucza",
+      "changePassphraseForThisKey":"Zmień hasło dla tego klucza",
+      "oldPassphrase":"Stare hasło",
+      "oldPassphrasePlaceholder":"Wprowadź stare hasło",
+      "newPassphrase":"Nowe Hasło",
+      "newPassphrasePlaceholder":"Wprowadź nowe hasło",
+      "confirmNewPassphrase":"Potwierdź nowe hasło",
+      "confirmNewPassphraselaceholder":"Wprowadź nowe hasło ponownie",
+      "failedToParseKey":"Nie udało się przetworzyć klucza",
+      "newPasswordDoesnttMatch":"Nowe hasło się nie zgadza",
+      "newPasswordCantBeEmpty":"Nowe hasło nie może być puste",
+      "failedToEncryptKey":"Nie udało się zaszyfrować klucza"
     }
   }

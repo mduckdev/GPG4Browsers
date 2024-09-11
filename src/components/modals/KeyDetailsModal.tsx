@@ -5,17 +5,20 @@ import AllKeys from "../tabs/KeyDetails/AllKeys";
 import { useTranslation } from "react-i18next";
 import AllUsers from "../tabs/KeyDetails/AllUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faLock, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import ConfirmModal from "./ConfirmModal";
 import { useAppDispatch } from "@src/redux/store";
 import { deletePrivateKey } from "@src/redux/privateKeySlice";
 import { deletePublicKey } from "@src/redux/publicKeySlice";
 import { setLastSection } from "@src/redux/historySlice";
 import ExportKeysModal from "./ExportKeysModal";
+import ChagnePassphraseModal from "./ChangePassphraseModal";
 export default function KeyDetailsModal({title,text, isVisible, selectedKey, setIsVisible ,onClose, onConfirm}:KeyDetailsProps) {
   const { t } = useTranslation();
   const [isConfirmModalVisible,setIsConfirmModalVisible] = useState<boolean>(false);
   const [isExportModalVisible,setIsExportModalVisible] = useState<boolean>(false);
+  const [isChangePassphraseModalVisible,setIsChangePassphraseModalVisible] = useState<boolean>(false);
+
 
   const dispatch = useAppDispatch();
 
@@ -54,6 +57,7 @@ export default function KeyDetailsModal({title,text, isVisible, selectedKey, set
       <dialog ref={modalRef} id="my_confirm_modal" className="modal" onCancel={handleESC} >
         <ConfirmModal title={t("additionalConfirmationNeeded")} text={t("confirmDeletingThisKey")} isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} selectedKey={selectedKey} onConfirm={deleteKey} />
         <ExportKeysModal  isVisible={isExportModalVisible} setIsVisible={setIsExportModalVisible} selectedKey={selectedKey} onConfirm={()=>{}} />
+        <ChagnePassphraseModal isVisible={isChangePassphraseModalVisible} setIsVisible={setIsChangePassphraseModalVisible} onConfirm={()=>{}} selectedKey={selectedKey}/>
 
         <div className="modal-box w-11/12 max-w-5xl relative">
           <FontAwesomeIcon className="absolute top-5 right-5 cursor-pointer hover:opacity-50" icon={faXmark} onClick={e=>setIsVisible(false)} />
@@ -82,15 +86,22 @@ export default function KeyDetailsModal({title,text, isVisible, selectedKey, set
           </div>
             <div className="w-full flex flex-col mt-2">
                 <div className="flex gap-2 mx-0">
-                  <button className="btn btn-success" onClick={handleConfirm}>{t("save")}</button>
-                  <button className="btn" onClick={()=>setIsVisible(false)}>{t("cancel")}</button>
-                  <button className="btn btn-error" onClick={()=>{setIsConfirmModalVisible(true);setIsVisible(false)}}>{t("deleteKey")}</button>
+                  <button className="btn btn-error" onClick={()=>{setIsConfirmModalVisible(true);setIsVisible(false)}}>
+                    {t("deleteKey")}
+                    <FontAwesomeIcon icon={faTrash}/>
+                    </button>
                   <button className="btn" onClick={()=>{setIsVisible(false);setIsExportModalVisible(true)}}>
                     {t("exportKeys")}
                     <FontAwesomeIcon icon={faDownload}/>
                   </button>
-
-
+                  {
+                    selectedKey.isPrivate?(
+                      <button className="btn" onClick={()=>{setIsVisible(false);setIsChangePassphraseModalVisible(true)}}>
+                        {(selectedKey.isDecrypted)?t("setPassphraseForThisKey"):t("changePassphraseForThisKey")}
+                        <FontAwesomeIcon icon={faLock}/>
+                      </button>
+                    ):(null)
+                  }
                 </div>
             </div>
         </div>

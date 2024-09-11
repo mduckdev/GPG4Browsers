@@ -135,6 +135,18 @@
         "cleartextSignature":"Cleartext signature",
         "validSignatureFrom":"Valid signature from",
         "primaryKeyFingerprint":"Primary key fingerprint",
-        "defaultEncryptionKeys":"Default encryption keys"
+        "defaultEncryptionKeys":"Default encryption keys",
+        "setPassphraseForThisKey":"Set passphrase for this key",
+        "changePassphraseForThisKey":"Change passphrase for this key",
+        "oldPassphrase":"Old passphrase",
+        "oldPassphrasePlaceholder":"Enter your old passphrase",
+        "newPassphrase":"New passphrase",
+        "newPassphrasePlaceholder":"Enter your new passphrase",
+        "confirmNewPassphrase":"Confirm your new passphrase",
+        "confirmNewPassphraselaceholder":"Enter your new passphrase again",
+        "failedToParseKey":"Failed to parse key",
+        "newPasswordDoesnttMatch":"New password does not match",
+        "newPasswordCantBeEmpty":"New password can't be empty",
+        "failedToEncryptKey":"Failed to encrypt the key"
     }
 }

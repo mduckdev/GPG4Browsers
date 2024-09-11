@@ -255,6 +255,7 @@ export const parseToKeyinfoObject = async (keys:Key[],t:TFunction<"translation",
     let expirationDateAsString = expirationDateToString(expirationDate,t);
     const keyInfoObject:keyInfo = {
         isPrivate:e.isPrivate(),
+        isDecrypted:(await readPrivateKey({armoredKey:e.armor()}).catch(e=>{return undefined}))?.isDecrypted(),
         primaryName:userID?.user.userID?.name || userID?.user.userID?.userID || "",
         primaryEmail:userID?.user.userID?.email || "",
         fingerprint:e.getFingerprint().toUpperCase(),
