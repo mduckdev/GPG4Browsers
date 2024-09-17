@@ -4,7 +4,7 @@
         "paths": {
             "@src/*": ["src/*"]
         },
-        "target": "es2015",
+        "target": "es2022",
         "module": "commonjs",
         "moduleResolution": "node",
         "rootDir": "./",
@@ -16,6 +16,7 @@
         "lib": ["es2015", "dom","ES2021.String"],
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "typeRoots": ["./node_modules/@types", "./test/types"]
     }
 }

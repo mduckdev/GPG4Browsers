@@ -40,7 +40,7 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
     },[isOpen])
 
     return (
-    <div className={style}>
+    <div className={style} data-testid="keysDropdown">
         <label htmlFor="keys" className="block text-sm font-medium mt-3" >{label}</label>
         <div className="flex gap-2">
             <div className="flex basis-5/6 min-w-0" ref={ref}>

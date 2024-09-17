@@ -138,7 +138,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     }
 
     return (
-    <div className="p-6">
+    <div className="p-6" id="validatingSignatures">
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">{t("signedMessage")}</label>
             <textarea id="message"

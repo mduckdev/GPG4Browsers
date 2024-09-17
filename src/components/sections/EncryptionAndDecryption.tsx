@@ -23,7 +23,7 @@ export default function EncryptionAndDecryption({activeSection,isPopup,previousT
         }
       },[activeTab])
         return (
-            <div>
+            <div >
                 <div role="tablist" className="tabs tabs-lifted mt-4">
                     <a
                         role="tab"

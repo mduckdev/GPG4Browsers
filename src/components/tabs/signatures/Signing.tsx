@@ -101,7 +101,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
 
     }
     return (
-    <div className="p-6">
+    <div className="p-6" id="signing">
         <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} dataToUnlock={dataToUnlock} setIsVisible={setIsModalVisible} onConfirm={signData} onClose={()=>{}} />
         <div className="w-full flex flex-col">
             <label htmlFor="message" className="block text-sm font-medium">{t("message")}</label>

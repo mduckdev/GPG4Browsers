@@ -12,7 +12,7 @@ export default function ThemeToggle({className,currentTheme,setTheme}:themeToggl
         }
     },[currentTheme])
     return (
-        <label className={`flex cursor-pointer gap-2 ${className}`}>
+        <label className={`flex cursor-pointer gap-2 ${className}`} id="theme-toggle">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="20"

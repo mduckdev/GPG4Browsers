@@ -236,7 +236,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     return (
-        <div className="p-6">
+        <div className="p-6" id="decryption">
             <PassphraseModal title={t("passphrase")}text={t("enterPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
 
             <div className="w-full flex flex-col">

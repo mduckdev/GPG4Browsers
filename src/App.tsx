@@ -20,10 +20,10 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>(lastSection || 'EncryptionAndDecryption');
   const [activeTab, setActiveTab] = useState<string>(lastTab || 'encryption');
 
-  const [isPopup, setIsPopup] = useState<boolean>(true);
+  const [isPopup, setIsPopup] = useState<boolean>(false);
   const [theme, setThemeLocal] = useState<string>(fetchedTheme);
   const previousTab = usePrevious(activeSection);
-
+  
   useEffect(()=>{
     if(!(['dark','light'].includes(theme))){
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -33,7 +33,6 @@ const App: React.FC = () => {
         setThemeLocal("light")
         dispatch(setTheme("light"))
       }
-      return;
     }
     const params = new URLSearchParams(window.location.search);
     setIsPopup(params.get("popup")==="false"?false:true);
@@ -61,11 +60,11 @@ useEffect(()=>{
 
   return (
   <div className="min-h-screen overscroll-none">
-    <div className={`${isPopup?("w-96"):("w-full")} relative`}>
+    <div className={`${isPopup?("min-w-96"):("min-w-full")} relative`}>
     <ThemeToggle className="absolute top-3 left-3" currentTheme={theme} setTheme={setThemeLocal}/>
     {
       isPopup?(
-        <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer text-xl" onClick={openTab} />
+        <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="absolute top-3 right-3 hover:cursor-pointer text-xl" onClick={openTab} id="openFullscreenIcon" />
       ):(null)
     }
       <Main activeSection={activeSection} previousTab={previousTab} setActiveSection={setActiveSection} isPopup={isPopup} activeTab={activeTab}/>

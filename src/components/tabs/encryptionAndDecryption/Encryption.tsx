@@ -174,7 +174,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     return (
-        <div className="p-6">
+        <div className="p-6" id="encryption">
             <PassphraseModal title={t("unlockPrivKey")} text={t("enterPrivKeyPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={dataToUnlock} onConfirm={encryptData} onClose={()=>{}} />
             <div className={`flex flex-col ${encryptedMessage!==""?(''):'mb-8'}`}>
                 <label htmlFor="message" className="block text-sm font-medium ">{t("message")}</label>
