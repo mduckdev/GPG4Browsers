@@ -240,8 +240,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             <PassphraseModal title={t("passphrase")}text={t("enterPassphrase")} isVisible={isModalVisible} setIsVisible={setIsModalVisible} dataToUnlock={decryptionKeys} onConfirm={decryptData} onClose={()=>{}} />
 
             <div className="w-full flex flex-col">
-                <label htmlFor="message" className="block text-sm font-medium">{t("encryptedMessage")}:</label>
-                <textarea id="message"
+                <label htmlFor="encryptedMessage" className="block text-sm font-medium">{t("encryptedMessage")}:</label>
+                <textarea id="encryptedMessage"
                     className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" value={encryptedMessage} onChange={(e)=>{setEncryptedMessage(e.target.value)}}></textarea>
  {
                     isPopup?(null):(

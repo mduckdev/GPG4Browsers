@@ -147,7 +147,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     }
 
     return (
-    <div className="p-4 flex flex-col items-center">
+    <div className="mt-4 flex flex-col items-center container mx-auto w-4/5">
     <KeyUpdateModal title={t("confirmUpdatingTheKey")} text="" isVisible={isConfirmModalVisible} setIsVisible={setIsConfirmModalVisible} keys={keysToConfirm} onConfirm={saveToKeyring} onClose={()=>{}} />
     <SearchKeysModal isVisible={isSearchModalVisible} setKeyValue={setKeyValue} setParentAlerts={setAlerts} parentAlerts={alerts} setIsVisible={setIsSearchModalVisible} onConfirm={() => goBack()} onClose={()=>{}}/>
     <KeyGenerationModal isVisible={isKeyGenerationVisible} setIsVisible={setIsKeyGenerationVisible} onConfirm={() => goBack()} onClose={()=>{}}/>
@@ -174,7 +174,7 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
                         </div>
         )
         }
-        <div className={`buttons ${isPopup?('w-4/5'):('w-1/5')}`}>
+        <div className={`buttons ${isPopup?('w-full'):('w-2/5')}`}>
             <button id="saveButton" className="w-full btn btn-info mb-4" onClick={()=> saveToKeyring()}>{t("save")}</button>
             <button className="w-full btn btn-info mb-4" onClick={()=>{setIsSearchModalVisible(true)}}><FontAwesomeIcon icon={faMagnifyingGlass} /> {t("searchOnKeyServer")}</button>
             <button className="w-full btn btn-success mb-4" onClick={()=>{setIsKeyGenerationVisible(true)}}>{t("generateNewKey")}</button>

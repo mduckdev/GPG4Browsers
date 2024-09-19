@@ -31,7 +31,7 @@ export default function DropdownItem<T extends IPublicKey | IPrivateKey>({keyDat
         }
     }
     return (
-    <div className="flex gap-1 items-center block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800" onClick={handleClick}>
+    <div className="flex gap-1 items-center block px-4 py-2 cursor-pointer rounded-md hover:bg-slate-200 dark:hover:bg-gray-800" onClick={handleClick} data-testid="DropdownItem">
         <input type="checkbox" className="checkbox" checked={isSelected} readOnly={true}/>
         {keyData.userID || keyData.fingerprint.toUpperCase()}
     </div>

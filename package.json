@@ -58,7 +58,10 @@
   "scripts": {
     "ext": "npx web-ext run",
     "dev": "npx grunt ext-dev",
-    "build": "npx grunt ext-prod"
+    "build": "npx grunt ext-prod",
+    "test":"npx playwright test",
+    "test-ui":"npx playwright test --ui"
+
   },
   "eslintConfig": {
     "extends": [

@@ -1,7 +1,4 @@
-*.asc
-*.pgp
-*.gpg
-*.pub
+
 node_modules
 .dccache
 /.pnp
@@ -25,7 +22,7 @@ web-ext-artifacts
 .env.development.local
 .env.test.local
 .env.production.local
-
+/exclude
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

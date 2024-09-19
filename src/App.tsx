@@ -60,7 +60,7 @@ useEffect(()=>{
 
   return (
   <div className="min-h-screen overscroll-none">
-    <div className={`${isPopup?("min-w-96"):("min-w-full")} relative`}>
+    <div className={`${isPopup?("w-[400px]"):("w-full")} relative`}>
     <ThemeToggle className="absolute top-3 left-3" currentTheme={theme} setTheme={setThemeLocal}/>
     {
       isPopup?(

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import DropdownItem from "./DropdownItem";
 import { IPrivateKey } from "@src/redux/privateKeySlice";
 
-export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,style,keysList,isActive,selectedKeys,setSelectedKeys,setActiveSection}:KeyDropdownProps<T>) {
+export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,style,id,keysList,isActive,selectedKeys,setSelectedKeys,setActiveSection}:KeyDropdownProps<T>) {
     const { t } = useTranslation();
     const preferences = useAppSelector((state:RootState)=>state.preferences);
 
@@ -40,7 +40,7 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
     },[isOpen])
 
     return (
-    <div className={style} data-testid="keysDropdown">
+    <div className={style} data-testid={`${id}Dropdown`}>
         <label htmlFor="keys" className="block text-sm font-medium mt-3" >{label}</label>
         <div className="flex gap-2">
             <div className="flex basis-5/6 min-w-0" ref={ref}>
@@ -72,7 +72,7 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
                    
                 </div>
             </div>
-        <button className="bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveSection('AddKey')}>+</button>
+        <button id={`Add${id}`} className="bg-green-500 hover:bg-green-600 text-white font-bold rounded basis-1/6" onClick={()=>setActiveSection('AddKey')}>+</button>
         </div>
         
     </div>

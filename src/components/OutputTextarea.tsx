@@ -6,7 +6,8 @@ export default function OutputTextarea({textValue}:outputTextareaPropsInterface)
     const [showClipboardIcon,setShowClipboardIcon] = useState<boolean>(false);
     const [showSuccessIcon,setshowSuccessIcon] = useState<boolean>(false);
     return (
-        <div className="mt-4 mb-8 relative"
+        <div
+        className="mt-4 mb-8 relative"
         onMouseOver={() => { setShowClipboardIcon(true);setshowSuccessIcon(false) }}
         onMouseLeave={() => { setShowClipboardIcon(false); setshowSuccessIcon(false) }}
         onClick={() => { navigator.clipboard.writeText(textValue);setShowClipboardIcon(false);setshowSuccessIcon(true) }}
@@ -33,6 +34,7 @@ export default function OutputTextarea({textValue}:outputTextareaPropsInterface)
     
     
           <textarea
+            id="outputTextarea" 
             className={`w-full h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-green-500 p-2 rounded-md hover:cursor-pointer ${(showClipboardIcon || showSuccessIcon)?('blur-[1px]'):('')}`}
             value={textValue}
             contentEditable={false}
