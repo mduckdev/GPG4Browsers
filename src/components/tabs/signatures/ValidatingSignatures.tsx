@@ -91,7 +91,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             } ;
             
             if(!signatureParsed){
-                newCheckedFile.signatureMessages.push(t("failedToParseTheFile"));
+                newCheckedFile.signatureMessages.push(t("failedToParseTheFileSignature"));
                 newCheckedFiles.push(newCheckedFile);
                 continue;
             }

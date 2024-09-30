@@ -40,7 +40,7 @@
       "details":"Szczegóły",
       "addNewKey": "Dodaj nowy klucz",
       "failedToParseTheMessage": "Nie udało się przetworzyć wiadomości",
-      "failedToParseTheFile": "Nie udało się przetworzyć sygnatury pliku",
+      "failedToParseTheFileSignature": "Nie udało się przetworzyć sygnatury pliku",
       "failedToCheckSignatures": "Nie udało się sprawdzić sygnatur",
       "failedToFindCorrespondingFile": "Nie udało się znaleźć odpowiadającego pliku dla sygnatury",
       "failedToParseCorrespondingFile": "Nie udało się przetworzyć pliku odpowiadającego tej sygnaturze",
@@ -147,6 +147,11 @@
       "failedToParseKey":"Nie udało się przetworzyć klucza",
       "newPasswordDoesnttMatch":"Nowe hasło się nie zgadza",
       "newPasswordCantBeEmpty":"Nowe hasło nie może być puste",
-      "failedToEncryptKey":"Nie udało się zaszyfrować klucza"
+      "failedToEncryptKey":"Nie udało się zaszyfrować klucza",
+      "noDecryptionKeyFound":"Nie znaleziono klucza do odszyfrowania z ID",
+      "failedToParseTheFile":"Nie udało się przetworzyć pliku",
+      "failedToDecryptMessage":"Nie udało się odszyfrować wiadomości",
+      "failedToDecryptFile":"Nie udało się odszyfrować pliku",
+      "selectFilesOrEnterMessage":"Brak zaszyfrowanych danych. Wpisz wiadomość lub wybierz pliki do odszyfrowania"
     }
   }

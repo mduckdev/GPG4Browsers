@@ -60,8 +60,6 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         setTempKeys([]);
         setAlerts([])
       }
-
-      // setIsPassphraseValid(true);
       setCurrentPassphrase("");
       if (!modalRef.current) {
         return;
@@ -84,7 +82,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
       return;
     }
     
-    const response = await attempToDecrypt(currentKey,currentPassphrase).catch(e=>{
+    const response = await attempToDecrypt(currentKey,currentPassphrase,t).catch(e=>{
       setAlerts([
         ...alerts,
         {

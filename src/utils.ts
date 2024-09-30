@@ -37,7 +37,7 @@ export const getSignatureInfo = async (signatures:VerificationResult[],publicKey
             }
           }
           if(foundKeys.length===1){
-            info.push(`${t("validSignatureFrom")} ${(await foundKeys[0].getPrimaryUser().catch(e=>{return null}))?.user.userID?.userID}, ${t("primaryKeyFingerprint")}: ${foundKeys[0].getFingerprint()}, ${t("keyID")}: ${signature.keyID.toHex()}`);
+            info.push(`${t("validSignatureFrom")}: ${(await foundKeys[0].getPrimaryUser().catch(e=>{return null}))?.user.userID?.userID}, ${t("primaryKeyFingerprint")}: ${foundKeys[0].getFingerprint()}, ${t("keyID")}: ${signature.keyID.toHex()}`);
           }else{
             info.push(`${t("validSignatureWithKeyID")}: ${signature.keyID.toHex()}`)
           }
@@ -153,7 +153,7 @@ export const updateIsKeyUnlocked = async(selectedPrivKey:string,setIsSelectedPri
   }
 }
 
-export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)=>{
+export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string,t:TFunction<"translation", undefined>)=>{
   if(dataToUnlock.isPrivateKey && typeof dataToUnlock.data==="string"){ //current key is a locked private key
     const parsedCurrentKey = await readPrivateKey({armoredKey:dataToUnlock.data}).catch(e => { console.error(e); return null });
     if(!parsedCurrentKey){
@@ -169,7 +169,7 @@ export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)
     });
 
     if(!decrytpedKey){
-      return Promise.reject("Error! Failed to unlock the private key.");
+      return Promise.reject(t("errorFailedToUnlockPrivKey"));
     }else{
       return Promise.resolve(decrytpedKey)
     }
@@ -191,7 +191,7 @@ export const attempToDecrypt = async (dataToUnlock:CryptoKeys,passphrase:string)
        decryptedMessage = await decrypt({message:encryptedMessage,passwords:passphrase}).catch(e => { console.error(e); return null });
     }
     if(!decryptedMessage){
-      return Promise.reject(`Error! Incorrect passphrase for `+(dataToUnlock.filename?(`file: ${dataToUnlock.filename}`):"encrypted message"));
+      return Promise.reject(`${t("errorIncorrectPassphraseFor")}: `+(dataToUnlock.filename?(`${t("file").toLowerCase()}: ${dataToUnlock.filename}`):t("encryptedMessage")));
     }else{
       return Promise.resolve(passphrase);
     }
@@ -374,4 +374,9 @@ export const privateKeysToCryptoKeys = (privateKeys:IPrivateKey[]|null)=>{
     }
   }
   return results;
+}
+export const  merge = (a:string[], b:string[], predicate = (a:string, b:string) => a === b) => {
+  const c = [...a]; 
+  b.forEach((bItem) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)))
+  return c;
 }

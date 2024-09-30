@@ -40,7 +40,7 @@
         "details":"Details",
         "addNewKey":"Add new key",
         "failedToParseTheMessage":"Failed to parse the message",
-        "failedToParseTheFile":"Failed to parse the file signature",
+        "failedToParseTheFileSignature":"Failed to parse the file signature",
         "failedToCheckSignatures":"Failed to check signatures",
         "failedToFindCorrespondingFile":"Failed to find corresponding file for this signature",
         "failedToParseCorrespondingFile":"Failed to parse corresponding file for this signature",
@@ -147,6 +147,11 @@
         "failedToParseKey":"Failed to parse key",
         "newPasswordDoesnttMatch":"New password does not match",
         "newPasswordCantBeEmpty":"New password can't be empty",
-        "failedToEncryptKey":"Failed to encrypt the key"
+        "failedToEncryptKey":"Failed to encrypt the key",
+        "noDecryptionKeyFound":"Failed to find decryption key with keyID",
+        "failedToParseTheFile":"Failed to parse the file",
+        "failedToDecryptMessage":"Failed to decrypt message",
+        "failedToDecryptFile":"Failed to decrypt file",
+        "selectFilesOrEnterMessage":"No encrypted data detected. Enter message or select files for decryption"
     }
 }

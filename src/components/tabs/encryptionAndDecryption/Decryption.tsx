@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/modals/PassphraseModal";
 
 import OutputTextarea from "@src/components/OutputTextarea";
-import { CryptoKeys, MainProps, decryptedFile, file } from "@src/types";
-import {  getPrivateKeysAndPasswords, getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop } from "@src/utils";
+import { CryptoKeys, MainProps, alert, decryptedFile, file } from "@src/types";
+import {  getPrivateKeysAndPasswords, getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop, merge } from "@src/utils";
 import ShowFilesInTable from "@src/components/ShowFilesInTable";
 import { useTranslation } from "react-i18next";
 import Browser from "webextension-polyfill";
+import Alert from "@src/components/Alert";
 export default function Decryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
     const privKeysList = useAppSelector((state:RootState)=>state.privateKeys);
@@ -22,6 +23,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
     const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
     const [decryptedFiles, setDecryptedFiles] = useState<decryptedFile[]>([])
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
@@ -53,7 +55,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         for(const privateKey of privKeysList){
             const privKey:PrivateKey|null = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
             if(!privKey){
-                return;
+                continue;
             }
             // see https://github.com/openpgpjs/openpgpjs/issues/1693
             //
@@ -74,14 +76,30 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
 
     const decryptData = async (decryptionData?:CryptoKeys[])=>{
+        if(encryptedMessage.length===0 && encryptedFiles.length === 0){
+            setAlerts([
+                ...alerts,
+                {
+                  text:t("selectFilesOrEnterMessage"),
+                  style:"alert-error"
+                }
+            ]);
+            return;
+        }
         const decryptionKeysNeeded:CryptoKeys[] = [];
         let parsedFiles:Message<Uint8Array>[]=[];
+        let notFoundKeyIDs:string[]=[];
         for await(const currentFile of encryptedFiles){
             const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:currentFile.data}).catch(e => { console.error(e); return null });
             if(!pgpMessage ){
-                // setDecryptionInProgress(false);
+                setAlerts([
+                    ...alerts,
+                    {
+                      text:`${t("failedToParseTheFile")}: ${currentFile.fileName}`,
+                      style:"alert-error"
+                    }
+                ]);
                 continue;
-                //show alert with information
             }
             const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
             if(messageEncryptionKeys.length===0){
@@ -90,9 +108,9 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 let messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
 
                 if(!messageDecryptionKey){
-                    console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
+                    notFoundKeyIDs = merge(notFoundKeyIDs,messageEncryptionKeys.map(e=>e.toHex()));
+                    
                     continue;
-                    //show alert no key found
                 }
                 const isKeyUnlocked =  (await readPrivateKey({armoredKey:messageDecryptionKey})).isDecrypted();
                 if(messageDecryptionKey && 
@@ -105,6 +123,15 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             parsedFiles.push(pgpMessage);
             
         }
+        if(notFoundKeyIDs.length>0){
+            setAlerts([
+                ...alerts,
+                {
+                  text:`${t("noDecryptionKeyFound")}: ${notFoundKeyIDs.join(", ")}`,
+                  style:"alert-error"
+                }
+            ]);
+        }
         const pgpMessage:Message<string>|null = await readMessage({armoredMessage:encryptedMessage}).catch(e => { console.error(e); return null });
         if(pgpMessage){
             const messageEncryptionKeys:KeyID[] = pgpMessage.getEncryptionKeyIDs();
@@ -113,9 +140,13 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             }else{
                 const messageDecryptionKey = await findDecryptionKeyInKeyring(messageEncryptionKeys);
                 if(!messageDecryptionKey){
-                    console.log(`Couldn't find a suitable key with IDs:${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`)            
-                    // return;
-                    //show alert no key found
+                    setAlerts([
+                        ...alerts,
+                        {
+                          text:`${t("noDecryptionKeyFound")}: ${messageEncryptionKeys.map(e=>e.toHex()).join(" ")}`,
+                          style:"alert-error"
+                        }
+                    ]);
                 }
                 if(messageDecryptionKey && 
                     decryptionKeysNeeded.filter(e=>e.data===messageDecryptionKey).length===0
@@ -128,6 +159,17 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             }
             
         }
+        if(!pgpMessage && encryptedFiles.length===0){
+            setAlerts([
+                ...alerts,
+                {
+                  text:t("selectFilesOrEnterMessage"),
+                  style:"alert-error"
+                }
+            ]);
+            return;
+        }
+
         setDecryptionKeys(decryptionKeysNeeded);
         if(decryptionKeysNeeded.length === 0){
             return;
@@ -147,6 +189,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
         const parsedPublicKeys = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
 
+        
+
         if(pgpMessage){
             decryptMessage(pgpMessage,parsedDecryptionData,parsedPublicKeys)
         }
@@ -156,10 +200,6 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     }
 
     const decryptMessage = async (pgpMessage:Message<string>,decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
-        console.log(decryptionKeys)
-        if(encryptedMessage===""){
-            return;
-        }
         const {privateKeys,passwords} = await getPrivateKeysAndPasswords(decryptionKeys);
         let cfg;
         if(passwords.length===0){
@@ -170,7 +210,13 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         const decryptedMessage:DecryptMessageResult|null = await decrypt(cfg).catch(e => { console.error(e); return null });
 
         if(!decryptedMessage){
-            console.log("Failed to decrypt the message.");
+            setAlerts([
+                ...alerts,
+                {
+                  text:t("failedToDecryptMessage"),
+                  style:"alert-error"
+                }
+            ]);
             return;
         }
 
@@ -178,7 +224,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         const results = await getSignatureInfo(decryptedMessage.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
         if(!results){
-            setSignatureMessages("Message authenticity could not be verified.");
+            setSignatureMessages(t("messageUnathenticated"));
             setIsMessageVerified(false);
             return;
         }
@@ -193,6 +239,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
         const newDecryptedFiles:decryptedFile[] = [];
         setDecryptionInProgress(true);
+        let notDecryptedFilenames:string[]=[];
         for await(const currentFile of encryptedFiles){
             const pgpMessage:Message<Uint8Array>|null = await readMessage({binaryMessage:currentFile.data}).catch(e => { console.error(e);return null}); 
             if(!pgpMessage ){
@@ -210,6 +257,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
             if(!decryptedMessage){
                 console.log(`Failed to decrypt file ${currentFile.fileName}.`);
+                notDecryptedFilenames = merge(notDecryptedFilenames,[currentFile.fileName])
+                
                 continue;
             }
 
@@ -231,6 +280,15 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             newDecryptedFiles.push(newDecryptedFile);
         }
 
+        if(notDecryptedFilenames.length>0){
+            setAlerts([
+                ...alerts,
+                {
+                  text:`${t("failedToDecryptFile")}: ${notDecryptedFilenames.join(", ")}`,
+                  style:"alert-error"
+                }
+            ]);
+        }
         setDecryptionInProgress(false);
         setDecryptedFiles(newDecryptedFiles);
     }
@@ -286,7 +344,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             (decryptedFiles.length !== 0 && !decryptionInProgress) ? (
                 <ShowFilesInTable files={decryptedFiles} removeExtensions={true}/>
             ) : (null)
-            }
+        }
+        <Alert alerts={alerts} setAlerts={setAlerts} />
 
         </div>
     );
