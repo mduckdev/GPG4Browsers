@@ -35,21 +35,23 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             decryptData();
         }
     }
-    const getData = async ()=>{
-        const data = await Browser.runtime.sendMessage({action:"get-data"});
+    const getData = async (id:string)=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data-by-id",id:id});
         if(typeof data === "string"){
             setEncryptedMessage(data);
         }
     }
     useEffect(()=>{
-        attempToDecrypt(encryptedMessage);
-    },[encryptedMessage]);
-    useEffect(()=>{
         const params = new URLSearchParams(window.location.search);
-        if(params.get("waitForData")==="true"){
-            getData();
+        let id = params.get("id")
+        if(params.get("waitForData")==="true" && id){
+            getData(id);
         }
     },[]);
+    useEffect(()=>{
+        attempToDecrypt(encryptedMessage);
+    },[encryptedMessage]);
+    
 
     
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{

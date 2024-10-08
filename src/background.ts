@@ -1,28 +1,40 @@
-import browser from "webextension-polyfill"
+import browser, { action } from "webextension-polyfill"
 import { storeBootstrap } from "./redux/store";
 import { setLastSection, setLastTab } from "./redux/historySlice";
+import { generateRandomString } from "../tests/test-util";
+interface globalData{
+    data:string,
+    id:string,
+    deleteAfter:number
+}
 let globalBlob:Blob|undefined;
-let globalData:string|undefined;
+let globalData:globalData[]=[];
 browser.contextMenus.create({
     id: "encrypt-selected",
     title: "Encrypt",
     contexts: ["selection"],
 });
-const openWindowAndWaitForData = ()=>{
-    browser.windows.create({ url: "popup.html?popup=false&waitForData=true"})
+const openWindowAndWaitForData = (id:string)=>{
+    browser.windows.create({ url: `popup.html?popup=false&waitForData=true&id=${id}`})
 }
 setInterval(()=>{
-    globalData=undefined;
-},5000)
+    globalData = globalData.filter(e=>e.deleteAfter>Date.now());
+},500)
 
 browser.contextMenus.onClicked.addListener(async(info, tab) => {
     switch (info.menuItemId) {
-        case "encrypt-selected":
-            globalData=info.selectionText;
+        case "encrypt-selected":{
+            if(!info.selectionText){
+                break;
+            }
+            let id = generateRandomString(16);
+            globalData.push({data:info.selectionText,id:id,deleteAfter:Date.now()+(1000*10)});
             const store = await storeBootstrap();
             store.dispatch(setLastTab("encryption"))
-            openWindowAndWaitForData();
+            openWindowAndWaitForData(id);
             break;
+        }
+            
     }
 });
 
@@ -47,29 +59,32 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             });
             return globalBlob;
         }
-        case "get-data":{
-            let temp = globalData;
-            return temp;
+        case "get-data-by-id":{
+            return globalData.find(e=>e.id===request.id)?.data;
         }
         case "set-encrypted-data":{
-            globalData=request.data;
+            let id = generateRandomString(16);
+            globalData.push({data:request.data,id:id,deleteAfter:Date.now()+(1000*10)});
+
             const store = await storeBootstrap();
             store.dispatch(setLastTab("decryption"))
-            openWindowAndWaitForData();
+            openWindowAndWaitForData(id);
             return Promise.resolve(true);
         }
         case "set-signed-data":{
-            globalData=request.data;
+            let id = generateRandomString(16);
+            globalData.push({data:request.data,id:id,deleteAfter:Date.now()+(1000*10)});
             const store = await storeBootstrap();
             store.dispatch(setLastTab("validatingSignatures"))
-            openWindowAndWaitForData();
+            openWindowAndWaitForData(id);
             return Promise.resolve(true);
         }
         case "set-key-data":{
-            globalData=request.data;
+            let id = generateRandomString(16);
+            globalData.push({data:request.data,id:id,deleteAfter:Date.now()+(1000*10)});
             const store = await storeBootstrap();
             store.dispatch(setLastSection("AddKey"))
-            openWindowAndWaitForData();
+            openWindowAndWaitForData(id);
             return Promise.resolve(true);
         }
         default: {

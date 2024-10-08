@@ -36,16 +36,17 @@ export default function AddKey({activeSection,isPopup,previousTab,setActiveSecti
     const [isSearchModalVisible,setIsSearchModalVisible] = useState<boolean>(false);
 
 
-    const getData = async ()=>{
-        const data = await Browser.runtime.sendMessage({action:"get-data"});
+    const getData = async (id:string)=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data-by-id",id:id});
         if(typeof data === "string"){
             setKeyValue(data);
         }
     }
     useEffect(()=>{
         const params = new URLSearchParams(window.location.search);
-        if(params.get("waitForData")==="true"){
-            getData();
+        let id = params.get("id")
+        if(params.get("waitForData")==="true" && id){
+            getData(id);
         }
     },[]);
     const goBack = ()=>{

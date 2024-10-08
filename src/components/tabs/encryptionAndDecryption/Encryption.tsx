@@ -40,12 +40,19 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
 
     const [encryptionInProgress,setEncryptionInProgress] = useState<boolean>(false);
-    const getData = async ()=>{
-        const data = await Browser.runtime.sendMessage({action:"get-data"});
+    const getData = async (id:string)=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data-by-id",id:id});
         if(typeof data === "string"){
             setMessage(data);
         }
     }
+    useEffect(()=>{
+        const params = new URLSearchParams(window.location.search);
+        let id = params.get("id")
+        if(params.get("waitForData")==="true" && id){
+            getData(id);
+        }
+    },[]);
 
     useEffect(()=>{
         setPassword("");
@@ -60,13 +67,6 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
     useEffect(()=>{
         setDataToUnlock(privateKeysToCryptoKeys(selectedPrivKeys))
     },[selectedPrivKeys])
-
-    useEffect(()=>{
-        const params = new URLSearchParams(window.location.search);
-        if(params.get("waitForData")==="true"){
-            getData();
-        }
-    },[])
 
     const encryptData = async (privateKey:CryptoKeys[])=>{
         if(selectedPubKeys?.length===0 && password===""){
