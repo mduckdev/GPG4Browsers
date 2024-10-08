@@ -152,6 +152,9 @@
         "failedToParseTheFile":"Failed to parse the file",
         "failedToDecryptMessage":"Failed to decrypt message",
         "failedToDecryptFile":"Failed to decrypt file",
-        "selectFilesOrEnterMessage":"No encrypted data detected. Enter message or select files for decryption"
+        "selectFilesOrEnterMessage":"No data found. Enter message or select files",
+        "noKeysSelected":"No keys selected",
+        "failedToSignMessage":"Failed to sign message",
+        "failedToSignFiles":"Failed to sign files"
     }
 }

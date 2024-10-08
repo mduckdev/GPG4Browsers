@@ -152,6 +152,9 @@
       "failedToParseTheFile":"Nie udało się przetworzyć pliku",
       "failedToDecryptMessage":"Nie udało się odszyfrować wiadomości",
       "failedToDecryptFile":"Nie udało się odszyfrować pliku",
-      "selectFilesOrEnterMessage":"Brak zaszyfrowanych danych. Wpisz wiadomość lub wybierz pliki do odszyfrowania"
+      "selectFilesOrEnterMessage":"Brak danych. Wpisz wiadomość lub wybierz pliki",
+      "noKeysSelected":"Nie wybrano kluczy",
+      "failedToSignMessage":"Nie udało się podpisać wiadomości",
+      "failedToSignFiles":"Nie udało się podpisać plików"
     }
   }

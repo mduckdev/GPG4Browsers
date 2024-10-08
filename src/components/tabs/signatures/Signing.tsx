@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import PassphraseModal from "../../modals/PassphraseModal";
 import OutputTextarea from "../../OutputTextarea";
 import KeyDropdown from "../../keyDropdown";
-import { CryptoKeys, MainProps, file, sectionsPropsInterface } from "@src/types";
+import { CryptoKeys, MainProps, alert, file, sectionsPropsInterface } from "@src/types";
 import { getPrivateKeys, getPrivateKeysAndPasswords, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
 import { useTranslation } from "react-i18next";
 import { IPrivateKey } from "@src/redux/privateKeySlice";
+import Alert from "@src/components/Alert";
 
 export default function Signing({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
@@ -20,25 +21,29 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const [message,setMessage] = useState<string>("");
     const [signedMessage,setSignedMessage] = useState<string>("");
 
-
     const [files,setFiles] = useState<file[]>([])
     const [fileSignatures, setFileSignatures] = useState<file[]>([])
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
     const [selectedPrivKeys,setSelectedPrivKeys] =  useState<IPrivateKey[]>(getPrivateKeys(privKeysList,preferences) || []);
-
 
     const [isModalVisible,setIsModalVisible] = useState<boolean>(false);
     const [signingInProgress,setSigningInProgress] = useState<boolean>(false);
     const [isCleartext,setIsCleartex] = useState<boolean>(true);
 
-
-    
     useEffect(()=>{
         setDataToUnlock(privateKeysToCryptoKeys(selectedPrivKeys))
     },[selectedPrivKeys])
 
     const signData = async (signingKeys:CryptoKeys[])=>{
         if(signingKeys.length===0){
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("noKeysSelected"),
+                    style:"alert-error"
+                }
+            ])
             return;
         }
         
@@ -47,6 +52,16 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
             return;
         }
         const {privateKeys} = await getPrivateKeysAndPasswords(signingKeys);
+        if(message === "" && files.length === 0){
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("selectFilesOrEnterMessage"),
+                    style:"alert-error"
+                }
+            ])
+            return;
+        }
         signMessage(privateKeys);
         signFiles(privateKeys)
     }
@@ -54,7 +69,6 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const signMessage = async (privateKeys:PrivateKey[])=>{
         if(message === ""){
             return;
-            //show alert with info
         }
         let signature:string|null;
         if(isCleartext){
@@ -69,7 +83,13 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
         }
         
         if(!signature){
-            console.log("Failed to generate signature");
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("failedToSignMessage"),
+                    style:"alert-error"
+                }
+            ])
             return;
         }
         setSignedMessage(signature);
@@ -78,23 +98,32 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
     const signFiles = async (privateKeys:PrivateKey[])=>{
         if(files.length === 0){
             return;
-            //show alert with info
         }
         setSigningInProgress(true);
         const newFileSignatures:file[] = [];
+        const failedFiles:string[] = [];
         for await(const currentFile of files){
             const pgpMessage:Message<Uint8Array>|null = await createMessage({binary:currentFile.data,format:"binary"}).catch(e => { console.error(e); return null });
             if(!pgpMessage){
-                console.log("Failed to parse file");
-                return;
+                failedFiles.push(currentFile.fileName);
+                continue;
             }
             const response:Uint8Array|null = await sign({detached:true,message:pgpMessage,signingKeys:privateKeys,format:"binary"}).catch(e => { console.error(e); return null });
             
             if(!response){
-                console.log("Failed to sign file");
-                return;
+                failedFiles.push(currentFile.fileName);
+                continue;
             }
             newFileSignatures.push({data:response,fileName:currentFile.fileName})
+        }
+        if(failedFiles.length>0){
+            setAlerts([
+                ...alerts,
+                {
+                    text:`${t("failedToSignFiles")}: ${failedFiles.join(", ")}`,
+                    style:"alert-error"
+                }
+            ])
         }
         setFileSignatures(newFileSignatures);
         setSigningInProgress(false);
@@ -158,6 +187,8 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
             <ShowGPGFiles files={fileSignatures} extension=".sig"/>
         ) : (null)
     }
+        <Alert alerts={alerts} setAlerts={setAlerts} />
+
     </div>
     )
 }
