@@ -49,7 +49,6 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
         }
         case "get-data":{
             let temp = globalData;
-            globalData=undefined;
             return temp;
         }
         case "set-encrypted-data":{

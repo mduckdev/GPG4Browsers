@@ -35,6 +35,12 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
             decryptData();
         }
     }
+    const getData = async ()=>{
+        const data = await Browser.runtime.sendMessage({action:"get-data"});
+        if(typeof data === "string"){
+            setEncryptedMessage(data);
+        }
+    }
     useEffect(()=>{
         attempToDecrypt(encryptedMessage);
     },[encryptedMessage]);
@@ -45,12 +51,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         }
     },[]);
 
-    const getData = async ()=>{
-        const data = await Browser.runtime.sendMessage({action:"get-data"});
-        if(typeof data === "string"){
-            setEncryptedMessage(data);
-        }
-    }
+    
     const findDecryptionKeyInKeyring = async (encryptionKeys:KeyID[]) =>{
         for(const privateKey of privKeysList){
             const privKey:PrivateKey|null = await readPrivateKey({armoredKey:privateKey.keyValue}).catch(e => { console.error(e); return null });
@@ -223,14 +224,8 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
 
         const results = await getSignatureInfo(decryptedMessage.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
-        if(!results){
-            setSignatureMessages(t("messageUnathenticated"));
-            setIsMessageVerified(false);
-            return;
-        }
-
-        setIsMessageVerified(true)
-        setSignatureMessages(results.join("\n"))
+        setIsMessageVerified(results?true:false)
+        setSignatureMessages(results?results.join("\n"):t("messageUnathenticated"))
         setDecryptedMessage(decryptedMessage.data.toString());
     }
     const decryptFiles = async (decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
