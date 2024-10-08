@@ -27,7 +27,7 @@ export interface outputTextareaPropsInterface{
 
 export interface KeyDropdownProps<T extends IPublicKey|IPrivateKey>{
     style?:string,
-    id?:string,
+    id?:"PublicKey"|"PrivateKey",
     label:string,
     isActive:boolean,
     keysList:T[],

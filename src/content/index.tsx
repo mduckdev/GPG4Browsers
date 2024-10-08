@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import Content from "./content";
 import React from "react";
-import "./css/style.css"
 import { processPage } from "./utils";
 import { storeBootstrap, useAppSelector } from "@src/redux/store";
 import { getDetectMessages } from "@src/redux/preferencesSlice";

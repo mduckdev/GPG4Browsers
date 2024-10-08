@@ -156,7 +156,7 @@ export default function Signing({activeSection,isPopup,previousTab,setActiveSect
                         </div>
                     )
                 }
-                <KeyDropdown isActive={true} label={t("signWithPrivKey")} selectedKeys={selectedPrivKeys} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
+                <KeyDropdown id="PrivateKey" isActive={true} label={t("signWithPrivKey")} selectedKeys={selectedPrivKeys} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
                 <div className="form-control">
                         <label className="label cursor-pointer">
                             <span className="label-text">{t("cleartextSignature")}</span>

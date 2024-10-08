@@ -10,7 +10,8 @@ test.describe("Tests switching encryption tabs",()=>{
         await expect(page.locator("#decryption")).toHaveCount(0); 
         await expect(page.locator("#message")).toHaveCount(1); 
         await expect(page.locator("#message")).toHaveCount(1);
-        await expect(page.getByTestId("keysDropdown")).toHaveCount(2); 
+        await expect(page.getByTestId("PublicKeyDropdown")).toHaveCount(1); 
+        await expect(page.getByTestId("PrivateKeyDropdown")).toHaveCount(1); 
         await expect(page.locator("input.checkbox")).toHaveCount(2); 
         await expect(page.locator("#encryptBtn")).toHaveCount(1); 
     });
@@ -29,7 +30,7 @@ test.describe("Tests switching signature tabs",()=>{
     })
     test('Correct rendering signing tab', async ({ page, webExtURL }) => {
         await expect(page.locator("#signing")).toHaveCount(1);
-        await expect(page.getByTestId("keysDropdown")).toHaveCount(1); 
+        await expect(page.getByTestId("PrivateKeyDropdown")).toHaveCount(1); 
         await expect(page.locator("input.checkbox")).toHaveCount(1); 
         await expect(page.locator("#validatingSignatures")).toHaveCount(0);
     });

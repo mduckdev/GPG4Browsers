@@ -33,7 +33,7 @@ test.describe("Encryption page logic",()=>{
         await page.locator("textarea#encryptedMessage").fill(encryptedMessage);
         await expect(page.locator("textarea#outputTextarea")).toBeVisible();
         await expect(page.locator("textarea#outputTextarea")).toContainText(message);
-        await expect(page.locator("p.text-info")).toContainText("Valid signature from test <test@example.com>, Primary key fingerprint: b30ec8bdd3110f1e381d3b639150d0123f5ca2f3, Key ID: 9150d0123f5ca2f3")
+        await expect(page.locator("p.text-info")).toContainText("Valid signature from: test <test@example.com>, Primary key fingerprint: b30ec8bdd3110f1e381d3b639150d0123f5ca2f3, Key ID: 9150d0123f5ca2f3")
     })
   
 })
