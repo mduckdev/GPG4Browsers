@@ -6,6 +6,8 @@ import { IPrivateKey } from "./redux/privateKeySlice";
 import { User } from "openpgp";
 import { TFunction } from "i18next";
 const extensionsRegex:RegExp = /(\.gpg|\.pgp|\.asc|\.sig)$/i;
+export const urlRegex = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+
 export const usePrevious = (value:string):string =>{
     const ref = useRef<string>();
     useEffect(() => {

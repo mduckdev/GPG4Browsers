@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import KeyDropdown from "../keyDropdown";
 import { MainProps, alert, preferences } from "@src/types";
 import { useTranslation } from "react-i18next";
-import { getPrivateKeys, getPublicKeys } from "@src/utils";
+import { getPrivateKeys, getPublicKeys, urlRegex } from "@src/utils";
 import { setPreferences } from "@src/redux/preferencesSlice";
 import { PrivateKey, readPrivateKey } from "openpgp";
 import Alert from "../Alert";
@@ -56,7 +56,14 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
         </div>
         <label  className="block text-sm font-medium ">{t("keyServers")}</label>
         <textarea className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" 
-                    defaultValue={keyServers.join("\n")} onChange={(e)=>{setKeyServers(e.target.value.split("\n").filter(e=>e!==""))}}></textarea>
+                    defaultValue={keyServers.join("\n")} 
+                    onChange={(e)=>{
+                        const urls = Array.from(e.target.value.split("\n")).filter((s: string) => {
+                            const link = s.match(urlRegex);
+                            return link;
+                          });
+                        setKeyServers(urls.map(link => link.replace(/\/$/, '').trim()));
+                    }}></textarea>
         <label className="label cursor-pointer flex gap-2">
             <span className="label-text">{t("askBeforeUpdatingKey")}</span>
             <input type="checkbox" className="checkbox" checked={askAboutUpdatingKey} onChange={(e)=>{setAskAboutUpdatingKey(e.target.checked);}}/>
