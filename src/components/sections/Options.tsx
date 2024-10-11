@@ -28,8 +28,8 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
 
     const saveChanges = async ()=>{
         const newPreferences:preferences = {
-            defaultSigningKeyFingerprints:selectedPrivKeys?.map(e=>e.fingerprint) || [],
-            defaultEncryptionKeyFingerprints:selectedPubKeys?.map(e=>e.fingerprint) || [],
+            defaultSigningKeyFingerprints:selectedPrivKeys.map(e=>e?.fingerprint) || [],
+            defaultEncryptionKeyFingerprints:selectedPubKeys.map(e=>e?.fingerprint) || [],
             askAboutUpdatingKey:askAboutUpdatingKey,
             detectMessages:detectMessages,
             keyServers:keyServers
@@ -56,7 +56,7 @@ export default function Options({activeSection,isPopup,previousTab,setActiveSect
         </div>
         <label  className="block text-sm font-medium ">{t("keyServers")}</label>
         <textarea className="mt-1 h-24 border border-gray-300 dark:border-gray-500 focus:outline-none focus:border-blue-500 p-2 rounded-md" 
-                    value={keyServers.join("\n")} onChange={(e)=>{setKeyServers(e.target.value.split("\n").filter(e=>e!==""))}}></textarea>
+                    defaultValue={keyServers.join("\n")} onChange={(e)=>{setKeyServers(e.target.value.split("\n").filter(e=>e!==""))}}></textarea>
         <label className="label cursor-pointer flex gap-2">
             <span className="label-text">{t("askBeforeUpdatingKey")}</span>
             <input type="checkbox" className="checkbox" checked={askAboutUpdatingKey} onChange={(e)=>{setAskAboutUpdatingKey(e.target.checked);}}/>
