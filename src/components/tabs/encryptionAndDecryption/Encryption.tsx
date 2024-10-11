@@ -205,11 +205,11 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                         usePassword?(
                             <PassphraseTextInput value={password} setOnChange={setPassword} />
                         ):(
-                            <KeyDropdown id="PublicKey" selectedKeys={selectedPubKeys} isActive={true} label={t("recipientPubKey")} keysList={pubKeysList} setSelectedKeys={setSelectedPubKeys} setActiveSection={setActiveSection} />
+                            <KeyDropdown  id="PublicKey" selectedKeys={selectedPubKeys} isActive={true} label={t("recipientPubKey")} keysList={pubKeysList} setSelectedKeys={setSelectedPubKeys} setActiveSection={setActiveSection} />
                         )
                     }
                     
-                    <KeyDropdown id="PrivateKey" selectedKeys={selectedPrivKeys} isActive={signMessage} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
+                    <KeyDropdown  id="PrivateKey" selectedKeys={selectedPrivKeys} isActive={signMessage} label={t("signWithPrivKey")} keysList={privKeysList} setSelectedKeys={setSelectedPrivKeys} setActiveSection={setActiveSection} />
                     
                     <div className="form-control">
                         <label className="label cursor-pointer">

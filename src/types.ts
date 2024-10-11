@@ -3,6 +3,7 @@ import { IPrivateKey } from "./redux/privateKeySlice"
 import { IPublicKey } from "./redux/publicKeySlice"
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { User } from "openpgp";
+import { TFunction } from "i18next";
 
 export interface sectionsPropsInterface{
     activeSection:string,
@@ -179,6 +180,7 @@ export interface preferences{
     keyServers:string[],
     detectMessages:boolean,
     defaultEncryptionKeyFingerprints:string[],
+    language:string
 }
 export interface DropdownItemProps<T extends IPublicKey | IPrivateKey>{
     keyData:IPublicKey|IPrivateKey,

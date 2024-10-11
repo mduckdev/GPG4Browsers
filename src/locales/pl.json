@@ -155,6 +155,8 @@
       "selectFilesOrEnterMessage":"Brak danych. Wpisz wiadomość lub wybierz pliki",
       "noKeysSelected":"Nie wybrano kluczy",
       "failedToSignMessage":"Nie udało się podpisać wiadomości",
-      "failedToSignFiles":"Nie udało się podpisać plików"
+      "failedToSignFiles":"Nie udało się podpisać plików",
+      "selectLanguage":"Wybierz język",
+      "language":"Język"
     }
   }

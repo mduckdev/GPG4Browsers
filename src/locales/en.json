@@ -155,6 +155,8 @@
         "selectFilesOrEnterMessage":"No data found. Enter message or select files",
         "noKeysSelected":"No keys selected",
         "failedToSignMessage":"Failed to sign message",
-        "failedToSignFiles":"Failed to sign files"
+        "failedToSignFiles":"Failed to sign files",
+        "selectLanguage":"Select language",
+        "language":"Language"
     }
 }

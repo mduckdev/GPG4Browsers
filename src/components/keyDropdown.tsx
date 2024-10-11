@@ -8,15 +8,17 @@ import DropdownItem from "./DropdownItem";
 import { IPrivateKey } from "@src/redux/privateKeySlice";
 
 export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,style,id,keysList,isActive,selectedKeys,setSelectedKeys,setActiveSection}:KeyDropdownProps<T>) {
-    const { t } = useTranslation();
     const preferences = useAppSelector((state:RootState)=>state.preferences);
+    const { t, i18n } = useTranslation();
 
     const [isOpen,setIsOpen]=useState<boolean>(false);
     const [searchQuery,setSearchQuery]=useState<string>("");
     const [dropdownText,setDropdownText]=useState<string>(getDropdownText(keysList,preferences, t("selectKey")));
     const ref = useRef<HTMLDivElement | null>(null);
 
-
+    useEffect(() => {
+        setDropdownText(getDropdownText(keysList,preferences, t("selectKey")))
+      }, [i18n.language]);
 
     const handleClickOutside = (event: MouseEvent) => {
         if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -25,10 +27,6 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
       };
 
     useEffect(()=>{
-        // let areDefaultKeysAvailable:T[]|undefined=keysList.filter(e=>preferences.defaultSigningKeyFingerprints.includes(e.fingerprint));
-        // if(areDefaultKeysAvailable){
-        //     setSelectedKeys(areDefaultKeysAvailable);
-        // }
         document.addEventListener("click", handleClickOutside);
         return () => {
           document.removeEventListener("click", handleClickOutside);
@@ -54,7 +52,7 @@ export default function KeyDropdown<T extends IPublicKey | IPrivateKey>({label,s
                     {
                         (isOpen && isActive)?(
                             <div id="dropdown-menu" onBlur={()=>setIsOpen(false)}  className="w-full absolute right-0 bg-slate-100 dark:bg-gray-700 rounded-md shadow-lg p-1 space-y-1 z-50 overflow-auto max-h-36">
-                                <input id="search-input" className="block w-full px-4 py-2 border rounded-md  focus:outline-none" type="text" placeholder="Search items" autoComplete="off" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
+                                <input id="search-input" className="block w-full px-4 py-2 border rounded-md  focus:outline-none" type="text" placeholder={t("search")} autoComplete="off" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
                                 {
                                     keysList.map( (element:IPublicKey,index:number)=>{
                                         if(element.userID.toLowerCase().includes(searchQuery.toLowerCase()) || 

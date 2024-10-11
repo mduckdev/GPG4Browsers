@@ -6,16 +6,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
 import Browser from 'webextension-polyfill';
 import ThemeToggle from './components/ThemeToggle';
-import { useAppDispatch, useAppSelector } from './redux/store';
+import { RootState, useAppDispatch, useAppSelector } from './redux/store';
 import { setTheme } from './redux/themeSlice';
 import { usePrevious } from './utils';
 import { setLastSection, setLastTab } from './redux/historySlice';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const fetchedTheme  = useAppSelector(state=>state.theme.prefferedTheme);
-  const lastSection  = useAppSelector(state=>state.history.lastSection);
-  const lastTab = useAppSelector(state=>state.history.lastTab);
+  const fetchedTheme  = useAppSelector((state:RootState)=>state.theme.prefferedTheme);
+  const lastSection  = useAppSelector((state:RootState)=>state.history.lastSection);
+  const lastTab = useAppSelector((state:RootState)=>state.history.lastTab);
 
   const [activeSection, setActiveSection] = useState<string>(lastSection || 'EncryptionAndDecryption');
   const [activeTab, setActiveTab] = useState<string>(lastTab || 'encryption');
@@ -42,6 +42,7 @@ const App: React.FC = () => {
     if(lastTab){
       dispatch(setLastTab(""));
     }
+    
   },[])
 
 useEffect(()=>{

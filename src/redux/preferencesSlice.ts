@@ -7,7 +7,8 @@ const defaultState:preferences = {
     defaultEncryptionKeyFingerprints:[],
     askAboutUpdatingKey:true,
     keyServers:["https://keys.openpgp.org","https://keys.mailvelope.com"],
-    detectMessages:true
+    detectMessages:true,
+    language:""
 }
 
 export const preferencesSlice = createSlice({
