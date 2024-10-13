@@ -14,7 +14,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     const [signedMessage,setSignedMessage] = useState<string>("");
     const [signedValue,setSignedValue] = useState<string>("");
     const [isMessageVerified,setIsMessageVerified] = useState<boolean>(false);
-    const [signatureMessages,setSignatureMessages] = useState<string>("");
+    const [signatureMessages,setSignatureMessages] = useState<string[]>([]);
 
     const [fileSignatures, setFileSignatures] = useState<file[]>([])
     const [checkedFiles, setCheckedFiles] = useState<decryptedFile[]>([])
@@ -40,7 +40,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         if(!signatureParsed){ // is not cleartext message
             signatureParsed = await readMessage({armoredMessage:signedMessage}).catch(e => { console.error(e); return null });
             if(!signatureParsed){ //is not cleartext or inline 
-                setSignatureMessages(t("failedToParseTheMessage"));
+                setSignatureMessages([t("failedToParseTheMessage")]);
                 setIsMessageVerified(false);
                 return;
             }else{ //is inline
@@ -51,7 +51,7 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
         }
 
         if(!signatureInfo){
-            setSignatureMessages(t("failedToCheckSignatures"));
+            setSignatureMessages([t("failedToCheckSignatures")]);
             setIsMessageVerified(false);
             return;
         }
@@ -59,15 +59,9 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
 
         const results = await getSignatureInfo(signatureInfo.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
-        if(!results){
-            setSignatureMessages(t("messageUnathenticated"));
-            setIsMessageVerified(false);
-            return;
-        }
-        
         setSignedValue(signatureInfo.data);
-        setIsMessageVerified(true)
-        setSignatureMessages(results.join("\n"));
+        setIsMessageVerified(results?true:false)
+        setSignatureMessages(results?results:[t("messageUnathenticated")]);
     }
     const verifyFiles = async (publicKeys:Key[])=>{
         if(fileSignatures.length===0){
@@ -166,7 +160,13 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             <button 
                 className="mt-4 btn btn-info" onClick={verifyData}>{t("verify")}</button>
         </div>
-        <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
+        {
+            signatureMessages.map((e,index)=>{
+                if(index<15){
+                    return <p key={index} className={isMessageVerified?("text-info"):("text-error")}>{e}</p>
+                }
+            })
+            }
         {       
         (signedValue === "") ? (
             null

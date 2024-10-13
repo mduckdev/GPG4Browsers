@@ -34,7 +34,13 @@ export default function ShowFilesInTable({files,removeExtensions}:ShowFilesInTab
                                 </button>
                             </a>
                         </td>
-                        <td className={`${e.signatureStatus}`}>{e.signatureMessages}</td>
+                        <td className={`${e.signatureStatus}`}>{e.signatureMessages.map((e,index)=>{
+                            if(index<15){
+                                return (
+                                    <p key={index}>{e}</p>
+                                )
+                            }
+                        })}</td>
                         <td>{formatBytes(e.data.length)}</td>
                     </tr>
                 ))}

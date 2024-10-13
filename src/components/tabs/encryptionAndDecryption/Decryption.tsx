@@ -19,7 +19,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
     
     const [encryptedMessage,setEncryptedMessage] = useState<string>("");
     const [decryptedMessage,setDecryptedMessage] = useState<string>("");
-    const [signatureMessages,setSignatureMessages] = useState<string>("");
+    const [signatureMessages,setSignatureMessages] = useState<string[]>([]);
 
     const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
     const [decryptedFiles, setDecryptedFiles] = useState<decryptedFile[]>([])
@@ -227,7 +227,7 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
         const results = await getSignatureInfo(decryptedMessage.signatures,publicKeys,t).catch(e=>{console.error(e);return null});
 
         setIsMessageVerified(results?true:false)
-        setSignatureMessages(results?results.join("\n"):t("messageUnathenticated"))
+        setSignatureMessages(results?results:[t("messageUnathenticated")])
         setDecryptedMessage(decryptedMessage.data.toString());
     }
     const decryptFiles = async (decryptionKeys:CryptoKeys[],publicKeys:Key[])=>{
@@ -321,7 +321,16 @@ export default function Decryption({activeSection,isPopup,previousTab,setActiveS
                 <button 
                     className="mt-4 btn btn-info" onClick={()=>{decryptData()}}>{t("decrypt")}</button>
             </div>
-        <p className={isMessageVerified?("text-info"):("text-error")}>{signatureMessages}</p>
+        <div>
+            {
+            signatureMessages.map((e,index)=>{
+                if(index<15){
+                    return <p key={index} className={isMessageVerified?("text-info"):("text-error")}>{e}</p>
+                }
+            })
+            }
+
+        </div>
         {
             (decryptedMessage === "") ? (
                 null
