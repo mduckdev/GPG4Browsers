@@ -105,7 +105,7 @@ export default function SubkeyGenerationModal({title,text,selectedKey, isVisible
   },[passphrase,updatedKey]);
     return (
         <div>
-            <PassphraseModal title={t("passphrase")}text={t("enterPassphrase")} isVisible={isPassphraseModalVisible} setIsVisible={setIsPassphraseModalVisible} dataToUnlock={[{data:selectedKey.armoredKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={handleConfirm} onClose={()=>{}} setPassphraseValue={setPassphrase} />
+            <PassphraseModal title={t("enterPassphrase")}text={t("enterPassphrase")} isVisible={isPassphraseModalVisible} setIsVisible={setIsPassphraseModalVisible} dataToUnlock={[{data:selectedKey.armoredKey,isPrivateKey:true,isUnlocked:isSelectedPrivateKeyUnlocked}]} onConfirm={handleConfirm} onClose={()=>{}} setPassphraseValue={setPassphrase} />
 
             <dialog ref={modalRef} id="my_confirm_modal" className="modal" onCancel={handleESC}>
                 <div className="modal-box w-11/12 max-w-5xl">

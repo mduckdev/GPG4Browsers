@@ -9,7 +9,7 @@ export default function ShowFilesInTable({files,removeExtensions}:ShowFilesInTab
 
     return (
         <div className="overflow-x-auto mb-3">
-            <div className="divider">FILES</div>
+            <div className="divider">{t("files")}</div>
 
             <table className="table">
                 {/* head */}

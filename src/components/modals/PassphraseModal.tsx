@@ -148,7 +148,7 @@ export default function PassphraseModal({title,text, isVisible, dataToUnlock, se
         <dialog ref={modalRef} id="my_modal_4" className="modal" onCancel={handleESC}>
             <div className="modal-box w-11/12 max-w-5xl">
                 <h3 className="font-bold text-lg">{title}</h3>
-                <p className="py-2">{t("enterPassphrase")}: {currentKeyInfo}</p>
+                <p className="py-2">{currentKeyInfo}</p>
                 <div className="w-full flex flex-col">
                     <PassphraseTextInput value={currentPassphrase} setOnChange={setCurrentPassphrase}/>
                     
