@@ -30,6 +30,12 @@ const renderApp = async () => {
     const store = await storeBootstrap();
     if(getDetectMessages(store.getState())){
         renderApp();
-        setInterval(renderApp,1000)
+        let lastHTML = document.documentElement.innerHTML;
+        setInterval(()=>{
+            if(lastHTML !== document.documentElement.innerHTML){
+                lastHTML = document.documentElement.innerHTML;
+                renderApp();
+            }
+        },1000)
     }
 })();
