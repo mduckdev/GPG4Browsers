@@ -13,6 +13,7 @@ test.describe("Decrypting messages detected from content script, key missing",()
 
     test("Decrypt message encrypted and signed with unlocked key, key unavailable",async ({ page, webExtURL }) => {
         const newPagePromise:Promise<Page> = new Promise(resolve => page.context().once("page", resolve));
+        await page.waitForSelector("div.GPG4Browsers");
         await (await page.locator("div.GPG4Browsers img").all())[0].click();
         const newPage = await newPagePromise
         

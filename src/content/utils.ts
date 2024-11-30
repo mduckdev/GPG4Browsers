@@ -7,51 +7,64 @@ import { Key, Message, Signature, readKeys, readMessage, readSignature } from "o
 export const pgpMessagePattern = /-----BEGIN PGP MESSAGE-----[\s\S]+?-----END PGP MESSAGE-----/g;
 export const pgpPublicKeyPattern = /-----BEGIN PGP PUBLIC KEY BLOCK-----[\s\S]+?-----END PGP PUBLIC KEY BLOCK-----/g;
 
-export function processPage(globalMessages: string[]): ProcessPageResults|undefined {
-    const results: ProcessPageResults = {
-        newHtmlElements: [],
-        newPgpMessages: []
+export function processPage(
+    globalMessages: string[],
+    regexes: RegExp[] = [pgpMessagePattern, pgpPublicKeyPattern]
+): ProcessPageResults | undefined {
+
+    const newPgpMessages: string[] = [];
+    const newHtmlElements: HTMLElement[] = [];
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    let currentNode: Node | null;
+    let currentMessage = '';
+
+    while ((currentNode = walker.nextNode())) {
+        const textContent = currentNode.textContent; 
+        if (textContent) {
+            currentMessage += textContent;
+
+            for (const regex of regexes) {
+                let match: RegExpExecArray | null;
+
+                while ((match = regex.exec(currentMessage))) {
+                    const matchedMessage = match[0].split("\n").map(e=>e.trim()).filter((e,index)=>e.length>0 || index ===1).join("\n"); // Zostawiamy pełną wiadomość z nowymi liniami
+
+                    if (globalMessages.includes(matchedMessage) || newPgpMessages.includes(matchedMessage)) {
+                        continue;
+                    }
+                    newPgpMessages.push(matchedMessage);
+
+                    const parentElement = currentNode.parentElement;
+                    if (parentElement) {
+                        const newDiv = document.createElement("div");
+                        newDiv.className="GPG4Browsers"
+                        parentElement.insertBefore(newDiv, currentNode.nextSibling);
+                        newHtmlElements.push(newDiv);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if (currentMessage.includes("-----END PGP MESSAGE-----")) {
+            currentMessage = ''; 
+        }
+    }
+
+    if (newPgpMessages.length === 0) {
+        return undefined;
+    }
+
+    return {
+        newHtmlElements,
+        newPgpMessages,
     };
-
-    const page = document.querySelector('html');
-    if (!page) return;
-
-    const pgpMessagesHTML = page.innerHTML.match(pgpMessagePattern) || [];
-    const pgpMessagesText = page.innerText.match(pgpMessagePattern) || [];
-
-    const pgpPublicKeysHTML = page.innerHTML.match(pgpPublicKeyPattern) || [];
-    const pgpPublicKeysText = page.innerText.match(pgpPublicKeyPattern) || [];
-
-
-    const allMatchesHTML = [...pgpMessagesHTML, ...pgpPublicKeysHTML];
-    const allMatchesText = [...pgpMessagesText, ...pgpPublicKeysText];
-
-
-    if (allMatchesText.length === globalMessages.length) return;
-    if(allMatchesText.length !== allMatchesHTML.length) return;
-
-    for (let i =0; i<allMatchesText.length; i++) {
-        if (!globalMessages.includes(allMatchesText[i])) {
-            results.newPgpMessages.push(allMatchesText[i]);
-
-            const span = `<span class="GPG4Browsers">${allMatchesHTML[i]}</span>`;
-
-            page.innerHTML = page.innerHTML.replace(allMatchesHTML[i], span);
-        }
-    }
-    results.newPgpMessages = results.newPgpMessages.map(match => match.replaceAll('\t',''));
-    const messagesHTML = Array.from(document.querySelectorAll("span.GPG4Browsers"));
-    for (const message of messagesHTML) {
-        if (!message.querySelector("div.GPG4Browsers")) {
-            const container = document.createElement("div");
-            container.classList.add("GPG4Browsers");
-            message.appendChild(container);
-            results.newHtmlElements.push(container as HTMLElement); 
-        }
-    }
-
-    return results;
 }
+
+
+
 
 export const parsePgpData = async (value:string) =>{
     const message:Message<string>|null = await readMessage({armoredMessage:value}).catch(e=>{console.log("Not a message");return null})

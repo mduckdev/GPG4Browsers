@@ -9,6 +9,7 @@ test.describe("Options page logic",()=>{
 
     test("Testing detection option",async ({ page, webExtURL }) => {
         await page.goto("https://gist.github.com/mduckdev/ad232504a7d09dc7e1bcf02fe24bf6c7");
+        await page.waitForSelector("div.GPG4Browsers");
         await expect(await page.locator('div.GPG4Browsers').count()).toBeGreaterThan(0)
         await page.goto(`${webExtURL}/popup.html?popup=false`);
         await page.getByText("Options").click();
