@@ -48,7 +48,7 @@ export function processPage(
             }
         }
 
-        if (currentMessage.includes("-----END PGP MESSAGE-----")) {
+        if (currentMessage.includes("-----END PGP MESSAGE-----") || currentMessage.includes("-----END PGP PUBLIC KEY BLOCK-----")) {
             currentMessage = ''; 
         }
     }

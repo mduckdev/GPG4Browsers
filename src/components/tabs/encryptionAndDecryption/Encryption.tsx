@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import PassphraseModal from "@src/components/modals/PassphraseModal";
 import OutputTextarea from "@src/components/OutputTextarea";
 import KeyDropdown from "@src/components/keyDropdown";
-import { CryptoKeys, MainProps, file } from "@src/types";
+import { CryptoKeys, MainProps, alert, file } from "@src/types";
 import {  getPrivateKeys, getPublicKeys, handleDataLoaded, handleDataLoadedOnDrop, privateKeysToCryptoKeys, updateIsKeyUnlocked } from "@src/utils";
 import PassphraseTextInput from "@src/components/PassphraseTextInput";
 import ShowGPGFiles from "@src/components/ShowGPGFiles";
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import Browser from "webextension-polyfill";
 import { IPublicKey } from "@src/redux/publicKeySlice";
 import { IPrivateKey } from "@src/redux/privateKeySlice";
+import Alert from "@src/components/Alert";
 
 export default function Encryption({activeSection,isPopup,previousTab,setActiveSection}:MainProps) {
     const { t } = useTranslation();
@@ -30,6 +31,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     const [encryptedMessage,setEncryptedMessage] =  useState<string>("");
 
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
     const [files,setFiles] = useState<file[]>([])
     const [encryptedFiles, setEncryptedFiles] = useState<file[]>([])
@@ -70,12 +72,19 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
 
     const encryptData = async (privateKey:CryptoKeys[])=>{
         if(selectedPubKeys?.length===0 && password===""){
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("noKeysOrPasswordSelected"),
+                    style:"alert-error"
+                }
+            ])
             return;
         }
         const pgpKeys:Key[] = [];
         if(selectedPubKeys){
             for await(const pubkey of selectedPubKeys){
-                let key = await readKey({armoredKey:pubkey.keyValue}).catch(e => { console.error(e); return null })
+                let key = await readKey({armoredKey:pubkey?.keyValue}).catch(e => { console.error(e); return null })
                 if(key){
                     pgpKeys.push(key);
                 }
@@ -84,6 +93,13 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
         
         
         if(pgpKeys.length === 0 && password === ""){
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("noKeysOrPasswordSelected"),
+                    style:"alert-error"
+                }
+            ])
             return;
         }
         let pgpSignKey:PrivateKey[]=[];
@@ -251,6 +267,7 @@ export default function Encryption({activeSection,isPopup,previousTab,setActiveS
                 <ShowGPGFiles files={encryptedFiles} extension=".gpg"/>
             ) : (null)
             }
+            <Alert alerts={alerts} setAlerts={setAlerts} />
                
         </div>
     );

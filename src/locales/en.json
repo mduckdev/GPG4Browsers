@@ -106,7 +106,7 @@
         "validCertification":"Valid certification",
         "couldntVerifyCertification":"Failed to verify certification",
         "issuer":"Issuer",
-        "noPubKeyFound":"Failed to find corresponding public key",
+        "noPubKeysAvailable":"No public keys are available",
         "expired":"Expired",
         "deleteKey":"Delete key",
         "additionalConfirmationNeeded":"Additional confirmation needed",
@@ -157,6 +157,7 @@
         "failedToSignMessage":"Failed to sign message",
         "failedToSignFiles":"Failed to sign files",
         "selectLanguage":"Select language",
-        "language":"Language"
+        "language":"Language",
+        "noKeysOrPasswordSelected":"No keys or password was selected"
     }
 }

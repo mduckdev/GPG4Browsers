@@ -1,7 +1,8 @@
+import Alert from "@src/components/Alert";
 import OutputTextarea from "@src/components/OutputTextarea";
 import ShowFilesInTable from "@src/components/ShowFilesInTable";
 import { RootState, useAppSelector } from "@src/redux/store";
-import { MainProps, decryptedFile, file, sectionsPropsInterface } from "@src/types";
+import { MainProps, alert, decryptedFile, file, sectionsPropsInterface } from "@src/types";
 import { getSignatureInfo, handleDataLoaded, handleDataLoadedOnDrop, removeFileExtension, testFileExtension } from "@src/utils";
 import { CleartextMessage, Key, Message, Signature, VerifyMessageResult, createMessage, readCleartextMessage, readKey, readMessage, readSignature, verify } from "openpgp";
 import React, { useState } from "react";
@@ -20,12 +21,19 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
     const [checkedFiles, setCheckedFiles] = useState<decryptedFile[]>([])
 
     const [validatingInProgress,setValidatingInProgress] = useState<boolean>(false);
+    const [alerts,setAlerts] = useState<alert[]>([]);
 
 
     const verifyData = async ()=>{
         const pubKeys:Key[] = await Promise.all(pubKeysList.map(async e=>await readKey({armoredKey:e.keyValue})))
         if(pubKeys.length===0){
-            //show alert
+            setAlerts([
+                ...alerts,
+                {
+                    text:t("noPubKeysAvailable"),
+                    style:"alert-error"
+                }
+            ])
             return;
         }
         verifyMessage(pubKeys);
@@ -192,6 +200,8 @@ export default function ValidatingSignatures({activeSection,isPopup,previousTab,
             <ShowFilesInTable files={checkedFiles} removeExtensions={false}/>
         ) : (null)
     }
+        <Alert alerts={alerts} setAlerts={setAlerts} />
+
     </div>
     )
 }

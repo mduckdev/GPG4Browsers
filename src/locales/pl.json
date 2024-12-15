@@ -106,7 +106,7 @@
       "validCertification":"Prawidłowa certyfikacja",
       "couldntVerifyCertification":"Nie udało się zweryfikować certyfikacji",
       "issuer":"Certyfikujący",
-      "noPubKeyFound":"Nie udało się znaleźć odpowiadającego klucza publicznego",
+      "noPubKeysAvailable":"Brak zapisanych żadnych kluczy publicznych",
       "expired":"Wygaśnięty",
       "deleteKey":"Usuń klucz",
       "additionalConfirmationNeeded":"Potrzebne jest dodatkowe potwierdzenie",
@@ -157,6 +157,7 @@
       "failedToSignMessage":"Nie udało się podpisać wiadomości",
       "failedToSignFiles":"Nie udało się podpisać plików",
       "selectLanguage":"Wybierz język",
-      "language":"Język"
+      "language":"Język",
+      "noKeysOrPasswordSelected":"Nie wybrano kluczy ani hasła"
     }
   }
