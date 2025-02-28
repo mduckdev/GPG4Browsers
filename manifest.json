@@ -1,13 +1,12 @@
 {
     "manifest_version": 3,
     "name": "GPG4Browsers",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Extension for encrypting data with OpenPGP",
     "permissions": [
         "tabs",
         "activeTab",
         "storage",
-        "nativeMessaging",
         "contextMenus"
     ],
     "background": {
